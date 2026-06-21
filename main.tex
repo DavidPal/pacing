@@ -31,7 +31,7 @@ We show convergence results for the pacing problem.
 
 \section{Introduction}
 
-Consider a sequence of requests $R_1, R_2, \dots R_T \in \Requests$. For each
+Consider a sequence of requests $R_1, R_2, \dots, R_T \in \Requests$. For each
 request we have to make one of $N$ decisions. We make a simple assumption that
 the requests are sampled i.i.d. from a fixed, but unknown, distribution $D$.
 Each request is an $N \times M$ matrix with entries in the interval $[0,1]$. In
@@ -50,14 +50,14 @@ of the following optimization problem.
 \end{align*}
 
 The value $R_{t,i,1}$ is the reward collected for $t$-th request if we make
-decision $i$ for it. The value $R_{t,i,j}$ for $j \ge 2$ is the $j$-the bussiness
-metric for $t$-the request. For example, at Uber, a request can be request by a
+decision $i$ for it. The value $R_{t,i,j}$ for $j \ge 2$ is the $j$-th business
+metric for the $t$-th request. For example, at Uber, a request can be a request by a
 customer to get a ride and Uber needs to choose one of $K$ possible prices for
 the request. $R_{t,i,1}$ could be the probability of the trip happening,
 $R_{t,i,2}$ could be the price paid by the rider, $R_{t,i,3}$ could be the price
 paid to the driver, etc.
 
-The optimization problem can expressed as a linear program:
+The optimization problem can be expressed as a linear program:
 
 \begin{align*}
 \maximize_{x_{1,1}, \dots, x_{T,N} \in \R} \qquad & \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N x_{t,i} \cdot R_{t,i,1} \\
@@ -66,26 +66,26 @@ The optimization problem can expressed as a linear program:
 & \sum_{i=1}^N x_{t,i} = 1 & \text{for all $t=1,2,\dots,T$}
 \end{align*}
 
-However, as opoposed to a standard optimization problem. We don't have all the
+However, as opposed to a standard optimization problem. We don't have all the
 coefficients $R_{t,i,j}$ available upfront. Instead, the requests come one at a
 time, and for each request we need to choose the probability vector $(x_{t,1},
 x_{t,2}, \dots, x_{t,N}) \in \Delta_N$. In order to make the decision for $t$-th
-request quickly, the probability vector is the ouptout of policy $\pi(R_t)$
+request quickly, the probability vector is the output of policy $\pi(R_t)$
 applied to the request $R_t$.
 
 We shall focus on a regime where the number of requests $T$ is much greater than
 both $N$ and $M$. The assumption that the entries of a request matrix $R_t$ lie
-in $[0,1]$ translates to an assumption that each request has neggligible impact
-on the total (or average) bussiness metrics. For the applications that we are
+in $[0,1]$ translates to an assumption that each request has negligible impact
+on the total (or average) business metrics. For the applications that we are
 interested in, the i.i.d. assumption is a good approximation for short enough
 time periods (e.g. a day or a week). Perhaps the most problematic assumption is
-that the value of the reward and bussiness metrics $R_{t,i,j}$ are known at the
-time when the decision $\pi(R_t)$ needs to made. In applications we have in
-mind, the reward and the bussiness metrics are predicted by machine learning
-models at time of the decision, and the actual reward and other bussiness
+that the value of the reward and business metrics $R_{t,i,j}$ are known at the
+time when the decision $\pi(R_t)$ needs to be made. In applications we have in
+mind, the reward and the business metrics are predicted by machine learning
+models at time of the decision, and the actual reward and other business
 metrics are revealed only after the decision has been made, sometimes with a
 significant delay. However, in order to keep our model simple, we assume that
-$R_t$ is available at time when the decision $\pi(R_t)$ needs to computed and
+$R_t$ is available at the time when the decision $\pi(R_t)$ needs to be computed and
 that entries in $R_t$ are perfectly accurate.
 
 We also make the simplifying assumption that the number of requests $T$ is known
@@ -95,29 +95,29 @@ model.
 For technical reasons, we shall assume that distribution $D$ has density
 function with respect to standard Lebesgue measure over $\R^{N \times M}$. The
 reason for this assumption will become clear later. This technical assumption
-can lifted at the expense of much more elaborate proofs that only muddle
+can be lifted at the expense of much more elaborate proofs that only muddle
 the main arguments.
 
 We shall use the following notation for the rest of the paper. For $i=1,2,\dots$,
-we define $e_i$ be the vector in $\R^N$ with $i$-the entry equal to $1$
-and all entries equal to zero,
+we define $e_i$ to be the vector in $\R^N$ with $i$-th entry equal to $1$
+and all other entries equal to zero,
 $$
-e_i = \underbrace{(0,\dots,0,1,0,\dots,0)}_{\text{$1$ is position $i$}} \: .
+e_i = \underbrace{(0,\dots,0,1,0,\dots,0)}_{\text{$1$ is at position $i$}} \: .
 $$
 
 \section{Reduced policy space}
 
 We consider policies parametrized by $M-1$ non-negative real numbers $\lambda_2,
-\lambda_2, \dots, \lambda_M$. As will become clear later, these are the dual
+\lambda_3, \dots, \lambda_M$. As will become clear later, these are the dual
 variables associated with the constraints of the linear program. However, for
 now, think of them as arbitrary non-negative real numbers. For any $(M-1)$-tuple
-$\lambda = (\lambda_2, \lambda_2, \dots, \lambda_K)$ we define a policy
+$\lambda = (\lambda_2, \lambda_3, \dots, \lambda_M)$ we define a policy
 $\pi_\lambda:\Requests \to \Delta_N$ as follows. For any request $R \in [0,1]^{N
 \times M}$, we define
 $$
 \pi_\lambda(R) = e_i
 \qquad \text{where} \qquad
-i = \argmax_{i=1,2,\dots,N} R_{i,1} + \lambda_2 R_{i,2} + \lambda_3 R_{i,3} \dots + \lambda_M R_{i,M} \: .
+i = \argmax_{i=1,2,\dots,N} R_{i,1} + \lambda_2 R_{i,2} + \lambda_3 R_{i,3} + \dots + \lambda_M R_{i,M} \: .
 $$
 
 \end{document}
