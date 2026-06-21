@@ -12,6 +12,7 @@
 
 \DeclareMathOperator*{\argmax}{argmax}
 \DeclareMathOperator*{\argmin}{argmin}
+\DeclareMathOperator*{\Exp}{\mathbf{E}}
 
 \DeclareMathOperator*{\maximize}{maximize}
 \DeclareMathOperator*{\minimize}{minimize}
@@ -45,19 +46,27 @@ $$
 We would like to come up with a policy that is an (approximate) optimal solution
 of the following optimization problem.
 \begin{align*}
-\maximize_{\pi} \qquad & \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N \pi(\R_t)_i \cdot R_{t,i,1} \\
-\subjectto \qquad & \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N \pi(\R_t)_i \cdot R_{t,i,j} \le B_j & \text{for all $j=2,3,\dots,M$} \\
+\maximize_{\pi} \qquad & \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N \pi(R_t)_i \cdot R_{t,i,1} \\
+\subjectto \qquad & \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N \pi(R_t)_i \cdot R_{t,i,j} \le B_j & \text{for all $j=2,3,\dots,M$} \\
 \end{align*}
 
 The value $R_{t,i,1}$ is the reward collected for $t$-th request if we make
 decision $i$ for it. The value $R_{t,i,j}$ for $j \ge 2$ is the $j$-th business
-metric for the $t$-th request. For example, at Uber, a request can be a request by a
-customer to get a ride and Uber needs to choose one of $K$ possible prices for
-the request. $R_{t,i,1}$ could be the probability of the trip happening,
-$R_{t,i,2}$ could be the price paid by the rider, $R_{t,i,3}$ could be the price
-paid to the driver, etc.
+metric for the $t$-th request. The right-hand sides of the constraints $B_2,
+B_3, \dots, B_M$ are given to us head of time.
 
-The optimization problem can be expressed as a linear program:
+The optimization is over the space of all possible policies. However,
+for technical reasons that will become obvious later, we consider only
+policies that are measurable.
+
+For example, at Uber, a request can be a request by a customer to get a ride and
+Uber needs to choose one of $K$ possible prices for the request. $R_{t,i,1}$
+could be the probability of the trip happening, $R_{t,i,2}$ could be the price
+paid by the rider, $R_{t,i,3}$ could be the price paid to the driver, etc. The
+right-hand sides of the constraints would be business objectives Uber wishes to
+achieve over a longer time period, say, one day or one week.
+
+The optimization problem can be expressed as a standard linear program:
 
 \begin{align*}
 \maximize_{x_{1,1}, \dots, x_{T,N} \in \R} \qquad & \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N x_{t,i} \cdot R_{t,i,1} \\
@@ -66,46 +75,45 @@ The optimization problem can be expressed as a linear program:
 & \sum_{i=1}^N x_{t,i} = 1 & \text{for all $t=1,2,\dots,T$}
 \end{align*}
 
-However, as opposed to a standard optimization problem. We don't have all the
+However, as opposed to a standard linear program, we don't have all the
 coefficients $R_{t,i,j}$ available upfront. Instead, the requests come one at a
 time, and for each request we need to choose the probability vector $(x_{t,1},
 x_{t,2}, \dots, x_{t,N}) \in \Delta_N$. In order to make the decision for $t$-th
-request quickly, the probability vector is the output of policy $\pi(R_t)$
-applied to the request $R_t$.
+request quickly, the probability vector is computed on the fly using the policy
+$\pi$ applied to the request $R_t$.
 
-We shall focus on a regime where the number of requests $T$ is much greater than
-both $N$ and $M$. The assumption that the entries of a request matrix $R_t$ lie
-in $[0,1]$ translates to an assumption that each request has negligible impact
-on the total (or average) business metrics. For the applications that we are
+We focus on a regime where the number of requests $T$ is much greater than both
+$N$ and $M$. The assumption that the entries of a request matrix $R_t$ lie in
+$[0,1]$ translates to an assumption that each request has negligible impact on
+the total (or average) business metrics. For the applications that we are
 interested in, the i.i.d. assumption is a good approximation for short enough
 time periods (e.g. a day or a week). Perhaps the most problematic assumption is
 that the value of the reward and business metrics $R_{t,i,j}$ are known at the
 time when the decision $\pi(R_t)$ needs to be made. In applications we have in
 mind, the reward and the business metrics are predicted by machine learning
-models at time of the decision, and the actual reward and other business
-metrics are revealed only after the decision has been made, sometimes with a
-significant delay. However, in order to keep our model simple, we assume that
-$R_t$ is available at the time when the decision $\pi(R_t)$ needs to be computed and
-that entries in $R_t$ are perfectly accurate.
+models at time of the decision, and the actual reward and other business metrics
+are revealed only after the decision has been made, sometimes with a significant
+delay. However, in order to keep our model simple, we assume that $R_t$ is
+available at the time when the decision for $t$-th request needs to be made, and
+we assume that the entries in $R_t$ are perfectly accurate.
 
 We also make the simplifying assumption that the number of requests $T$ is known
 upfront. In applications, this value would be predicted by a machine learning
 model.
 
-For technical reasons, we shall assume that distribution $D$ has density
-function with respect to standard Lebesgue measure over $\R^{N \times M}$. The
-reason for this assumption will become clear later. This technical assumption
-can be lifted at the expense of much more elaborate proofs that only muddle
-the main arguments.
+For technical reasons, we assume that distribution $D$ has density function with
+respect to standard Lebesgue measure over $\R^{N \times M}$. The reason for this
+assumption will become clear later. This technical assumption can be lifted at
+the expense of much more elaborate proofs.
 
-We shall use the following notation for the rest of the paper. For $i=1,2,\dots$,
-we define $e_i$ to be the vector in $\R^N$ with $i$-th entry equal to $1$
-and all other entries equal to zero,
+We use the following notation for the rest of the paper. For $i=1,2,\dots,N$, we
+define $e_i$ to be the vector in $\R^N$ with $i$-th entry equal to $1$ and all
+other entries equal to zero, that is,
 $$
 e_i = \underbrace{(0,\dots,0,1,0,\dots,0)}_{\text{$1$ is at position $i$}} \: .
 $$
 
-\section{Reduced policy space}
+\section{Lagrangian policies}
 
 We consider policies parametrized by $M-1$ non-negative real numbers $\lambda_2,
 \lambda_3, \dots, \lambda_M$. As will become clear later, these are the dual
@@ -119,5 +127,26 @@ $$
 \qquad \text{where} \qquad
 i = \argmax_{i=1,2,\dots,N} R_{i,1} + \lambda_2 R_{i,2} + \lambda_3 R_{i,3} + \dots + \lambda_M R_{i,M} \: .
 $$
+We call a policy of this form a \emph{Lagrangian policy}, as it corresponds to a
+Lagrangian relaxation of the linear program. We defined the \emph{Lagrangian
+policy space} $\Pi_\Lambda$ as the set of all possible policies of this form.
+Formally, that is,
+$$
+\Pi_\Lambda = \left\{\pi_\lambda ~:~ \lambda \in \R^{M-1}, \lambda \ge 0, \lambda = (\lambda_2, \lambda_3, \dots, \lambda_M) \right\} \: .
+$$
+
+Note that Lagrangian policies are deterministic and measurable. While Lagrangian
+policies form a negligible fraction of all possible policies, as it will turn
+out, there exists a near-optimal Lagrangian policy.
+
+\section{Optimization problem for the expected values}
+
+Recall the $D$ is a distribution over requests. We assume that a request $R$ is
+sampled from $D$ at random.
+
+\begin{align*}
+\maximize_{\pi} \qquad & \Exp_{R \sim D} \left[ \sum_{i=1}^N \pi(R)_i \cdot R_{i,1} \right] \\
+\subjectto \qquad & \Exp_{R \sim D} \left[ \sum_{i=1}^N \pi(R)_i \cdot R_{i,j} \le B_j \right] & \text{for all $j=2,3,\dots,M$} \\
+\end{align*}
 
 \end{document}
