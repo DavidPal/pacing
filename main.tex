@@ -146,7 +146,7 @@ sampled from $D$ at random.
 
 \begin{align*}
 \maximize_{\pi} \qquad & \Exp_{R \sim D} \left[ \sum_{i=1}^N \pi(R)_i \cdot R_{i,1} \right] \\
-\subjectto \qquad & \Exp_{R \sim D} \left[ \sum_{i=1}^N \pi(R)_i \cdot R_{i,j} \le B_j \right] & \text{for all $j=2,3,\dots,M$} \\
+\subjectto \qquad & \Exp_{R \sim D} \left[ \sum_{i=1}^N \pi(R)_i \cdot R_{i,j} \right] \le B_j & \text{for all $j=2,3,\dots,M$} \\
 \end{align*}
 
 \end{document}

@@ -5,4 +5,4 @@ clean:
 	rm -rf *.aux *.log main.pdf
 
 read:
-	evince main.pdf &
+	open main.pdf &
