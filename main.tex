@@ -167,10 +167,9 @@ We consider the following linear program and analyze its properties.
 The dual of this linear program is the following linear program:
 
 \begin{align*}
-\minimize_{\substack{\mu_1, \dots, \mu_T \in \R \\ \lambda_2, \dots, \lambda_M \in \R}} \qquad & \sum_{t=1}^T \mu_t + \sum_{j=2}^M \lambda_j B_j \\
+\minimize_{\substack{\mu_1, \dots, \mu_T \in \R \\ \lambda_2, \dots, \lambda_M \in \R}} \qquad & \sum_{t=1}^T \mu_t + \sum_{j=2}^M B_j \lambda_j \\
 \subjectto \qquad
-& \mu_{t,i} + \sum_{j=2}^M a_{t,i,j} \lambda_j  \ge a_{t,i,1} & \text{for all $i=1,2,\dots,N$ and all $t=1,2,\dots,T$} \\
-& \mu_t \in \R & \text{for all $t=1,2,\dots,T$} \\
+& \mu_t + \sum_{j=2}^M a_{t,i,j} \lambda_j  \ge a_{t,i,1} & \text{for all $i=1,2,\dots,N$ and all $t=1,2,\dots,T$} \\
 & \lambda_j \ge 0 & \text{for all $j=2,3,\dots,M$}
 \end{align*}
 
