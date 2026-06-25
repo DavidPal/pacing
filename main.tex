@@ -149,6 +149,27 @@ Note that policies in $\Pi_\Lambda^\text{det}$ are deterministic and measurable.
 
 TODO
 
+\section{Linear programs}
+
+We consider the following linear program and analyze its properties.
+
+\begin{align*}
+\maximize_{x_{1,1}, \dots, x_{T,N} \in \R} \qquad & \sum_{t=1}^T \sum_{i=1}^N a_{t,i,1} \cdot x_{t,i} \\
+\subjectto \qquad & \sum_{t=1}^T \sum_{i=1}^N a_{t,i,j} \cdot x_{t,i} \le B_j & \text{for all $j=2,3,\dots,M$} \\
+& \sum_{i=1}^N x_{t,i} = 1 & \text{for all $t=1,2,\dots,T$} \\
+& x_{t,i} \ge 0 & \text{for all $i=1,2,\dots,N$ and all $t=1,2,\dots,T$}
+\end{align*}
+
+The dual of this linear program is the following linear program:
+
+\begin{align*}
+\minimize_{\substack{\mu_1, \dots, \mu_T \in \R \\ \lambda_2, \dots, \lambda_M \in \R}} \qquad & \sum_{t=1}^T \mu_t + \sum_{j=2}^M \lambda_j B_j \\
+\subjectto \qquad
+& \mu_{t,i} + \sum_{j=2}^M a_{t,i,j} \lambda_j  \ge a_{t,i,1} & \text{for all $i=1,2,\dots,N$ and all $t=1,2,\dots,T$} \\
+& \mu_t \in \R & \text{for all $t=1,2,\dots,T$} \\
+& \lambda_j \ge 0 & \text{for all $j=2,3,\dots,M$}
+\end{align*}
+
 \section{Optimization problem for the expected values}
 
 Recall the $D$ is a distribution over requests. We assume that a request $R$ is
