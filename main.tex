@@ -49,23 +49,20 @@ other words, we assume that the space of requests is $\Requests = [0,1]^{N
 maximizes a linear reward subject to linear constraints. Formally, a randomized
 policy $\pi$ is a function $\pi:\Requests \to \Delta_N$, where
 $$
-\Delta_N = \left\{ x \in \R^N ~:~ x_1, x_2, \dots, x_N \ge 0, \sum_{i=1}^N x_i = 1  \right\} \: .
+\Delta_N = \left\{ x \in \R^N ~:~ x_1, x_2, \dots, x_N \ge 0, \sum_{i=1}^N x_i = 1  \right\}
 $$
-We would like to come up with a policy that is an (approximate) optimal solution
-of the following optimization problem.
+is the probability simplex. We would like to come up with a policy that is an
+(approximate) optimal solution of the following optimization problem.
 \begin{align*}
-\maximize_{\pi} \qquad & \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N R_{t,i,1} \cdot \pi(R_t)_i \\
-\subjectto \qquad & \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N R_{t,i,j} \cdot \pi(R_t)_i \le B_j & \text{for all $j=2,3,\dots,M$} \\
+\maximize_{\pi \in \Pi} \qquad & \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N R_{t,i,1} \cdot \pi(R_t)_i \\
+\subjectto \qquad & \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N R_{t,i,j} \cdot \pi(R_t)_i \le B_j & \text{for all $j=2,3,\dots,M$}
 \end{align*}
+where $\Pi$ is the set of measurable policies.
 
 The value $R_{t,i,1}$ is the reward collected for $t$-th request if we make
 decision $i$ for it. The value $R_{t,i,j}$ for $j \ge 2$ is the $j$-th business
 metric for the $t$-th request. The right-hand sides of the constraints $B_2,
-B_3, \dots, B_M$ are given to us head of time.
-
-The optimization is over the space of all possible policies. However,
-for technical reasons that will become obvious later, we consider only
-policies that are measurable.
+B_3, \dots, B_M$ are given to us ahead of time.
 
 For example, at Uber, a request can be a request by a customer to get a ride and
 Uber needs to choose one of $K$ possible prices for the request. $R_{t,i,1}$
@@ -147,7 +144,13 @@ Note that policies in $\Pi_\Lambda^\text{det}$ are deterministic and measurable.
 
 \subsection{Randomized Lagrangian policies}
 
-TODO
+\begin{theorem}
+Let $D$ be any distribution over requests. Let $\delta \in (0,1)$ and $\epsilon > 0$.
+Then, with probability at least $1-\delta$,
+$$
+\forall \pi \in \Pi_\Lambda^\text{det}, \forall j=1,2,\dots,M \qquad \left| \Exp_{R \sim D} \left[ \sum_{i=1}^N \pi(R)_i \cdot R_{i,j}  \right]  -  \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N R_{t,i,j} \cdot \pi(R)_i  \right| \le 2\sqrt{ \frac{\log(MN/\delta)}{2T} } \: .
+$$
+\end{theorem}
 
 \section{Uniform convergence for Lagrangian policies}
 
