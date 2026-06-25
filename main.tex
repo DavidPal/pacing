@@ -18,6 +18,14 @@
 \DeclareMathOperator*{\minimize}{minimize}
 \DeclareMathOperator*{\subjectto}{subject\ to}
 
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{conjecture}[theorem]{Conjecture}
+
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+
 \begin{document}
 
 \title{Pacing}
@@ -46,8 +54,8 @@ $$
 We would like to come up with a policy that is an (approximate) optimal solution
 of the following optimization problem.
 \begin{align*}
-\maximize_{\pi} \qquad & \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N \pi(R_t)_i \cdot R_{t,i,1} \\
-\subjectto \qquad & \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N \pi(R_t)_i \cdot R_{t,i,j} \le B_j & \text{for all $j=2,3,\dots,M$} \\
+\maximize_{\pi} \qquad & \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N R_{t,i,1} \cdot \pi(R_t)_i \\
+\subjectto \qquad & \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N R_{t,i,j} \cdot \pi(R_t)_i \le B_j & \text{for all $j=2,3,\dots,M$} \\
 \end{align*}
 
 The value $R_{t,i,1}$ is the reward collected for $t$-th request if we make
@@ -69,10 +77,10 @@ achieve over a longer time period, say, one day or one week.
 The optimization problem can be expressed as a standard linear program:
 
 \begin{align*}
-\maximize_{x_{1,1}, \dots, x_{T,N} \in \R} \qquad & \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N x_{t,i} \cdot R_{t,i,1} \\
-\subjectto \qquad & \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N x_{t,i} \cdot R_{t,i,j} \le B_j & \text{for all $j=2,3,\dots,M$} \\
-& x_{t,i} \ge 0 & \text{for all $i=1,2,\dots,N$ and all $t=1,2,\dots,T$} \\
-& \sum_{i=1}^N x_{t,i} = 1 & \text{for all $t=1,2,\dots,T$}
+\maximize_{x_{1,1}, \dots, x_{T,N} \in \R} \qquad & \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N R_{t,i,1} \cdot x_{t,i} \\
+\subjectto \qquad & \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N R_{t,i,j} \cdot x_{t,i} \le B_j & \text{for all $j=2,3,\dots,M$} \\
+& \sum_{i=1}^N x_{t,i} = 1 & \text{for all $t=1,2,\dots,T$} \\
+& x_{t,i} \ge 0 & \text{for all $i=1,2,\dots,N$ and all $t=1,2,\dots,T$}
 \end{align*}
 
 However, as opposed to a standard linear program, we don't have all the
@@ -101,10 +109,10 @@ We also make the simplifying assumption that the number of requests $T$ is known
 upfront. In applications, this value would be predicted by a machine learning
 model.
 
-For technical reasons, we assume that distribution $D$ has density function with
-respect to standard Lebesgue measure over $\R^{N \times M}$. The reason for this
-assumption will become clear later. This technical assumption can be lifted at
-the expense of much more elaborate proofs.
+For technical reasons, we assume that distribution $D$ is non-atomic, i.e., does
+not assign positive probability to any single point in $\Requests$. The reason
+for this assumption will become clear later. This technical assumption can be
+lifted at the expense of much more elaborate proofs.
 
 We use the following notation for the rest of the paper. For $i=1,2,\dots,N$, we
 define $e_i$ to be the vector in $\R^N$ with $i$-th entry equal to $1$ and all
@@ -127,26 +135,61 @@ $$
 \qquad \text{where} \qquad
 i = \argmax_{i=1,2,\dots,N} R_{i,1} + \lambda_2 R_{i,2} + \lambda_3 R_{i,3} + \dots + \lambda_M R_{i,M} \: .
 $$
-We call a policy of this form a \emph{Lagrangian policy}, as it corresponds to a
-Lagrangian relaxation of the linear program. We defined the \emph{Lagrangian
-policy space} $\Pi_\Lambda$ as the set of all possible policies of this form.
-Formally, that is,
+We call a policy of this form a \emph{deterministic Lagrangian policy}, as it
+corresponds to a Lagrangian relaxation of the linear program. We defined the
+\emph{deterministic Lagrangian policy space} $\Pi_\Lambda^\text{det}$ as the set
+of all possible policies of this form. Formally, that is,
 $$
-\Pi_\Lambda = \left\{\pi_\lambda ~:~ \lambda \in \R^{M-1}, \lambda \ge 0, \lambda = (\lambda_2, \lambda_3, \dots, \lambda_M) \right\} \: .
+\Pi_\Lambda^\text{det} = \left\{\pi_\lambda ~:~ \lambda \in \R^{M-1}, \lambda \ge 0, \lambda = (\lambda_2, \lambda_3, \dots, \lambda_M) \right\} \: .
 $$
 
-Note that Lagrangian policies are deterministic and measurable. While Lagrangian
-policies form a negligible fraction of all possible policies, as it will turn
-out, there exists a near-optimal Lagrangian policy.
+Note that policies in $\Pi_\Lambda^\text{det}$ are deterministic and measurable.
+
+\subsection{Randomized Lagrangian policies}
+
+TODO
 
 \section{Optimization problem for the expected values}
 
 Recall the $D$ is a distribution over requests. We assume that a request $R$ is
-sampled from $D$ at random.
+sampled from $D$ at random. We consider the following optimization problem over all possible
+measurable policies $\pi:\Requests \to \Delta_N$.
 
 \begin{align*}
 \maximize_{\pi} \qquad & \Exp_{R \sim D} \left[ \sum_{i=1}^N \pi(R)_i \cdot R_{i,1} \right] \\
 \subjectto \qquad & \Exp_{R \sim D} \left[ \sum_{i=1}^N \pi(R)_i \cdot R_{i,j} \right] \le B_j & \text{for all $j=2,3,\dots,M$} \\
 \end{align*}
+
+\begin{lemma}
+For any measure $D$ with finite support, there exists a (possibly randomized) Lagrangian policy $\pi$ that is optimal.
+\end{lemma}
+
+\begin{proof}
+Let $D$ be a measure with finite support. Then, there exists only a finite
+number of requests $R_1, R_2, \dots, R_T$ with positive probability.
+Let $p_t = D(R_t)$ be the probability of request $R_t$.
+
+We can represent any randomized policy $\pi$ by vectors $x_1, x_2, \dots, x_T \in
+\Delta_N$ such that $\pi(R_t) = x_t$ for each $t=1,2,\dots,T$. The optimization
+problem for the expected values is then equivalent to the following linear
+program:
+
+\begin{align*}
+\maximize_{x_{1,1}, \dots, x_{T,N} \in \R} \qquad & \sum_{t=1}^T \sum_{i=1}^N p_t \cdot R_{t,i,1} \cdot x_{t,i}  \\
+\subjectto \qquad & \sum_{t=1}^T \sum_{i=1}^N p_t \cdot R_{t,i,j} \cdot x_{t,i} \le B_j & \text{for all $j=2,3,\dots,M$} \\
+& \sum_{i=1}^N x_{t,i} = 1 & \text{for all $t=1,2,\dots,T$} \\
+& x_{t,i} \ge 0 & \text{for all $i=1,2,\dots,N$ and all $t=1,2,\dots,T$}
+\end{align*}
+
+TODO
+\end{proof}
+
+\begin{conjecture}
+Let $D$ be a non-atomic measure. Then, there exists a \textbf{deterministic} Lagrangian policy $\pi$ that is optimal.
+\end{conjecture}
+
+\begin{conjecture}
+For any measure $D$, there exists a (possibly randomized) Lagrangian policy $\pi$ that is optimal.
+\end{conjecture}
 
 \end{document}
