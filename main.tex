@@ -106,11 +106,6 @@ We also make the simplifying assumption that the number of requests $T$ is known
 upfront. In applications, this value would be predicted by a machine learning
 model.
 
-For technical reasons, we assume that distribution $D$ is non-atomic, i.e., does
-not assign positive probability to any single point in $\Requests$. The reason
-for this assumption will become clear later. This technical assumption can be
-lifted at the expense of much more elaborate proofs.
-
 We use the following notation for the rest of the paper. For $i=1,2,\dots,N$, we
 define $e_i$ to be the vector in $\R^N$ with $i$-th entry equal to $1$ and all
 other entries equal to zero, that is,
@@ -128,9 +123,9 @@ $\lambda = (\lambda_2, \lambda_3, \dots, \lambda_M)$ we define a policy
 $\pi_\lambda:\Requests \to \Delta_N$ as follows. For any request $R \in [0,1]^{N
 \times M}$, we define
 $$
-\pi_\lambda(R) = e_i
+\pi_\lambda(R) = e_{i^*}
 \qquad \text{where} \qquad
-i = \argmax_{i=1,2,\dots,N} R_{i,1} + \lambda_2 R_{i,2} + \lambda_3 R_{i,3} + \dots + \lambda_M R_{i,M} \: .
+i^* = \argmax_{i=1,2,\dots,N} R_{i,1} - \lambda_2 R_{i,2} - \lambda_3 R_{i,3} - \dots - \lambda_M R_{i,M} \: .
 $$
 We call a policy of this form a \emph{deterministic Lagrangian policy}, as it
 corresponds to a Lagrangian relaxation of the linear program. We defined the
@@ -139,22 +134,42 @@ of all possible policies of this form. Formally, that is,
 $$
 \Pi_\Lambda^\text{det} = \left\{\pi_\lambda ~:~ \lambda \in \R^{M-1}, \lambda \ge 0, \lambda = (\lambda_2, \lambda_3, \dots, \lambda_M) \right\} \: .
 $$
-
 Note that policies in $\Pi_\Lambda^\text{det}$ are deterministic and measurable.
 
 \subsection{Randomized Lagrangian policies}
 
-\begin{theorem}
-Let $D$ be any distribution over requests. Let $\delta \in (0,1)$ and $\epsilon > 0$.
-Then, with probability at least $1-\delta$,
-$$
-\forall \pi \in \Pi_\Lambda^\text{det}, \forall j=1,2,\dots,M \qquad \left| \Exp_{R \sim D} \left[ \sum_{i=1}^N \pi(R)_i \cdot R_{i,j}  \right]  -  \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N R_{t,i,j} \cdot \pi(R)_i  \right| \le 2\sqrt{ \frac{\log(MN/\delta)}{2T} } \: .
-$$
-\end{theorem}
+TODO
 
 \section{Uniform convergence for Lagrangian policies}
 
-TODO
+\begin{theorem}
+Let $D$ be any distribution over requests. Let $\delta \in (0,1)$ and $T$ be
+positive integer. Suppose $R_1, R_2, \dots, R_T$ is an i.i.d. sample from $D$.
+Then, with probability at least $1-\delta$, for all $\pi \in \Pi_\Lambda^\text{det}$
+and for all $j=1,2,\dots,M$,
+$$
+\left| \Exp_{R \sim D} \left[ \sum_{i=1}^N \pi(R)_i \cdot R_{i,j}  \right]  -  \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N R_{t,i,j} \cdot \pi(R_t)_i  \right| \le 2\sqrt{ \frac{\log(MN/\delta)}{2T} } \: .
+$$
+\end{theorem}
+
+\begin{proof}
+Let $R, R_1, R_2, \dots, R_T, R'_1, R'_2, \dots, R'_T$ be an i.i.d. sample from $D$ of size $2T+1$.
+Consider the random variable
+$$
+Z = \sup_{\substack{\pi \in \Pi_\Lambda^\text{det} \\ j=1,2,\dots,M}}
+\left| \Exp_{R \sim D} \left[ \sum_{i=1}^N \pi(R)_i \cdot R_{i,j}  \right] - \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N R_{t,i,j} \cdot \pi(R)_i \right| \: .
+$$
+We have
+\begin{align*}
+\Exp[Z]
+& = \Exp\left[\sup_{\substack{\pi \in \Pi_\Lambda^\text{det} \\ j=1,2,\dots,M}} \left| \Exp \left[ \sum_{i=1}^N \pi(R)_i \cdot R_{i,j}  \right] - \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N R_{t,i,j} \cdot \pi(R_t)_i \right| \right] \\
+& = \Exp\left[\sup_{\substack{\pi \in \Pi_\Lambda^\text{det} \\ j=1,2,\dots,M}} \left| \Exp \left[ \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N \pi(R'_t)_i \cdot R'_{t,i,j}  \right] - \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N R_{t,i,j} \cdot \pi(R_t)_i \right| \right] \\
+& \le \Exp\left[\sup_{\substack{\pi \in \Pi_\Lambda^\text{det} \\ j=1,2,\dots,M}} \left| \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N \pi(R'_t)_i \cdot R'_{t,i,j} - \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N R_{t,i,j} \cdot \pi(R_t)_i \right| \right] \\
+& = \frac{1}{T} \Exp\left[\sup_{\substack{\pi \in \Pi_\Lambda^\text{det} \\ j=1,2,\dots,M}} \left| \sum_{t=1}^T \sum_{i=1}^N \sigma_{t,i} (\pi(R'_t)_i \cdot R'_{t,i,j} - R_{t,i,j} \cdot \pi(R_t)_i ) \right| \right] \\
+& \le \frac{2}{T} \Exp\left[\sup_{\substack{\pi \in \Pi_\Lambda^\text{det} \\ j=1,2,\dots,M}} \left| \sum_{t=1}^T \sum_{i=1}^N \sigma_{t,i} \pi(R_t)_i \cdot R_{t,i,j}  \right| \right] \\
+\end{align*}
+\end{proof}
+
 
 \section{Linear programs}
 
