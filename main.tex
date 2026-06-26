@@ -115,17 +115,17 @@ $$
 
 \section{Lagrangian policies}
 
-We consider policies parametrized by $M-1$ non-negative real numbers $\lambda_2,
-\lambda_3, \dots, \lambda_M$. As will become clear later, these are the dual
-variables associated with the constraints of the linear program. However, for
-now, think of them as arbitrary non-negative real numbers. For any $(M-1)$-tuple
-$\lambda = (\lambda_2, \lambda_3, \dots, \lambda_M)$ we define a policy
-$\pi_\lambda:\Requests \to \Delta_N$ as follows. For any request $R \in [0,1]^{N
-\times M}$, we define
+We consider policies parametrized by $M$ non-negative real numbers $\lambda_1,
+\lambda_2, \lambda_3, \dots, \lambda_M$. As will become clear later, these are
+the dual variables associated with the constraints of the linear program.
+However, for now, think of them as arbitrary non-negative real numbers. For any
+$(M-1)$-tuple $\lambda = (\lambda_2, \lambda_3, \dots, \lambda_M)$ we define a
+policy $\pi_\lambda:\Requests \to \Delta_N$ as follows. For any request $R \in
+[0,1]^{N \times M}$, we define
 $$
 \pi_\lambda(R) = e_{i^*}
 \qquad \text{where} \qquad
-i^* = \argmax_{i=1,2,\dots,N} R_{i,1} - \lambda_2 R_{i,2} - \lambda_3 R_{i,3} - \dots - \lambda_M R_{i,M} \: .
+i^* = \argmax_{i=1,2,\dots,N} \lambda_1 R_{i,1} - \lambda_2 R_{i,2} - \lambda_3 R_{i,3} - \dots - \lambda_M R_{i,M} \: .
 $$
 We call a policy of this form a \emph{deterministic Lagrangian policy}, as it
 corresponds to a Lagrangian relaxation of the linear program. We defined the
@@ -144,30 +144,65 @@ TODO
 
 \begin{theorem}
 Let $D$ be any distribution over requests. Let $\delta \in (0,1)$ and $T$ be
-positive integer. Suppose $R_1, R_2, \dots, R_T$ is an i.i.d. sample from $D$.
-Then, with probability at least $1-\delta$, for all $\pi \in \Pi_\Lambda^\text{det}$
-and for all $j=1,2,\dots,M$,
+positive integer. Suppose $R, R_1, R_2, \dots, R_T$ is an i.i.d. sample from
+$D$. Then, with probability at least $1-\delta$, for all $\pi \in
+\Pi_\Lambda^\text{det}$ and for all $j=1,2,\dots,M$,
 $$
-\left| \Exp_{R \sim D} \left[ \sum_{i=1}^N \pi(R)_i \cdot R_{i,j}  \right]  -  \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N R_{t,i,j} \cdot \pi(R_t)_i  \right| \le 2\sqrt{ \frac{\log(MN/\delta)}{2T} } \: .
+\left| \Exp_{R \sim D} \left[ \sum_{i=1}^N \pi(R)_i \cdot R_{i,j}  \right]  -  \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N R_{t,i,j} \cdot \pi(R_t)_i  \right| \le 2\sqrt{2 \frac{M\log(T)}{T} } + \sqrt{ \frac{\log(1/\delta)}{2T} } \: .
 $$
 \end{theorem}
 
 \begin{proof}
-Let $R, R_1, R_2, \dots, R_T, R'_1, R'_2, \dots, R'_T$ be an i.i.d. sample from $D$ of size $2T+1$.
+Let $R, R_1, R_2, \dots, R_T$ be an i.i.d. sample from $D$ of size $T+1$.
 Consider the random variable
 $$
 Z = \sup_{\substack{\pi \in \Pi_\Lambda^\text{det} \\ j=1,2,\dots,M}}
 \left| \Exp_{R \sim D} \left[ \sum_{i=1}^N \pi(R)_i \cdot R_{i,j}  \right] - \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N R_{t,i,j} \cdot \pi(R)_i \right| \: .
 $$
-We have
+The random variable $Z$ is a function of $R_1, R_2, \dots, R_T$. It satisfies
+the bounded difference property. Namely, if a single $R_t$ changes, then $Z$
+changes by at most $1/T$. McDiarmid's inequality implies that for any $\epsilon > 0$,
+$$
+\Pr\left[ Z \ge \Exp[Z] + \epsilon \right] \le e^{-2T\epsilon^2} \: .
+$$
+We set $\delta = e^{-2T\epsilon^2}$ and solve for $\epsilon$. We get that with probability at least $1-\delta$,
+$$
+Z \le \Exp[Z] + \sqrt{ \frac{\log(1/\delta)}{2T} } \: .
+$$
+It remains to upper bound $\Exp[Z]$. We use the symmetrization trick. Let $R'_1,
+R'_2, \dots, R'_T$ be an i.i.d. sample from $D$ of size $T$. Let $\sigma_1,
+\sigma_2, \dots, \sigma_T$ be independent Rademacher random variables, i.e.,
+$\Pr[\sigma_t = 1] = \Pr[\sigma_t = -1] = 1/2$ for all $t=1,2,\dots,T$. We assume that $\sigma_1,
+\sigma_2, \dots, \sigma_T$, $R$, $R_1, R_2, \dots, R_T$, $R'_1, R'_2, \dots, R'_T$ are
+mutually independent.
 \begin{align*}
-\Exp[Z]
-& = \Exp\left[\sup_{\substack{\pi \in \Pi_\Lambda^\text{det} \\ j=1,2,\dots,M}} \left| \Exp \left[ \sum_{i=1}^N \pi(R)_i \cdot R_{i,j}  \right] - \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N R_{t,i,j} \cdot \pi(R_t)_i \right| \right] \\
+\Exp[Z] & = \Exp\left[\sup_{\substack{\pi \in \Pi_\Lambda^\text{det} \\ j=1,2,\dots,M}} \left| \Exp \left[ \sum_{i=1}^N \pi(R)_i \cdot R_{i,j}  \right] - \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N R_{t,i,j} \cdot \pi(R_t)_i \right| \right] \\
 & = \Exp\left[\sup_{\substack{\pi \in \Pi_\Lambda^\text{det} \\ j=1,2,\dots,M}} \left| \Exp \left[ \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N \pi(R'_t)_i \cdot R'_{t,i,j}  \right] - \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N R_{t,i,j} \cdot \pi(R_t)_i \right| \right] \\
 & \le \Exp\left[\sup_{\substack{\pi \in \Pi_\Lambda^\text{det} \\ j=1,2,\dots,M}} \left| \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N \pi(R'_t)_i \cdot R'_{t,i,j} - \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N R_{t,i,j} \cdot \pi(R_t)_i \right| \right] \\
 & = \frac{1}{T} \Exp\left[\sup_{\substack{\pi \in \Pi_\Lambda^\text{det} \\ j=1,2,\dots,M}} \left| \sum_{t=1}^T \sum_{i=1}^N \sigma_t (\pi(R'_t)_i \cdot R'_{t,i,j} - R_{t,i,j} \cdot \pi(R_t)_i ) \right| \right] \\
-& \le \frac{2}{T} \Exp\left[\sup_{\substack{\pi \in \Pi_\Lambda^\text{det} \\ j=1,2,\dots,M}} \left| \sum_{t=1}^T \sum_{i=1}^N \sigma_t \pi(R_t)_i \cdot R_{t,i,j}  \right| \right] \\
+& \le \frac{2}{T} \Exp\left[\sup_{\substack{\pi \in \Pi_\Lambda^\text{det} \\ j=1,2,\dots,M}} \left| \sum_{t=1}^T \sum_{i=1}^N \sigma_t \pi(R_t)_i \cdot R_{t,i,j}  \right| \right]
 \end{align*}
+Condition on $R_1=r_1, R_2=r_2, \dots, R_T=r_T$ and consider the set of vectors
+$$
+V = \left\{ \left(\sum_{i=1}^N \pi(r_1)_i \cdot r_{1,i,j}, \dots, \sum_{i=1}^N \pi(r_T)_i \cdot r_{T,i,j} \right) ~:~ \pi \in \Pi_\Lambda^\text{det}, j=1,2,\dots,M \right\} \: .
+$$
+This is a finite set of vectors. We see that
+$$
+\Exp\left[\sup_{\substack{\pi \in \Pi_\Lambda^\text{det} \\ j=1,2,\dots,M}} \left| \sum_{t=1}^T \sum_{i=1}^N \sigma_t \pi(R_t)_i \cdot R_{t,i,j}  \right| ~\bigg|~ R_1=r_1, R_2=r_2, \dots, R_T=r_T \right]
+= \Exp\left[\max_{v \in V} \left| \sum_{t=1}^T \sigma_t v_t \right| \right]
+$$
+For any $v \in V$, the random variable $Y_v = \sum_{t=1}^T \sigma_t v_t$ is a sub-Gaussian random variable that satisfies
+$$
+\Exp[e^{sY_v}] \le e^{s^2T/2} \qquad \text{for all $s \in \R$.}
+$$
+Let $K$ be such that $|V| \le K$ for any choice $r_1, r_2, \dots, r_T \in
+\Requests$. Lemma~\ref{lemma:maximum-of-sub-gaussian-variables} implies that
+$$
+\Exp\left[\max_{v \in V} \left| \sum_{t=1}^T \sigma_t v_t \right| \right] \le \sqrt{2T \log(2K)} \: .
+$$
+It remains to find an upper bound $K$ on the cardinality of the set $V$.
+
+TODO
 \end{proof}
 
 
@@ -233,5 +268,22 @@ Let $D$ be a non-atomic measure. Then, there exists a \textbf{deterministic} Lag
 \begin{conjecture}
 For any measure $D$, there exists a (possibly randomized) Lagrangian policy $\pi$ that is optimal.
 \end{conjecture}
+
+\appendix
+
+\section{Technical lemmas}
+
+\begin{lemma}[Maximum of sub-Gaussian variables]
+\label{lemma:maximum-of-sub-gaussian-variables}
+Let $\sigma > 0$ and let $K \ge 1$. Let $Y_1, Y_2, \dots, Y_K$ be random
+variables that satisfy the $\sigma$-sub-Gaussian property
+$$
+\Exp\left[ e^{sY_k} \right] \le e^{s^2\sigma^2/2} \qquad \text{for all $s \in \R$ and for all $k=1,2,\dots,K$.}
+$$
+Then,
+$$
+\Exp\left[ \max_{k=1,2,\dots,K} |Y_k| \right] \le \sigma \sqrt{2\log(2K)} \: .
+$$
+\end{lemma}
 
 \end{document}
