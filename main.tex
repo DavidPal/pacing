@@ -165,8 +165,8 @@ We have
 & = \Exp\left[\sup_{\substack{\pi \in \Pi_\Lambda^\text{det} \\ j=1,2,\dots,M}} \left| \Exp \left[ \sum_{i=1}^N \pi(R)_i \cdot R_{i,j}  \right] - \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N R_{t,i,j} \cdot \pi(R_t)_i \right| \right] \\
 & = \Exp\left[\sup_{\substack{\pi \in \Pi_\Lambda^\text{det} \\ j=1,2,\dots,M}} \left| \Exp \left[ \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N \pi(R'_t)_i \cdot R'_{t,i,j}  \right] - \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N R_{t,i,j} \cdot \pi(R_t)_i \right| \right] \\
 & \le \Exp\left[\sup_{\substack{\pi \in \Pi_\Lambda^\text{det} \\ j=1,2,\dots,M}} \left| \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N \pi(R'_t)_i \cdot R'_{t,i,j} - \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N R_{t,i,j} \cdot \pi(R_t)_i \right| \right] \\
-& = \frac{1}{T} \Exp\left[\sup_{\substack{\pi \in \Pi_\Lambda^\text{det} \\ j=1,2,\dots,M}} \left| \sum_{t=1}^T \sum_{i=1}^N \sigma_{t,i} (\pi(R'_t)_i \cdot R'_{t,i,j} - R_{t,i,j} \cdot \pi(R_t)_i ) \right| \right] \\
-& \le \frac{2}{T} \Exp\left[\sup_{\substack{\pi \in \Pi_\Lambda^\text{det} \\ j=1,2,\dots,M}} \left| \sum_{t=1}^T \sum_{i=1}^N \sigma_{t,i} \pi(R_t)_i \cdot R_{t,i,j}  \right| \right] \\
+& = \frac{1}{T} \Exp\left[\sup_{\substack{\pi \in \Pi_\Lambda^\text{det} \\ j=1,2,\dots,M}} \left| \sum_{t=1}^T \sum_{i=1}^N \sigma_t (\pi(R'_t)_i \cdot R'_{t,i,j} - R_{t,i,j} \cdot \pi(R_t)_i ) \right| \right] \\
+& \le \frac{2}{T} \Exp\left[\sup_{\substack{\pi \in \Pi_\Lambda^\text{det} \\ j=1,2,\dots,M}} \left| \sum_{t=1}^T \sum_{i=1}^N \sigma_t \pi(R_t)_i \cdot R_{t,i,j}  \right| \right] \\
 \end{align*}
 \end{proof}
 
