@@ -172,9 +172,9 @@ $$
 It remains to upper bound $\Exp[Z]$. We use the symmetrization trick. Let $R'_1,
 R'_2, \dots, R'_T$ be an i.i.d. sample from $D$ of size $T$. Let $\sigma_1,
 \sigma_2, \dots, \sigma_T$ be independent Rademacher random variables, i.e.,
-$\Pr[\sigma_t = 1] = \Pr[\sigma_t = -1] = 1/2$ for all $t=1,2,\dots,T$. We assume that $\sigma_1,
-\sigma_2, \dots, \sigma_T$, $R$, $R_1, R_2, \dots, R_T$, $R'_1, R'_2, \dots, R'_T$ are
-mutually independent.
+$\Pr[\sigma_t = 1] = \Pr[\sigma_t = -1] = 1/2$ for all $t=1,2,\dots,T$. We
+assume that $\sigma_1, \sigma_2, \dots, \sigma_T$, $R$, $R_1, R_2, \dots, R_T$,
+$R'_1, R'_2, \dots, R'_T$ are mutually independent.
 \begin{align*}
 \Exp[Z] & = \Exp\left[\sup_{\substack{\pi \in \Pi_\Lambda^\text{det} \\ j=1,2,\dots,M}} \left| \Exp \left[ \sum_{i=1}^N \pi(R)_i \cdot R_{i,j}  \right] - \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N R_{t,i,j} \cdot \pi(R_t)_i \right| \right] \\
 & = \Exp\left[\sup_{\substack{\pi \in \Pi_\Lambda^\text{det} \\ j=1,2,\dots,M}} \left| \Exp \left[ \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N \pi(R'_t)_i \cdot R'_{t,i,j}  \right] - \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N R_{t,i,j} \cdot \pi(R_t)_i \right| \right] \\
