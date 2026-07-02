@@ -212,8 +212,8 @@ TODO
 We consider the following linear program and analyze its properties.
 
 \begin{align*}
-\maximize_{x_{1,1}, \dots, x_{T,N} \in \R} \qquad & \sum_{t=1}^T \sum_{i=1}^N a_{t,i,1} \cdot x_{t,i} \\
-\subjectto \qquad & \sum_{t=1}^T \sum_{i=1}^N a_{t,i,j} \cdot x_{t,i} \le B_j & \text{for all $j=2,3,\dots,M$} \\
+\maximize_{x_{1,1}, \dots, x_{T,N} \in \R} \qquad & \sum_{t=1}^T \sum_{i=1}^N a_{t,i,0} \cdot x_{t,i} \\
+\subjectto \qquad & \sum_{t=1}^T \sum_{i=1}^N a_{t,i,j} \cdot x_{t,i} \le B_j & \text{for all $j=1,2,\dots,M$} \\
 & \sum_{i=1}^N x_{t,i} = 1 & \text{for all $t=1,2,\dots,T$} \\
 & x_{t,i} \ge 0 & \text{for all $i=1,2,\dots,N$ and all $t=1,2,\dots,T$}
 \end{align*}
@@ -221,10 +221,10 @@ We consider the following linear program and analyze its properties.
 The dual of this linear program is the following linear program:
 
 \begin{align*}
-\minimize_{\substack{\mu_1, \dots, \mu_T \in \R \\ \lambda_2, \dots, \lambda_M \in \R}} \qquad & \sum_{t=1}^T \mu_t + \sum_{j=2}^M B_j \lambda_j \\
+\minimize_{\substack{\mu_1, \dots, \mu_T \in \R \\ \lambda_1, \dots, \lambda_M \in \R}} \qquad & \sum_{t=1}^T \mu_t + \sum_{j=1}^M B_j \lambda_j \\
 \subjectto \qquad
-& \mu_t + \sum_{j=2}^M a_{t,i,j} \lambda_j  \ge a_{t,i,1} & \text{for all $i=1,2,\dots,N$ and all $t=1,2,\dots,T$} \\
-& \lambda_j \ge 0 & \text{for all $j=2,3,\dots,M$}
+& \mu_t + \sum_{j=1}^M a_{t,i,j} \lambda_j  \ge a_{t,i,0} & \text{for all $i=1,2,\dots,N$ and all $t=1,2,\dots,T$} \\
+& \lambda_j \ge 0 & \text{for all $j=1,2,\dots,M$}
 \end{align*}
 
 \section{Optimization problem for the expected values}
@@ -234,8 +234,8 @@ sampled from $D$ at random. We consider the following optimization problem over 
 measurable policies $\pi:\Requests \to \Delta_N$.
 
 \begin{align*}
-\maximize_{\pi} \qquad & \Exp_{R \sim D} \left[ \sum_{i=1}^N \pi(R)_i \cdot R_{i,1} \right] \\
-\subjectto \qquad & \Exp_{R \sim D} \left[ \sum_{i=1}^N \pi(R)_i \cdot R_{i,j} \right] \le B_j & \text{for all $j=2,3,\dots,M$} \\
+\maximize_{\pi} \qquad & \Exp_{R \sim D} \left[ \sum_{i=1}^N \pi(R)_i \cdot R_{i,0} \right] \\
+\subjectto \qquad & \Exp_{R \sim D} \left[ \sum_{i=1}^N \pi(R)_i \cdot R_{i,j} \right] \le B_j & \text{for all $j=1,2,\dots,M$} \\
 \end{align*}
 
 \begin{lemma}
@@ -253,8 +253,8 @@ problem for the expected values is then equivalent to the following linear
 program:
 
 \begin{align*}
-\maximize_{x_{1,1}, \dots, x_{T,N} \in \R} \qquad & \sum_{t=1}^T \sum_{i=1}^N p_t \cdot R_{t,i,1} \cdot x_{t,i}  \\
-\subjectto \qquad & \sum_{t=1}^T \sum_{i=1}^N p_t \cdot R_{t,i,j} \cdot x_{t,i} \le B_j & \text{for all $j=2,3,\dots,M$} \\
+\maximize_{x_{1,1}, \dots, x_{T,N} \in \R} \qquad & \sum_{t=1}^T \sum_{i=1}^N p_t \cdot R_{t,i,0} \cdot x_{t,i}  \\
+\subjectto \qquad & \sum_{t=1}^T \sum_{i=1}^N p_t \cdot R_{t,i,j} \cdot x_{t,i} \le B_j & \text{for all $j=1,2,\dots,M$} \\
 & \sum_{i=1}^N x_{t,i} = 1 & \text{for all $t=1,2,\dots,T$} \\
 & x_{t,i} \ge 0 & \text{for all $i=1,2,\dots,N$ and all $t=1,2,\dots,T$}
 \end{align*}
