@@ -43,9 +43,9 @@ We show convergence results for the pacing problem.
 Consider a sequence of requests $R_1, R_2, \dots, R_T \in \Requests$. For each
 request we have to make one of $N$ decisions. We make a simple assumption that
 the requests are sampled i.i.d. from a fixed, but unknown, distribution $D$.
-Each request is an $N \times M$ matrix with entries in the interval $[0,1]$. In
+Each request is an $N \times (M+1)$ matrix with entries in the interval $[0,1]$. In
 other words, we assume that the space of requests is $\Requests = [0,1]^{N
-\times M}$. We would like to come up with a (randomized) policy $\pi$ that
+\times (M+1)}$. We would like to come up with a (randomized) policy $\pi$ that
 maximizes a linear reward subject to linear constraints. Formally, a randomized
 policy $\pi$ is a function $\pi:\Requests \to \Delta_N$, where
 $$
@@ -54,28 +54,28 @@ $$
 is the probability simplex. We would like to come up with a policy that is an
 (approximate) optimal solution of the following optimization problem.
 \begin{align*}
-\maximize_{\pi \in \Pi} \qquad & \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N R_{t,i,1} \cdot \pi(R_t)_i \\
-\subjectto \qquad & \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N R_{t,i,j} \cdot \pi(R_t)_i \le B_j & \text{for all $j=2,3,\dots,M$}
+\maximize_{\pi \in \Pi} \qquad & \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N R_{t,i,0} \cdot \pi(R_t)_i \\
+\subjectto \qquad & \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N R_{t,i,j} \cdot \pi(R_t)_i \le B_j & \text{for all $j=1,2,\dots,M$}
 \end{align*}
 where $\Pi$ is the set of measurable policies.
 
-The value $R_{t,i,1}$ is the reward collected for $t$-th request if we make
-decision $i$ for it. The value $R_{t,i,j}$ for $j \ge 2$ is the $j$-th business
-metric for the $t$-th request. The right-hand sides of the constraints $B_2,
-B_3, \dots, B_M$ are given to us ahead of time.
+The value $R_{t,i,0}$ is the reward collected for $t$-th request if we make
+decision $i$ for it. The value $R_{t,i,j}$ for $j = 1, 2, \dots, M$ is the
+$j$-th business metric for the $t$-th request. The right-hand sides of the
+constraints $B_1, B_2, \dots, B_M$ are given to us ahead of time.
 
 For example, at Uber, a request can be a request by a customer to get a ride and
-Uber needs to choose one of $K$ possible prices for the request. $R_{t,i,1}$
-could be the probability of the trip happening, $R_{t,i,2}$ could be the price
-paid by the rider, $R_{t,i,3}$ could be the price paid to the driver, etc. The
+Uber needs to choose one of $K$ possible prices for the request. $R_{t,i,0}$
+could be the probability of the trip happening, $R_{t,i,1}$ could be the price
+paid by the rider, $R_{t,i,2}$ could be the price paid to the driver, etc. The
 right-hand sides of the constraints would be business objectives Uber wishes to
 achieve over a longer time period, say, one day or one week.
 
 The optimization problem can be expressed as a standard linear program:
 
 \begin{align*}
-\maximize_{x_{1,1}, \dots, x_{T,N} \in \R} \qquad & \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N R_{t,i,1} \cdot x_{t,i} \\
-\subjectto \qquad & \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N R_{t,i,j} \cdot x_{t,i} \le B_j & \text{for all $j=2,3,\dots,M$} \\
+\maximize_{x_{1,1}, \dots, x_{T,N} \in \R} \qquad & \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N R_{t,i,0} \cdot x_{t,i} \\
+\subjectto \qquad & \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N R_{t,i,j} \cdot x_{t,i} \le B_j & \text{for all $j=1,2,\dots,M$} \\
 & \sum_{i=1}^N x_{t,i} = 1 & \text{for all $t=1,2,\dots,T$} \\
 & x_{t,i} \ge 0 & \text{for all $i=1,2,\dots,N$ and all $t=1,2,\dots,T$}
 \end{align*}
@@ -115,38 +115,39 @@ $$
 
 \section{Lagrangian policies}
 
-We consider policies parametrized by $M$ non-negative real numbers $\lambda_1,
-\lambda_2, \lambda_3, \dots, \lambda_M$. As will become clear later, these are
-the dual variables associated with the constraints of the linear program.
-However, for now, think of them as arbitrary non-negative real numbers. For any
-$(M-1)$-tuple $\lambda = (\lambda_2, \lambda_3, \dots, \lambda_M)$ we define a
-policy $\pi_\lambda:\Requests \to \Delta_N$ as follows. For any request $R \in
-[0,1]^{N \times M}$, we define
+We consider policies parametrized by $M+1$ real numbers $\lambda_0, \lambda_1,
+\dots, \lambda_M$. As will become clear later, the $\lambda_1, \dots, \lambda_M$
+can be interpreted as the dual variables associated with the constraints of the
+linear program. However, for now, think of them as arbitrary real numbers. For
+any $(M+1)$-tuple $\lambda = (\lambda_0, \lambda_1, \dots, \lambda_M)$ we define
+a policy $\pi_\lambda:\Requests \to \Delta_N$ as follows. For any request $R \in
+\Requests$, we define
 $$
 \pi_\lambda(R) = e_{i^*}
 \qquad \text{where} \qquad
-i^* = \argmax_{i=1,2,\dots,N} \lambda_1 R_{i,1} - \lambda_2 R_{i,2} - \lambda_3 R_{i,3} - \dots - \lambda_M R_{i,M} \: .
+i^* = \argmax_{i=1,2,\dots,N} \lambda_0 R_{i,0} - \lambda_1 R_{i,1} - \lambda_2 R_{i,2} - \dots - \lambda_M R_{i,M} \: .
 $$
-We call a policy of this form a \emph{deterministic Lagrangian policy}, as it
-corresponds to a Lagrangian relaxation of the linear program. We defined the
-\emph{deterministic Lagrangian policy space} $\Pi_\Lambda^\text{det}$ as the set
-of all possible policies of this form. Formally, that is,
-$$
-\Pi_\Lambda^\text{det} = \left\{\pi_\lambda ~:~ \lambda \in \R^{M-1}, \lambda \ge 0, \lambda = (\lambda_2, \lambda_3, \dots, \lambda_M) \right\} \: .
-$$
-Note that policies in $\Pi_\Lambda^\text{det}$ are deterministic and measurable.
+The ties in the $\argmax$ are broken towards the smaller index $i$. Obviously,
+the policy $\pi_\lambda$ is deterministic and measurable. We call a policy of
+this form a \emph{deterministic Lagrangian policy}, as it corresponds to a
+Lagrangian relaxation of the linear program.
 
-\subsection{Randomized Lagrangian policies}
-
-TODO
+For any positive number $c > 0$ and vector $\lambda \in \R^{M+1}$, the policies
+$\pi_{c \lambda}$ and $\pi_\lambda$ are the same. We can thus assume without
+loss of generality that $\|\lambda\|_2 \le 1$. We denote by
+$\Pi_\Lambda^\text{det}$ the set of deterministic Lagrangian policies. Formally,
+that is,
+$$
+\Pi_\Lambda^\text{det} = \left\{\pi_\lambda ~:~ \lambda \in \R^{M+1}, \|\lambda\|_2 \le 1 \right\} \: .
+$$
 
 \section{Uniform convergence for Lagrangian policies}
 
 \begin{theorem}
-Let $D$ be any distribution over requests. Let $\delta \in (0,1)$ and $T$ be
-positive integer. Suppose $R, R_1, R_2, \dots, R_T$ is an i.i.d. sample from
+Let $D$ be any distribution over $\Requests$. Let $\delta \in (0,1)$ and $T$ be
+a positive integer. Suppose $R, R_1, R_2, \dots, R_T$ is an i.i.d. sample from
 $D$. Then, with probability at least $1-\delta$, for all $\pi \in
-\Pi_\Lambda^\text{det}$ and for all $j=1,2,\dots,M$,
+\Pi_\Lambda^\text{det}$ and for all $j=0,1,2,\dots,M$,
 $$
 \left| \Exp_{R \sim D} \left[ \sum_{i=1}^N \pi(R)_i \cdot R_{i,j}  \right]  -  \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N R_{t,i,j} \cdot \pi(R_t)_i  \right| \le 2\sqrt{2 \frac{M\log(T)}{T} } + \sqrt{ \frac{\log(1/\delta)}{2T} } \: .
 $$
@@ -156,7 +157,7 @@ $$
 Let $R, R_1, R_2, \dots, R_T$ be an i.i.d. sample from $D$ of size $T+1$.
 Consider the random variable
 $$
-Z = \sup_{\substack{\pi \in \Pi_\Lambda^\text{det} \\ j=1,2,\dots,M}}
+Z = \sup_{\substack{\pi \in \Pi_\Lambda^\text{det} \\ j=0,1,2,\dots,M}}
 \left| \Exp_{R \sim D} \left[ \sum_{i=1}^N \pi(R)_i \cdot R_{i,j}  \right] - \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N R_{t,i,j} \cdot \pi(R)_i \right| \: .
 $$
 The random variable $Z$ is a function of $R_1, R_2, \dots, R_T$. It satisfies
@@ -171,20 +172,20 @@ Z \le \Exp[Z] + \sqrt{ \frac{\log(1/\delta)}{2T} } \: .
 $$
 It remains to upper bound $\Exp[Z]$. We use the symmetrization trick. Let $R'_1,
 R'_2, \dots, R'_T$ be an i.i.d. sample from $D$ of size $T$. Let $\sigma_1,
-\sigma_2, \dots, \sigma_T$ be independent Rademacher random variables, i.e.,
+\sigma_2, \dots, \sigma_T$ be i.i.d. Rademacher random variables, i.e.,
 $\Pr[\sigma_t = 1] = \Pr[\sigma_t = -1] = 1/2$ for all $t=1,2,\dots,T$. We
 assume that $\sigma_1, \sigma_2, \dots, \sigma_T$, $R$, $R_1, R_2, \dots, R_T$,
 $R'_1, R'_2, \dots, R'_T$ are mutually independent.
 \begin{align*}
-\Exp[Z] & = \Exp\left[\sup_{\substack{\pi \in \Pi_\Lambda^\text{det} \\ j=1,2,\dots,M}} \left| \Exp \left[ \sum_{i=1}^N \pi(R)_i \cdot R_{i,j}  \right] - \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N R_{t,i,j} \cdot \pi(R_t)_i \right| \right] \\
-& = \Exp\left[\sup_{\substack{\pi \in \Pi_\Lambda^\text{det} \\ j=1,2,\dots,M}} \left| \Exp \left[ \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N \pi(R'_t)_i \cdot R'_{t,i,j}  \right] - \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N R_{t,i,j} \cdot \pi(R_t)_i \right| \right] \\
-& \le \Exp\left[\sup_{\substack{\pi \in \Pi_\Lambda^\text{det} \\ j=1,2,\dots,M}} \left| \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N \pi(R'_t)_i \cdot R'_{t,i,j} - \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N R_{t,i,j} \cdot \pi(R_t)_i \right| \right] \\
-& = \frac{1}{T} \Exp\left[\sup_{\substack{\pi \in \Pi_\Lambda^\text{det} \\ j=1,2,\dots,M}} \left| \sum_{t=1}^T \sum_{i=1}^N \sigma_t (\pi(R'_t)_i \cdot R'_{t,i,j} - R_{t,i,j} \cdot \pi(R_t)_i ) \right| \right] \\
-& \le \frac{2}{T} \Exp\left[\sup_{\substack{\pi \in \Pi_\Lambda^\text{det} \\ j=1,2,\dots,M}} \left| \sum_{t=1}^T \sum_{i=1}^N \sigma_t \pi(R_t)_i \cdot R_{t,i,j}  \right| \right]
+\Exp[Z] & = \Exp\left[\sup_{\substack{\pi \in \Pi_\Lambda^\text{det} \\ j=0,1,2,\dots,M}} \left| \Exp \left[ \sum_{i=1}^N \pi(R)_i \cdot R_{i,j}  \right] - \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N R_{t,i,j} \cdot \pi(R_t)_i \right| \right] \\
+& = \Exp\left[\sup_{\substack{\pi \in \Pi_\Lambda^\text{det} \\ j=0,1,2,\dots,M}} \left| \Exp \left[ \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N \pi(R'_t)_i \cdot R'_{t,i,j}  \right] - \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N R_{t,i,j} \cdot \pi(R_t)_i \right| \right] \\
+& \le \Exp\left[\sup_{\substack{\pi \in \Pi_\Lambda^\text{det} \\ j=0,1,2,\dots,M}} \left| \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N \pi(R'_t)_i \cdot R'_{t,i,j} - \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N R_{t,i,j} \cdot \pi(R_t)_i \right| \right] \\
+& = \frac{1}{T} \Exp\left[\sup_{\substack{\pi \in \Pi_\Lambda^\text{det} \\ j=0,1,2,\dots,M}} \left| \sum_{t=1}^T \sum_{i=1}^N \sigma_t (\pi(R'_t)_i \cdot R'_{t,i,j} - R_{t,i,j} \cdot \pi(R_t)_i ) \right| \right] \\
+& \le \frac{2}{T} \Exp\left[\sup_{\substack{\pi \in \Pi_\Lambda^\text{det} \\ j=0,1,2,\dots,M}} \left| \sum_{t=1}^T \sum_{i=1}^N \sigma_t \pi(R_t)_i \cdot R_{t,i,j}  \right| \right]
 \end{align*}
 Condition on $R_1=r_1, R_2=r_2, \dots, R_T=r_T$ and consider the set of vectors
 $$
-V = \left\{ \left(\sum_{i=1}^N \pi(r_1)_i \cdot r_{1,i,j}, \dots, \sum_{i=1}^N \pi(r_T)_i \cdot r_{T,i,j} \right) ~:~ \pi \in \Pi_\Lambda^\text{det}, j=1,2,\dots,M \right\} \: .
+V = \left\{ \left(\sum_{i=1}^N \pi(r_1)_i \cdot r_{1,i,j}, \dots, \sum_{i=1}^N \pi(r_T)_i \cdot r_{T,i,j} \right) ~:~ \pi \in \Pi_\Lambda^\text{det}, j=0,1,2,\dots,M \right\} \: .
 $$
 This is a finite set of vectors. We see that
 $$
@@ -275,15 +276,56 @@ For any measure $D$, there exists a (possibly randomized) Lagrangian policy $\pi
 
 \begin{lemma}[Maximum of sub-Gaussian variables]
 \label{lemma:maximum-of-sub-gaussian-variables}
-Let $\sigma > 0$ and let $K \ge 1$. Let $Y_1, Y_2, \dots, Y_K$ be random
+Let $\sigma \ge 0$ and let $K \ge 1$. Let $Y_1, Y_2, \dots, Y_K$ be random
 variables that satisfy the $\sigma$-sub-Gaussian property
 $$
 \Exp\left[ e^{sY_k} \right] \le e^{s^2\sigma^2/2} \qquad \text{for all $s \in \R$ and for all $k=1,2,\dots,K$.}
 $$
 Then,
 $$
-\Exp\left[ \max_{k=1,2,\dots,K} |Y_k| \right] \le \sigma \sqrt{2\log(2K)} \: .
+\Exp\left[ \max_{k=1,2,\dots,K} |Y_k| \right] \le \sigma \sqrt{2 \ln(2K)} \: .
 $$
 \end{lemma}
+
+\begin{proof}
+For any $s \in \R$,
+\begin{align*}
+\exp\left(s \Exp\left[ \max_{k=1,2,\dots,K} |Y_k| \right] \right)
+& = \exp\left(s \Exp\left[ \max_{k=1,2,\dots,K} \max \left\{Y_k, -Y_k\right\} \right] \right) \\
+& \le \Exp\left[ \exp\left(s \max_{k=1,2,\dots,K} \max \left\{Y_k, -Y_k\right\} \right) \right] \\
+& = \Exp\left[ \max_{k=1,2,\dots,K} \max \left\{e^{sY_k}, e^{-sY_k}\right\} \right] \\
+& \le \Exp\left[ \sum_{k=1}^K \left( e^{sY_k} + e^{-sY_k} \right) \right] \\
+& = \sum_{k=1}^K \left( \Exp\left[ e^{sY_k} \right] + \Exp\left[ e^{-sY_k} \right] \right) \\
+& \le \sum_{k=1}^K \left( e^{s^2\sigma^2/2} + e^{s^2\sigma^2/2} \right) \\
+& = 2K e^{s^2\sigma^2/2} \: .
+\end{align*}
+The first equality follows from that $|Y_k| = \max \left\{Y_k, -Y_k\right\}$.
+The first inequality follows from Jensen's inequality for the convex function $x
+\mapsto e^{sx}$. The second inequality follows from the fact that maximum of
+non-negative numbers is upper bounded by their sum. The last inequality follows from
+the sub-Gaussian property for $Y_k$.
+
+Thus, for any $s \in \R$,
+$$
+\exp\left(s \Exp\left[ \max_{k=1,2,\dots,K} |Y_k| \right] \right) \le 2K e^{s^2\sigma^2/2} \: .
+$$
+Taking logarithms, we get that for any $s \in \R$,
+$$
+s \Exp\left[ \max_{k=1,2,\dots,K} |Y_k| \right] \le \frac{s^2 \sigma^2}{2} + \ln(2K) \: .
+$$
+We restrict ourselves to $s > 0$ and divide both sides by $s$. We get that for any $s > 0$,
+$$
+\Exp\left[ \max_{k=1,2,\dots,K} |Y_k| \right] \le \frac{s \sigma^2}{2} + \frac{\ln(2K)}{s} \: .
+$$
+If $\sigma > 0$, we choose $s = \frac{2\sqrt{\ln(2K)}}{\sigma}$ and get that
+$$
+\Exp\left[ \max_{k=1,2,\dots,K} |Y_k| \right] \le \frac{s \sigma^2}{2} + \frac{\ln(2K)}{s} = \sigma \sqrt{2 \ln(2K)} \: .
+$$
+If $\sigma = 0$ then for any $s > 0$,
+$$
+\Exp\left[ \max_{k=1,2,\dots,K} |Y_k| \right] \le \frac{\ln(2K)}{s} \: .
+$$
+Taking $s \to \infty$, we get that $\Exp\left[ \max_{k=1,2,\dots,K} |Y_k| \right] \le 0$.
+\end{proof}
 
 \end{document}
