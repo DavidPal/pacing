@@ -149,7 +149,8 @@ a positive integer. Suppose $R, R_1, R_2, \dots, R_T$ is an i.i.d. sample from
 $D$. Then, with probability at least $1-\delta$, for all $\pi \in
 \Pi_\Lambda^\text{det}$ and for all $j=0,1,2,\dots,M$,
 $$
-\left| \Exp_{R \sim D} \left[ \sum_{i=1}^N \pi(R)_i \cdot R_{i,j}  \right]  -  \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N R_{t,i,j} \cdot \pi(R_t)_i  \right| \le 2\sqrt{2 \frac{M\log(T)}{T} } + \sqrt{ \frac{\log(1/\delta)}{2T} } \: .
+\left| \Exp_{R \sim D} \left[ \sum_{i=1}^N \pi(R)_i \cdot R_{i,j}  \right]  -  \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N R_{t,i,j} \cdot \pi(R_t)_i  \right|
+\le (M+1)\sqrt{8 \frac{\ln(T) + 2\ln(N)}{T} } + \sqrt{ \frac{\log(1/\delta)}{2T} } \: .
 $$
 \end{theorem}
 
@@ -207,6 +208,10 @@ implies that
 $$
 \Exp\left[\max_{v \in V} \left| \sum_{t=1}^T \sigma_t v_t \right| \right] \le \sqrt{2T \log(2K)} \: .
 $$
+and thus
+$$
+\Exp[Z] \le \sqrt{\frac{8 \log(2K)}{T}} \: .
+$$
 It remains to find an upper bound $K$ on the cardinality of the set $V$. Let
 $$
 U = \left\{ \left(\pi(r_1), \dots, \pi(r_T) \right) ~:~ \pi \in \Pi_\Lambda^\text{det} \right\} \: .
@@ -233,10 +238,15 @@ $$
 Clearly, $|U| \le |W|$. It remains to upper bound the cardinality of $W$. The
 cardinality of $W$ is upper bounded by the number of behaviors of homogeneous
 hyperplanes in $\R^{M+1}$ on $\binom{N}{2} T$ points. Vapnik-Chervonenkis dimension
-of hyperplanes of homogeneous hyperplanes in $\R^{M+1}$. Therefore, the
-number of behaviors on $\binom{N}{2} T$ is at most
+of hyperplanes of homogeneous hyperplanes in $\R^{M+1}$. Thus, the
+number of behaviors of homogeneous hyperplanes in $\R^{M+1}$ on $\binom{N}{2} T$ points
+and thus the cardinality of $W$ is at most
 $$
-\sum_{p=0}^{M+1} \binom{T \binom{N}{2}}{p} \le ??
+|W| \le \sum_{k=0}^{M+1} \binom{T \binom{N}{2}}{k} \le \left(T \binom{N}{2} + 1 \right)^{M+1} \le (N^2T)^{M+1} \: .
+$$
+Therefore, the cardinality of $V$ is upper bounded by
+$$
+|V| \le (M+1) \left(N^2T \right)^{M+1} \le 2^{M+1} \left(N^2T \right)^{M+1} = \left(2N^2T \right)^{M+1} \: .
 $$
 \end{proof}
 
