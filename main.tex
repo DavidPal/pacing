@@ -192,18 +192,52 @@ $$
 \Exp\left[\sup_{\substack{\pi \in \Pi_\Lambda^\text{det} \\ j=1,2,\dots,M}} \left| \sum_{t=1}^T \sum_{i=1}^N \sigma_t \pi(R_t)_i \cdot R_{t,i,j}  \right| ~\bigg|~ R_1=r_1, R_2=r_2, \dots, R_T=r_T \right]
 = \Exp\left[\max_{v \in V} \left| \sum_{t=1}^T \sigma_t v_t \right| \right]
 $$
-For any $v \in V$, the random variable $Y_v = \sum_{t=1}^T \sigma_t v_t$ is a sub-Gaussian random variable that satisfies
+Consider any vector $v = (v_1, v_2, \dots, v_T)$ in $V$. Any entry $v_t$ of $v$ satisfies
+$$
+|v_t| = \left|\sum_{i=1}^N \pi(r_t)_i \cdot r_{t,i,j}\right| \le \left(\sum_{i=1}^N \pi(r_t)_i\right) \cdot  \max_{i=1,2,\dots,N} |r_{t,i,j}| \le 1 \: .
+$$
+The random variable $Y_v = \sum_{t=1}^T \sigma_t v_t$ is a
+$\sigma$-sub-Gaussian random with $\sigma=T$. That is, $Y_v$ satisfies
 $$
 \Exp[e^{sY_v}] \le e^{s^2T/2} \qquad \text{for all $s \in \R$.}
 $$
 Let $K$ be such that $|V| \le K$ for any choice $r_1, r_2, \dots, r_T \in
-\Requests$. Lemma~\ref{lemma:maximum-of-sub-gaussian-variables} implies that
+\Requests$. Lemma~\ref{lemma:maximum-of-sub-gaussian-variables}
+implies that
 $$
 \Exp\left[\max_{v \in V} \left| \sum_{t=1}^T \sigma_t v_t \right| \right] \le \sqrt{2T \log(2K)} \: .
 $$
-It remains to find an upper bound $K$ on the cardinality of the set $V$.
+It remains to find an upper bound $K$ on the cardinality of the set $V$. Let
+$$
+U = \left\{ \left(\pi(r_1), \dots, \pi(r_T) \right) ~:~ \pi \in \Pi_\Lambda^\text{det} \right\} \: .
+$$
+Clearly, $|V| \le (M+1) |U|$. It remains to upper bound the cardinality of $U$.
 
-TODO
+Consider any $\lambda \in \R^{M+1}$ and the corresponding deterministic Lagrangian policy $\pi_\lambda$.
+The decision of the policy $\pi_\lambda$ on a request $r_t$ is determined by $\binom{N}{2}$ indicators
+$$
+\mathbf{1} \left[\lambda_0 r_{t,i,0} - \lambda_1 r_{t,i,1} - \dots - \lambda_M r_{t,i,M} \ge \lambda_0 r_{t,i',0} - \lambda_1 r_{t,i',1} - \dots - \lambda_M r_{t,i',M}\right]
+$$
+indexed by pairs $i,i'$ such that $1 \le i < i' \le N$. Using vector notation, we can write the indicator as
+$$
+\mathbf{1} \left[ \lambda^T (r_{t,i} - r_{t,i'}) \ge 0 \right] \: .
+$$
+Let
+$$
+\kappa_\lambda(r_t) = (\mathbf{1} \left[ \lambda^T (r_{t,1} - r_{t,2}) \ge 0 \right], \mathbf{1} \left[ \lambda^T (r_{t,2} - r_{t,3}) \ge 0 \right], \dots, \mathbf{1} \left[ \lambda^T (r_{t,N-1} - r_{t,N}) \ge 0 \right])
+$$
+be the vector of these indicators. Let
+$$
+W = \left\{ (\kappa_\lambda(r_1), \kappa_\lambda(r_2), \dots, \kappa_\lambda(r_T)) ~:~ \lambda \in \R^{M+1} \right\} \: .
+$$
+Clearly, $|U| \le |W|$. It remains to upper bound the cardinality of $W$. The
+cardinality of $W$ is upper bounded by the number of behaviors of homogeneous
+hyperplanes in $\R^{M+1}$ on $\binom{N}{2} T$ points. Vapnik-Chervonenkis dimension
+of hyperplanes of homogeneous hyperplanes in $\R^{M+1}$. Therefore, the
+number of behaviors on $\binom{N}{2} T$ is at most
+$$
+\sum_{p=0}^{M+1} \binom{T \binom{N}{2}}{p} \le ??
+$$
 \end{proof}
 
 
