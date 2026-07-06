@@ -61,15 +61,16 @@ where $\Pi$ is the set of measurable policies.
 
 The value $R_{t,i,0}$ is the reward collected for $t$-th request if we make
 decision $i$ for it. The value $R_{t,i,j}$ for $j = 1, 2, \dots, M$ is the
-$j$-th business metric for the $t$-th request. The right-hand sides of the
-constraints $B_1, B_2, \dots, B_M$ are given to us ahead of time.
+$j$-th business metric for the $t$-th request if we make decision $i$ for it.
+The right-hand sides of the constraints $B_1, B_2, \dots, B_M$ are given to us
+ahead of time.
 
 For example, at Uber, a request can be a request by a customer to get a ride and
 Uber needs to choose one of $K$ possible prices for the request. $R_{t,i,0}$
 could be the probability of the trip happening, $R_{t,i,1}$ could be the price
 paid by the rider, $R_{t,i,2}$ could be the price paid to the driver, etc. The
-right-hand sides of the constraints would be business objectives Uber wishes to
-achieve over a longer time period, say, one day or one week.
+right-hand sides of the constraints are the business objectives Uber wishes to
+achieve over the period of say, one day or one week.
 
 The optimization problem can be expressed as a standard linear program:
 
@@ -116,12 +117,12 @@ $$
 \section{Lagrangian policies}
 
 We consider policies parametrized by $M+1$ real numbers $\lambda_0, \lambda_1,
-\dots, \lambda_M$. As will become clear later, the $\lambda_1, \dots, \lambda_M$
-can be interpreted as the dual variables associated with the constraints of the
-linear program. However, for now, think of them as arbitrary real numbers. For
-any $(M+1)$-tuple $\lambda = (\lambda_0, \lambda_1, \dots, \lambda_M)$ we define
-a policy $\pi_\lambda:\Requests \to \Delta_N$ as follows. For any request $R \in
-\Requests$, we define
+\dots, \lambda_M$ that are not all zero. As will become clear later, the
+$\lambda_1, \dots, \lambda_M$ can be interpreted as the dual variables
+associated with the constraints of the linear program. However, for now, think
+of them as arbitrary real numbers. For any $(M+1)$-tuple $\lambda = (\lambda_0,
+\lambda_1, \dots, \lambda_M)$ we define a policy $\pi_\lambda:\Requests \to
+\Delta_N$ as follows. For any request $R \in \Requests$, we define
 $$
 \pi_\lambda(R) = e_{i^*}
 \qquad \text{where} \qquad
@@ -134,12 +135,37 @@ Lagrangian relaxation of the linear program.
 
 For any positive number $c > 0$ and vector $\lambda \in \R^{M+1}$, the policies
 $\pi_{c \lambda}$ and $\pi_\lambda$ are the same. We can thus assume without
-loss of generality that $\|\lambda\|_2 \le 1$. We denote by
+loss of generality that $\|\lambda\|_2 = 1$. We denote by
 $\Pi_\Lambda^\text{det}$ the set of deterministic Lagrangian policies. Formally,
 that is,
 $$
-\Pi_\Lambda^\text{det} = \left\{\pi_\lambda ~:~ \lambda \in \R^{M+1}, \|\lambda\|_2 \le 1 \right\} \: .
+\Pi_\Lambda^\text{det} = \left\{\pi_\lambda ~:~ \lambda \in \R^{M+1}, \|\lambda\|_2 = 1 \right\} \: .
 $$
+
+\section{Failure of deterministic policies}
+
+In general, determistic policies are not good solutions for certain sequences of
+requests. In this section, we provide the simplest possible example that
+illustrates the point. Suppose $N=2$ and $M=1$ and $T$ can be atrbitrary. For
+all requests,
+$$
+R_t
+= \begin{pmatrix} R_{t,1,0} & R_{t,1,1} \\ R_{t,2,0} & R_{t,2,1} \end{pmatrix}
+= \begin{pmatrix} 1 & 1 \\ 0 & 0 \end{pmatrix}
+$$
+and $B_1 = \frac{1}{2}$. Any optimal policy $\pi^*$ for this sequence of
+requests satisfies
+\begin{equation}
+\label{equation:uniform-random-policy-on-two-outcomes}
+\pi^*(R_t) = \left( \frac{1}{2}, \frac{1}{2} \right) \: .
+\end{equation}
+The output of a policy for requests other than $R_t$ does not play any role and
+it can be arbitrary. More importantly, any policy that does not satisfy
+condition \eqref{equation:uniform-random-policy-on-two-outcomes} is suboptimal.
+
+However, as we will see later, deterministic Lagrangian policies are almost
+optimal assuming that the requests are sampled i.i.d. from a distribution with a
+probability density.
 
 \section{Uniform convergence for Lagrangian policies}
 
@@ -198,7 +224,7 @@ $$
 |v_t| = \left|\sum_{i=1}^N \pi(r_t)_i \cdot r_{t,i,j}\right| \le \left(\sum_{i=1}^N \pi(r_t)_i\right) \cdot  \max_{i=1,2,\dots,N} |r_{t,i,j}| \le 1 \: .
 $$
 The random variable $Y_v = \sum_{t=1}^T \sigma_t v_t$ is a
-$\sigma$-sub-Gaussian random variable with $\sigma=T$. That is, $Y_v$ satisfies
+$\sigma$-sub-Gaussian random variable with $\sigma=\sqrt{T}$. That is, $Y_v$ satisfies
 $$
 \Exp[e^{sY_v}] \le e^{s^2T/2} \qquad \text{for all $s \in \R$.}
 $$
@@ -229,16 +255,16 @@ $$
 $$
 Let
 $$
-\kappa_\lambda(r_t) = (\mathbf{1} \left[ \lambda^T (r_{t,1} - r_{t,2}) \ge 0 \right], \mathbf{1} \left[ \lambda^T (r_{t,2} - r_{t,3}) \ge 0 \right], \dots, \mathbf{1} \left[ \lambda^T (r_{t,N-1} - r_{t,N}) \ge 0 \right])
+\kappa_\lambda(r_t) = (\mathbf{1} \left[ \lambda^T (r_{t,1} - r_{t,2}) \ge 0 \right], \mathbf{1} \left[ \lambda^T (r_{t,1} - r_{t,3}) \ge 0 \right], \dots, \mathbf{1} \left[ \lambda^T (r_{t,N-1} - r_{t,N}) \ge 0 \right])
 $$
-be the vector of these indicators. Let
+be the vector of these $\binom{N}{2}$ indicators. Let
 $$
 W = \left\{ (\kappa_\lambda(r_1), \kappa_\lambda(r_2), \dots, \kappa_\lambda(r_T)) ~:~ \lambda \in \R^{M+1} \right\} \: .
 $$
 Clearly, $|U| \le |W|$. It remains to upper bound the cardinality of $W$. The
 cardinality of $W$ is upper bounded by the number of behaviors of homogeneous
 hyperplanes in $\R^{M+1}$ on $\binom{N}{2} T$ points. Vapnik-Chervonenkis
-dimension of homogeneous hyperplanes in $\R^{M+1}$. Thus, the number of
+dimension of homogeneous hyperplanes in $\R^{M+1}$ is $M+1$. Thus, the number of
 behaviors of homogeneous hyperplanes in $\R^{M+1}$ on $\binom{N}{2} T$ points
 and thus the cardinality of $W$ is at most
 $$
@@ -246,7 +272,7 @@ $$
 $$
 Therefore, the cardinality of $V$ is upper bounded as
 $$
-|V| \le (M+1) \left(N^2T \right)^{M+1} \le 2^{M+1} \left(N^2T \right)^{M+1} = \left(2N^2T \right)^{M+1} \: .
+|V| \le (M+1) |W| \le (M+1) \left(N^2T \right)^{M+1} \le 2^{M+1} \left(N^2T \right)^{M+1} = \left(2N^2T \right)^{M+1} \: .
 $$
 Using the value $K=\left(2N^2T \right)^{M+1}$, we get that
 $$
