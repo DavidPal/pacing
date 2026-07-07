@@ -43,8 +43,8 @@ We show convergence results for the pacing problem.
 Consider a sequence of requests $R_1, R_2, \dots, R_T \in \Requests$. For each
 request we have to make one of $N$ decisions. We make a simple assumption that
 the requests are sampled i.i.d. from a fixed, but unknown, distribution $D$.
-Each request is an $N \times (M+1)$ matrix with entries in the interval $[0,1]$. In
-other words, we assume that the space of requests is $\Requests = [0,1]^{N
+Each request is an $N \times (M+1)$ matrix with entries in the interval $[-1,1]$. In
+other words, we assume that the space of requests is $\Requests = [-1,1]^{N
 \times (M+1)}$. We would like to come up with a (randomized) policy $\pi$ that
 maximizes a linear reward subject to linear constraints. Formally, a randomized
 policy $\pi$ is a function $\pi:\Requests \to \Delta_N$, where
@@ -57,7 +57,8 @@ is the probability simplex. We would like to come up with a policy that is an
 \maximize_{\pi \in \Pi} \qquad & \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N R_{t,i,0} \cdot \pi(R_t)_i \\
 \subjectto \qquad & \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N R_{t,i,j} \cdot \pi(R_t)_i \le B_j & \text{for all $j=1,2,\dots,M$}
 \end{align*}
-where $\Pi$ is the set of measurable policies.
+where the maximization is over the set $\Pi$ of all set of measurable
+policies.
 
 The value $R_{t,i,0}$ is the reward collected for $t$-th request if we make
 decision $i$ for it. The value $R_{t,i,j}$ for $j = 1, 2, \dots, M$ is the
@@ -90,7 +91,7 @@ $\pi$ applied to the request $R_t$.
 
 We focus on a regime where the number of requests $T$ is much greater than both
 $N$ and $M$. The assumption that the entries of a request matrix $R_t$ lie in
-$[0,1]$ translates to an assumption that each request has negligible impact on
+$[-1,1]$ translates to an assumption that each request has negligible impact on
 the total (or average) business metrics. For the applications that we are
 interested in, the i.i.d. assumption is a good approximation for short enough
 time periods (e.g. a day or a week). Perhaps the most problematic assumption is
@@ -117,12 +118,12 @@ $$
 \section{Lagrangian policies}
 
 We consider policies parametrized by $M+1$ real numbers $\lambda_0, \lambda_1,
-\dots, \lambda_M$ that are not all zero. As will become clear later, the
-$\lambda_1, \dots, \lambda_M$ can be interpreted as the dual variables
-associated with the constraints of the linear program. However, for now, think
-of them as arbitrary real numbers. For any $(M+1)$-tuple $\lambda = (\lambda_0,
-\lambda_1, \dots, \lambda_M)$ we define a policy $\pi_\lambda:\Requests \to
-\Delta_N$ as follows. For any request $R \in \Requests$, we define
+\dots, \lambda_M$. As will become clear later, the $\lambda_1, \dots, \lambda_M$
+can be interpreted as the dual variables associated with the constraints of the
+linear program. However, for now, they are arbitrary real numbers. For any
+$(M+1)$-dimnesional vector $\lambda = (\lambda_0, \lambda_1, \dots, \lambda_M)
+\in \R^{M+1}$ we define a policy $\pi_\lambda:\Requests \to \Delta_N$ as
+follows. For any request $R \in \Requests$, we define
 $$
 \pi_\lambda(R) = e_{i^*}
 \qquad \text{where} \qquad
@@ -133,14 +134,22 @@ the policy $\pi_\lambda$ is deterministic and measurable. We call a policy of
 this form a \emph{deterministic Lagrangian policy}, as it corresponds to a
 Lagrangian relaxation of the linear program.
 
+We denote by $\Pi_\Lambda^\mathrm{det}$ the set of deterministic Lagrangian
+policies corresponding to nonzero vectors $\lambda \in \R^{M+1}$. Formally, that is,
+$$
+\Pi_\Lambda^\mathrm{det} = \left\{\pi_\lambda ~:~ \lambda \in \R^{M+1}, \lambda \neq 0 \right\} \: .
+$$
+We exclude the all-zero vector $\lambda$ because it is the point of
+discontinuity for a certain function that we will define later.
+
 For any positive number $c > 0$ and vector $\lambda \in \R^{M+1}$, the policies
 $\pi_{c \lambda}$ and $\pi_\lambda$ are the same. We can thus assume without
-loss of generality that $\|\lambda\|_2 = 1$. We denote by
-$\Pi_\Lambda^\text{det}$ the set of deterministic Lagrangian policies. Formally,
-that is,
+loss of generality that $\|\lambda\|_2 = 1$. Thus,
 $$
-\Pi_\Lambda^\text{det} = \left\{\pi_\lambda ~:~ \lambda \in \R^{M+1}, \|\lambda\|_2 = 1 \right\} \: .
+\Pi_\Lambda^\mathrm{det} = \left\{\pi_\lambda ~:~ \lambda \in \R^{M+1}, \|\lambda\|_2 = 1 \right\} \: .
 $$
+Later we will use that fact that the set $\{ \lambda \in \R^{M+1} ~:~  \|\lambda\|_2 = 1\}$
+is compact.
 
 \section{Failure of deterministic policies}
 
@@ -172,11 +181,10 @@ probability density.
 \begin{theorem}
 Let $D$ be any distribution over $\Requests$. Let $\delta \in (0,1)$ and $T$ be
 a positive integer. Suppose $R, R_1, R_2, \dots, R_T$ is an i.i.d. sample from
-$D$. Then, with probability at least $1-\delta$, for all $\pi \in
-\Pi_\Lambda^\text{det}$ and for all $j=0,1,2,\dots,M$,
+$D$. Then, with probability at least $1-\delta$, for all $\lambda \in \R^{M+1}$ and for all $j=0,1,2,\dots,M$,
 $$
-\left| \Exp_{R \sim D} \left[ \sum_{i=1}^N \pi(R)_i \cdot R_{i,j}  \right]  -  \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N R_{t,i,j} \cdot \pi(R_t)_i  \right|
-\le \sqrt{\frac{8(M+1) (\ln(4T) + 2 \ln N)}{T}} + \sqrt{ \frac{\log(1/\delta)}{2T} } \: .
+\left| \Exp_{R \sim D} \left[ \sum_{i=1}^N \pi_\lambda(R)_i \cdot R_{i,j}  \right]  -  \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N R_{t,i,j} \cdot \pi_\lambda(R_t)_i  \right|
+\le \sqrt{\frac{8(M+1) (\ln(4T) + 2 \ln N)}{T}} + \sqrt{ \frac{2\log(1/\delta)}{T} } \: .
 $$
 \end{theorem}
 
@@ -184,18 +192,19 @@ $$
 Let $R, R_1, R_2, \dots, R_T$ be an i.i.d. sample from $D$ of size $T+1$.
 Consider the random variable
 $$
-Z = \sup_{\substack{\pi \in \Pi_\Lambda^\text{det} \\ j=0,1,2,\dots,M}}
-\left| \Exp_{R \sim D} \left[ \sum_{i=1}^N \pi(R)_i \cdot R_{i,j}  \right] - \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N R_{t,i,j} \cdot \pi(R)_i \right| \: .
+Z = \sup_{\substack{\lambda \in \R^{M+1} \\ j=0,1,2,\dots,M}}
+\left| \Exp_{R \sim D} \left[ \sum_{i=1}^N \pi_\lambda(R)_i \cdot R_{i,j}  \right] - \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N R_{t,i,j} \cdot \pi_\lambda(R_t)_i \right| \: .
 $$
 The random variable $Z$ is a function of $R_1, R_2, \dots, R_T$. It satisfies
 the bounded difference property. Namely, if a single $R_t$ changes, then $Z$
-changes by at most $1/T$. McDiarmid's inequality implies that for any $\epsilon > 0$,
+changes by at most $2/T$. McDiarmid's inequality implies that for any $\epsilon > 0$,
 $$
-\Pr\left[ Z \ge \Exp[Z] + \epsilon \right] \le e^{-2T\epsilon^2} \: .
+\Pr\left[ Z \ge \Exp[Z] + \epsilon \right] \le e^{-T\epsilon^2/2} \: .
 $$
-We set $\delta = e^{-2T\epsilon^2}$ and solve for $\epsilon$. We get that with probability at least $1-\delta$,
+We set $\delta = e^{-T\epsilon^2/2}$ and solve for $\epsilon$. We get that with
+probability at least $1-\delta$,
 $$
-Z \le \Exp[Z] + \sqrt{ \frac{\log(1/\delta)}{2T} } \: .
+Z \le \Exp[Z] + \sqrt{ \frac{2\log(1/\delta)}{T} } \: .
 $$
 It remains to upper bound $\Exp[Z]$. We use the symmetrization trick. Let $R'_1,
 R'_2, \dots, R'_T$ be an i.i.d. sample from $D$ of size $T$. Let $\sigma_1,
@@ -204,19 +213,21 @@ $\Pr[\sigma_t = 1] = \Pr[\sigma_t = -1] = 1/2$ for all $t=1,2,\dots,T$. We
 assume that $\sigma_1, \sigma_2, \dots, \sigma_T$, $R$, $R_1, R_2, \dots, R_T$,
 $R'_1, R'_2, \dots, R'_T$ are mutually independent.
 \begin{align*}
-\Exp[Z] & = \Exp\left[\sup_{\substack{\pi \in \Pi_\Lambda^\text{det} \\ j=0,1,2,\dots,M}} \left| \Exp \left[ \sum_{i=1}^N \pi(R)_i \cdot R_{i,j}  \right] - \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N R_{t,i,j} \cdot \pi(R_t)_i \right| \right] \\
-& = \Exp\left[\sup_{\substack{\pi \in \Pi_\Lambda^\text{det} \\ j=0,1,2,\dots,M}} \left| \Exp \left[ \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N \pi(R'_t)_i \cdot R'_{t,i,j}  \right] - \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N R_{t,i,j} \cdot \pi(R_t)_i \right| \right] \\
-& \le \Exp\left[\sup_{\substack{\pi \in \Pi_\Lambda^\text{det} \\ j=0,1,2,\dots,M}} \left| \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N \pi(R'_t)_i \cdot R'_{t,i,j} - \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N R_{t,i,j} \cdot \pi(R_t)_i \right| \right] \\
-& = \frac{1}{T} \Exp\left[\sup_{\substack{\pi \in \Pi_\Lambda^\text{det} \\ j=0,1,2,\dots,M}} \left| \sum_{t=1}^T \sum_{i=1}^N \sigma_t (\pi(R'_t)_i \cdot R'_{t,i,j} - R_{t,i,j} \cdot \pi(R_t)_i ) \right| \right] \\
-& \le \frac{2}{T} \Exp\left[\sup_{\substack{\pi \in \Pi_\Lambda^\text{det} \\ j=0,1,2,\dots,M}} \left| \sum_{t=1}^T \sum_{i=1}^N \sigma_t \pi(R_t)_i \cdot R_{t,i,j}  \right| \right]
+\Exp[Z] & = \Exp\left[\sup_{\substack{\lambda \in \R^{M+1} \\ j=0,1,2,\dots,M}} \left| \Exp \left[ \sum_{i=1}^N \pi_\lambda(R)_i \cdot R_{i,j}  \right] - \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N R_{t,i,j} \cdot \pi_\lambda(R_t)_i \right| \right] \\
+& = \Exp\left[\sup_{\substack{\lambda \in \R^{M+1} \\ j=0,1,2,\dots,M}} \left| \Exp \left[ \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N \pi_\lambda(R'_t)_i \cdot R'_{t,i,j}  \right] - \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N R_{t,i,j} \cdot \pi_\lambda(R_t)_i \right| \right] \\
+& \le \Exp\left[\sup_{\substack{\lambda \in \R^{M+1} \\ j=0,1,2,\dots,M}} \left| \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N \pi_\lambda(R'_t)_i \cdot R'_{t,i,j} - \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N R_{t,i,j} \cdot \pi_\lambda(R_t)_i \right| \right] \\
+& = \frac{1}{T} \Exp\left[\sup_{\substack{\lambda \in \R^{M+1} \\ j=0,1,2,\dots,M}} \left| \sum_{t=1}^T \sum_{i=1}^N \sigma_t \left(\pi_\lambda(R'_t)_i \cdot R'_{t,i,j} - R_{t,i,j} \cdot \pi_\lambda(R_t)_i \right) \right| \right] \\
+& \le \frac{1}{T} \Exp\left[\sup_{\substack{\lambda \in \R^{M+1} \\ j=0,1,2,\dots,M}} \left| \sum_{t=1}^T \sum_{i=1}^N \sigma_t \cdot \pi_\lambda(R'_t)_i \cdot R'_{t,i,j} \right| + \left| \sum_{t=1}^T \sum_{i=1}^N \sigma_t \cdot \pi_\lambda(R_t)_i \cdot R_{t,i,j} \right|  \right] \\
+& \le \frac{2}{T} \Exp\left[\sup_{\substack{\lambda \in \R^{M+1} \\ j=0,1,2,\dots,M}} \left| \sum_{t=1}^T \sum_{i=1}^N \sigma_t \cdot \pi_\lambda(R_t)_i \cdot R_{t,i,j}  \right| \right]
 \end{align*}
-Condition on $R_1=r_1, R_2=r_2, \dots, R_T=r_T$ and consider the set of vectors
+
+Condition on the event $R_1=r_1, R_2=r_2, \dots, R_T=r_T$ and consider the set of vectors
 $$
-V = \left\{ \left(\sum_{i=1}^N \pi(r_1)_i \cdot r_{1,i,j}, \dots, \sum_{i=1}^N \pi(r_T)_i \cdot r_{T,i,j} \right) ~:~ \pi \in \Pi_\Lambda^\text{det}, j=0,1,2,\dots,M \right\} \: .
+V = \left\{ \left(\sum_{i=1}^N \pi_\lambda(r_1)_i \cdot r_{1,i,j}, \dots, \sum_{i=1}^N \pi_\lambda(r_T)_i \cdot r_{T,i,j} \right) ~:~ \lambda \in \R^{M+1}, j=0,1,2,\dots,M \right\} \: .
 $$
-This is a finite set of vectors. We see that
+This is a finite set of $T$-dimensional vectors. We see that
 $$
-\Exp\left[\sup_{\substack{\pi \in \Pi_\Lambda^\text{det} \\ j=1,2,\dots,M}} \left| \sum_{t=1}^T \sum_{i=1}^N \sigma_t \pi(R_t)_i \cdot R_{t,i,j}  \right| ~\bigg|~ R_1=r_1, R_2=r_2, \dots, R_T=r_T \right]
+\Exp\left[\sup_{\substack{\lambda \in \R^{M+1} \\ j=0,1,2,\dots,M}} \left| \sum_{t=1}^T \sum_{i=1}^N \sigma_t \cdot \pi_\lambda(R_t)_i \cdot R_{t,i,j}  \right| ~\bigg|~ R_1=r_1, R_2=r_2, \dots, R_T=r_T \right]
 = \Exp\left[\max_{v \in V} \left| \sum_{t=1}^T \sigma_t v_t \right| \right]
 $$
 Consider any vector $v = (v_1, v_2, \dots, v_T)$ in $V$. Any entry $v_t$ of $v$ satisfies
@@ -234,18 +245,23 @@ implies that
 $$
 \Exp\left[\max_{v \in V} \left| \sum_{t=1}^T \sigma_t v_t \right| \right] \le \sqrt{2T \log(2K)}
 $$
-and thus
+Thus, taking expectations over $R_1, R_2, \dots, R_T$, we get that
+$$
+\Exp\left[\sup_{\substack{\lambda \in \R^{M+1} \\ j=0,1,2,\dots,M}}  \left| \sum_{t=1}^T \sum_{i=1}^N \sigma_t \cdot \pi_\lambda(R_t)_i \cdot R_{t,i,j}  \right|  \right] \le \sqrt{2T \log(2K)} \: .
+$$
+Therefore,
 $$
 \Exp[Z] \le \sqrt{\frac{8 \log(2K)}{T}} \: .
 $$
+
 It remains to find an upper bound $K$ on the cardinality of the set $V$. Let
 $$
-U = \left\{ \left(\pi(r_1), \dots, \pi(r_T) \right) ~:~ \pi \in \Pi_\Lambda^\text{det} \right\} \: .
+U = \left\{ \left(\pi_\lambda(r_1), \dots, \pi_\lambda(r_T) \right) ~:~ \lambda \in \R^{M+1} \right\} \: .
 $$
 Clearly, $|V| \le (M+1) |U|$. It remains to upper bound the cardinality of $U$.
 
 Consider any $\lambda \in \R^{M+1}$ and the corresponding deterministic Lagrangian policy $\pi_\lambda$.
-The decision of the policy $\pi_\lambda$ on a request $r_t$ is determined by $\binom{N}{2}$ indicators
+The output of a policy $\pi_\lambda$ on a request $r_t$ is determined by $\binom{N}{2}$ indicators
 $$
 \mathbf{1} \left[\lambda_0 r_{t,i,0} - \lambda_1 r_{t,i,1} - \dots - \lambda_M r_{t,i,M} \ge \lambda_0 r_{t,i',0} - \lambda_1 r_{t,i',1} - \dots - \lambda_M r_{t,i',M}\right]
 $$
@@ -263,10 +279,11 @@ W = \left\{ (\kappa_\lambda(r_1), \kappa_\lambda(r_2), \dots, \kappa_\lambda(r_T
 $$
 Clearly, $|U| \le |W|$. It remains to upper bound the cardinality of $W$. The
 cardinality of $W$ is upper bounded by the number of behaviors of homogeneous
-hyperplanes in $\R^{M+1}$ on $\binom{N}{2} T$ points. Vapnik-Chervonenkis
-dimension of homogeneous hyperplanes in $\R^{M+1}$ is $M+1$. Thus, the number of
-behaviors of homogeneous hyperplanes in $\R^{M+1}$ on $\binom{N}{2} T$ points
-and thus the cardinality of $W$ is at most
+hyperplanes in $\R^{M+1}$ on $\binom{N}{2} T$ points. The Vapnik-Chervonenkis
+dimension of homogeneous hyperplanes in $\R^{M+1}$ is $M+1$.\footnote{The
+Vapnik-Chervonenkis dimension is not affacted by the inclusion of the constant $1$ predictor that corresponds to $\lambda = 0$.}
+Thus, the number of behaviors of homogeneous hyperplanes in $\R^{M+1}$ on
+$\binom{N}{2} T$ points and thus the cardinality of $W$ is at most
 $$
 |W| \le \sum_{k=0}^{M+1} \binom{T \binom{N}{2}}{k} \le \left(T \binom{N}{2} + 1 \right)^{M+1} \le (N^2T)^{M+1} \: .
 $$
