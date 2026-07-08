@@ -44,10 +44,10 @@ Consider a sequence of requests $R_1, R_2, \dots, R_T \in \Requests$. For each
 request we have to make one of $N$ decisions. We make a simple assumption that
 the requests are sampled i.i.d. from a fixed, but unknown, distribution $D$.
 Each request is an $N \times (M+1)$ matrix with entries in the interval
-$[-1,1]$.\footnote{Any bounded interval would work. We chose $-1$ and $1$ for
-convenience.} In other words, we assume that the space of requests is
-$\Requests = [-1,1]^{N \times (M+1)}$. We would like to come up with a
-(randomized) policy $\pi$ that maximizes a linear reward subject to linear
+$[-1,1]$.\footnote{As long as the entries are bounded, they can be linearly
+rescaled to the interval $[-1,1]$.} In other words, we assume that the space of
+requests is $\Requests = [-1,1]^{N \times (M+1)}$. We would like to come up with
+a (randomized) policy $\pi$ that maximizes a linear reward subject to linear
 constraints. Formally, a randomized policy $\pi$ is a function $\pi:\Requests
 \to \Delta_N$, where
 $$
