@@ -43,22 +43,25 @@ We show convergence results for the pacing problem.
 Consider a sequence of requests $R_1, R_2, \dots, R_T \in \Requests$. For each
 request we have to make one of $N$ decisions. We make a simple assumption that
 the requests are sampled i.i.d. from a fixed, but unknown, distribution $D$.
-Each request is an $N \times (M+1)$ matrix with entries in the interval $[-1,1]$. In
-other words, we assume that the space of requests is $\Requests = [-1,1]^{N
-\times (M+1)}$. We would like to come up with a (randomized) policy $\pi$ that
-maximizes a linear reward subject to linear constraints. Formally, a randomized
-policy $\pi$ is a function $\pi:\Requests \to \Delta_N$, where
+Each request is an $N \times (M+1)$ matrix with entries in the interval
+$[-1,1]$.\footnote{Any bounded interval would work. We chose $-1$ and $1$ for
+convenience.} In other words, we assume that the space of requests is
+$\Requests = [-1,1]^{N \times (M+1)}$. We would like to come up with a
+(randomized) policy $\pi$ that maximizes a linear reward subject to linear
+constraints. Formally, a randomized policy $\pi$ is a function $\pi:\Requests
+\to \Delta_N$, where
 $$
 \Delta_N = \left\{ x \in \R^N ~:~ x_1, x_2, \dots, x_N \ge 0, \sum_{i=1}^N x_i = 1  \right\}
 $$
 is the probability simplex. We would like to come up with a policy that is an
-(approximate) optimal solution of the following optimization problem.
+``close'' to an optimal solution of the optimization problem
 \begin{align*}
 \maximize_{\pi \in \Pi} \qquad & \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N R_{t,i,0} \cdot \pi(R_t)_i \\
 \subjectto \qquad & \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N R_{t,i,j} \cdot \pi(R_t)_i \le B_j & \text{for all $j=1,2,\dots,M$}
 \end{align*}
-where the maximization is over the set $\Pi$ of all set of measurable
-policies.
+The maximization is over the set $\Pi$ of all set of measurable functions
+$\pi:\Requests \to \Delta_N$ with respect to the $\sigma$-algebras defined by
+the Borel sets of $\Requests$ and $\Delta_N$ respectively.
 
 The value $R_{t,i,0}$ is the reward collected for $t$-th request if we make
 decision $i$ for it. The value $R_{t,i,j}$ for $j = 1, 2, \dots, M$ is the
@@ -211,7 +214,7 @@ R'_2, \dots, R'_T$ be an i.i.d. sample from $D$ of size $T$. Let $\sigma_1,
 \sigma_2, \dots, \sigma_T$ be i.i.d. Rademacher random variables, i.e.,
 $\Pr[\sigma_t = 1] = \Pr[\sigma_t = -1] = 1/2$ for all $t=1,2,\dots,T$. We
 assume that $\sigma_1, \sigma_2, \dots, \sigma_T$, $R$, $R_1, R_2, \dots, R_T$,
-$R'_1, R'_2, \dots, R'_T$ are mutually independent.
+$R'_1, R'_2, \dots, R'_T$ are mutually independent. We have
 \begin{align*}
 \Exp[Z] & = \Exp\left[\sup_{\substack{\lambda \in \R^{M+1} \\ j=0,1,2,\dots,M}} \left| \Exp \left[ \sum_{i=1}^N \pi_\lambda(R)_i \cdot R_{i,j}  \right] - \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N R_{t,i,j} \cdot \pi_\lambda(R_t)_i \right| \right] \\
 & = \Exp\left[\sup_{\substack{\lambda \in \R^{M+1} \\ j=0,1,2,\dots,M}} \left| \Exp \left[ \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N \pi_\lambda(R'_t)_i \cdot R'_{t,i,j}  \right] - \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N R_{t,i,j} \cdot \pi_\lambda(R_t)_i \right| \right] \\
@@ -221,21 +224,22 @@ $R'_1, R'_2, \dots, R'_T$ are mutually independent.
 & \le \frac{2}{T} \Exp\left[\sup_{\substack{\lambda \in \R^{M+1} \\ j=0,1,2,\dots,M}} \left| \sum_{t=1}^T \sum_{i=1}^N \sigma_t \cdot \pi_\lambda(R_t)_i \cdot R_{t,i,j}  \right| \right]
 \end{align*}
 
-Condition on the event $R_1=r_1, R_2=r_2, \dots, R_T=r_T$ and consider the set of vectors
+Condition on the event $R_1=r_1, R_2=r_2, \dots, R_T=r_T$ and consider the set of $T$-dimensional vectors
 $$
 V = \left\{ \left(\sum_{i=1}^N \pi_\lambda(r_1)_i \cdot r_{1,i,j}, \dots, \sum_{i=1}^N \pi_\lambda(r_T)_i \cdot r_{T,i,j} \right) ~:~ \lambda \in \R^{M+1}, j=0,1,2,\dots,M \right\} \: .
 $$
-This is a finite set of $T$-dimensional vectors. We see that
+The set $V$ is finite. We reduce the supremum over an uncountably infinite set to a maximum over the finite set $V$,
 $$
-\Exp\left[\sup_{\substack{\lambda \in \R^{M+1} \\ j=0,1,2,\dots,M}} \left| \sum_{t=1}^T \sum_{i=1}^N \sigma_t \cdot \pi_\lambda(R_t)_i \cdot R_{t,i,j}  \right| ~\bigg|~ R_1=r_1, R_2=r_2, \dots, R_T=r_T \right]
-= \Exp\left[\max_{v \in V} \left| \sum_{t=1}^T \sigma_t v_t \right| \right]
+\Exp\left[\sup_{\substack{\lambda \in \R^{M+1} \\ j=0,1,2,\dots,M}} \left| \sum_{t=1}^T \sum_{i=1}^N \sigma_t \cdot \pi_\lambda(R_t)_i \cdot R_{t,i,j}  \right| ~\middle|~ R_1=r_1, R_2=r_2, \dots, R_T=r_T \right]
+= \Exp\left[\max_{v \in V} \left| \sum_{t=1}^T \sigma_t v_t \right| \right]  \: .
 $$
 Consider any vector $v = (v_1, v_2, \dots, v_T)$ in $V$. Any entry $v_t$ of $v$ satisfies
 $$
 |v_t| = \left|\sum_{i=1}^N \pi(r_t)_i \cdot r_{t,i,j}\right| \le \left(\sum_{i=1}^N \pi(r_t)_i\right) \cdot  \max_{i=1,2,\dots,N} |r_{t,i,j}| \le 1 \: .
 $$
-The random variable $Y_v = \sum_{t=1}^T \sigma_t v_t$ is a
-$\sigma$-sub-Gaussian random variable with $\sigma=\sqrt{T}$. That is, $Y_v$ satisfies
+This implies that the random variable $Y_v = \sum_{t=1}^T \sigma_t v_t$ is a
+$\sigma$-sub-Gaussian random variable with $\sigma=\sqrt{T}$. That is, $Y_v$
+satisfies
 $$
 \Exp[e^{sY_v}] \le e^{s^2T/2} \qquad \text{for all $s \in \R$.}
 $$
@@ -260,8 +264,9 @@ U = \left\{ \left(\pi_\lambda(r_1), \dots, \pi_\lambda(r_T) \right) ~:~ \lambda 
 $$
 Clearly, $|V| \le (M+1) |U|$. It remains to upper bound the cardinality of $U$.
 
-Consider any $\lambda \in \R^{M+1}$ and the corresponding deterministic Lagrangian policy $\pi_\lambda$.
-The output of a policy $\pi_\lambda$ on a request $r_t$ is determined by $\binom{N}{2}$ indicators
+Consider any $\lambda \in \R^{M+1}$ and the corresponding deterministic
+Lagrangian policy $\pi_\lambda$. The output of the policy $\pi_\lambda$ on a
+request $r_t$ is determined by $\binom{N}{2}$ indicators
 $$
 \mathbf{1} \left[\lambda_0 r_{t,i,0} - \lambda_1 r_{t,i,1} - \dots - \lambda_M r_{t,i,M} \ge \lambda_0 r_{t,i',0} - \lambda_1 r_{t,i',1} - \dots - \lambda_M r_{t,i',M}\right]
 $$
@@ -300,23 +305,107 @@ $$
 
 \section{Linear programs}
 
-We consider the following linear program and analyze its properties.
-
+In order to show that Lagrangian policies are close to the policy, we study the
+linear program
 \begin{align*}
-\maximize_{x_{1,1}, \dots, x_{T,N} \in \R} \qquad & \sum_{t=1}^T \sum_{i=1}^N a_{t,i,0} \cdot x_{t,i} \\
-\subjectto \qquad & \sum_{t=1}^T \sum_{i=1}^N a_{t,i,j} \cdot x_{t,i} \le B_j & \text{for all $j=1,2,\dots,M$} \\
+\maximize_{x_{1,1}, \dots, x_{T,N} \in \R} \qquad & \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N R_{t,i,0} \cdot x_{t,i} \\
+\subjectto \qquad & \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N R_{t,i,j} \cdot x_{t,i} \le B_j & \text{for all $j=1,2,\dots,M$} \\
 & \sum_{i=1}^N x_{t,i} = 1 & \text{for all $t=1,2,\dots,T$} \\
 & x_{t,i} \ge 0 & \text{for all $i=1,2,\dots,N$ and all $t=1,2,\dots,T$}
 \end{align*}
-
-The dual of this linear program is the following linear program:
-
+Its dual is
 \begin{align*}
 \minimize_{\substack{\mu_1, \dots, \mu_T \in \R \\ \lambda_1, \dots, \lambda_M \in \R}} \qquad & \sum_{t=1}^T \mu_t + \sum_{j=1}^M B_j \lambda_j \\
 \subjectto \qquad
-& \mu_t + \sum_{j=1}^M a_{t,i,j} \lambda_j  \ge a_{t,i,0} & \text{for all $i=1,2,\dots,N$ and all $t=1,2,\dots,T$} \\
+& \mu_t + \frac{1}{T} \sum_{j=1}^M R_{t,i,j} \lambda_j  \ge \frac{1}{T} R_{t,i,0} & \text{for all $i=1,2,\dots,N$ and all $t=1,2,\dots,T$} \\
 & \lambda_j \ge 0 & \text{for all $j=1,2,\dots,M$}
 \end{align*}
+We prove several results about these linear programs.
+
+\begin{proposition}[Feasibility]
+\label{proposition:feasibility}
+The primal program is bounded. If the primal program is feasible, the dual
+program is feasible and both programs have an optimal solution.
+\end{proposition}
+
+\begin{proposition}[Computing $\mu$]
+\label{proposition:computing_mu}
+Let $\mu_1, \dots, \mu_T$, $\lambda_1, \dots, \lambda_M$ be an optimal solution of the dual program.
+Then,
+$$
+\mu_t = \frac{1}{T} \max_{i=1,2,\dots,N} \left( R_{t,i,0} - \sum_{j=1}^M R_{t,i,j} \lambda_j \right) \: .
+$$
+\end{proposition}
+
+\begin{proof}
+The dual constraints imply that
+$$
+\mu_t \ge \frac{1}{T} \left( R_{t,i,0} - \sum_{j=1}^M R_{t,i,j} \lambda_j \right) \: .
+$$
+Taking maximum over $i$, we get
+$$
+\mu_t \ge \frac{1}{T} \max_{i=1,2,\dots,N} \left( R_{t,i,0} - \sum_{j=1}^M R_{t,i,j} \lambda_j \right) \: .
+$$
+Any value of $\mu_t$ that satisfies this inequality is a feasible solution of
+the dual program. Since $\mu_t$ appears with coefficients $1$ in the dual
+objective function, the inequality must hold with equality.
+\end{proof}
+
+\begin{proposition}[Computing primal from dual]
+\label{proposition:computing_primal_from_dual}
+Let $\mu_1, \dots, \mu_T$, $\lambda_1, \dots, \lambda_M$ be an optimal solution of the dual program.
+Let $x_{1,1}, \dots, x_{t,N}$ be the optimal solution of the primal program.
+For any index $t$, if
+$$
+i(t) = \argmax_{i=1,2,\dots,N} \left( R_{t,i,0} - \sum_{j=1}^M R_{t,i,j} \lambda_j \right)
+$$
+is uniquely defined, then $x_{t,i(t)} = 1$ and $x_{t,i} = 0$ for all $i \neq i(t)$.
+\end{proposition}
+
+\begin{proof}
+Suppose
+$$
+i(t) = \argmax_{i=1,2,\dots,N} \left( R_{t,i,0} - \sum_{j=1}^M R_{t,i,j} \lambda_j \right)
+$$
+is uniquely defined. Proposition~\ref{proposition:computing_mu} implies that
+$$
+\mu_t = \frac{1}{T} \max_{i=1,2,\dots,N} \left( R_{t,i,0} - \sum_{j=1}^M R_{t,i,j} \lambda_j \right) = \frac{1}{T} \left( R_{t,i(t),0} - \sum_{j=1}^M R_{t,i(t),j} \lambda_j \right) \: .
+$$
+These two facts together imply that
+$$
+\mu_t > \frac{1}{T} \left( R_{t,i,0} - \sum_{j=1}^M R_{t,i,j} \lambda_j \right) \qquad \text{for all $i \neq i(t)$.}
+$$
+Equivalently,
+$$
+\mu_t + \frac{1}{T} \sum_{j=1}^M R_{t,i,j} \lambda_j > \frac{1}{T} R_{t,i,0} \qquad \text{for all $i \neq i(t)$.}
+$$
+By complementary slackness,
+$$
+x_{t,i} = 0 \qquad \text{for all $i \neq i(t)$}.
+$$
+The primal constraint $\sum_{i=1}^N x_{t,i} = 1$ then implies that $x_{t,i(t)} = 1$.
+\end{proof}
+
+Proposition~\ref{proposition:computing_mu} allows us to compute $\mu_1, \dots,
+\mu_T$ from optimal $\lambda_1, \dots, \lambda_M$.
+Proposition~\ref{proposition:computing_primal_from_dual} allows us to compute
+some values of $x_{t,i}$.
+
+\begin{lemma}[Ties are rare]
+Suppose that the requests $R_1, R_2, \dots, R_T$ are sampled i.i.d. from a
+probability distribution $D$ with a probability density (with respect to the
+Lebesgue measure on $\Requests$). Let $\mu_1, \dots, \mu_T$, $\lambda_1, \dots,
+\lambda_M$ be an optimal solution of the dual program. With probability one, for
+at least $T-M$ values of the index $t$, the argmax
+$$
+\argmax_{i=1,2,\dots,N} \left( R_{t,i,0} - \sum_{j=1}^M R_{t,i,j} \lambda_j \right)
+$$
+is uniquely defined.
+\end{lemma}
+
+\begin{proof}
+TODO
+\end{proof}
 
 \section{Optimization problem for the expected values}
 
@@ -330,36 +419,14 @@ measurable policies $\pi:\Requests \to \Delta_N$.
 \end{align*}
 
 \begin{lemma}
-For any measure $D$ with finite support, there exists a (possibly randomized) Lagrangian policy $\pi$ that is optimal.
+Let $D$ be a probability density (with respect to Lebesgue measure on $\Requests$).
+Then, there exists $\lambda \in \R^{M+1}$ such that $\|\lambda\|_2 = 1$
+and $\pi_\lambda$ is an optimal solution of the optimization problem.
 \end{lemma}
 
 \begin{proof}
-Let $D$ be a measure with finite support. Then, there exists only a finite
-number of requests $R_1, R_2, \dots, R_T$ with positive probability.
-Let $p_t = D(R_t)$ be the probability of request $R_t$.
-
-We can represent any randomized policy $\pi$ by vectors $x_1, x_2, \dots, x_T \in
-\Delta_N$ such that $\pi(R_t) = x_t$ for each $t=1,2,\dots,T$. The optimization
-problem for the expected values is then equivalent to the following linear
-program:
-
-\begin{align*}
-\maximize_{x_{1,1}, \dots, x_{T,N} \in \R} \qquad & \sum_{t=1}^T \sum_{i=1}^N p_t \cdot R_{t,i,0} \cdot x_{t,i}  \\
-\subjectto \qquad & \sum_{t=1}^T \sum_{i=1}^N p_t \cdot R_{t,i,j} \cdot x_{t,i} \le B_j & \text{for all $j=1,2,\dots,M$} \\
-& \sum_{i=1}^N x_{t,i} = 1 & \text{for all $t=1,2,\dots,T$} \\
-& x_{t,i} \ge 0 & \text{for all $i=1,2,\dots,N$ and all $t=1,2,\dots,T$}
-\end{align*}
-
 TODO
 \end{proof}
-
-\begin{conjecture}
-Let $D$ be a non-atomic measure. Then, there exists a \textbf{deterministic} Lagrangian policy $\pi$ that is optimal.
-\end{conjecture}
-
-\begin{conjecture}
-For any measure $D$, there exists a (possibly randomized) Lagrangian policy $\pi$ that is optimal.
-\end{conjecture}
 
 \appendix
 
