@@ -8,7 +8,9 @@
 \usepackage{fullpage}
 
 \newcommand{\R}{\mathbb{R}}
+\newcommand{\Z}{\mathbb{Z}}
 \newcommand{\Requests}{\mathfrak{R}}
+\newcommand{\T}{\mathcal{T}}
 
 \DeclareMathOperator*{\argmax}{argmax}
 \DeclareMathOperator*{\argmin}{argmin}
@@ -157,30 +159,30 @@ as follows. For any request $R \in \Requests$, we define
 \qquad \text{where} \qquad
 i^* = \argmax_{i=1,2,\dots,N} \lambda_0 R_{i,0} - \lambda_1 R_{i,1} - \lambda_2 R_{i,2} - \dots - \lambda_M R_{i,M} \: .
 \end{equation}
-The ties in the $\argmax$ are broken towards the smaller index $i$. Obviously,
-the policy $\pi_\lambda$ is deterministic and measurable. We call a policy of
-this form a \emph{deterministic Lagrangian policy}. The reason for this
-name will become clear once we formulate the optimization problem as a linear
-program and consider its dual.
+The ties in the $\argmax$ are broken towards the smaller index $i$. We call a
+policy of this form a \emph{Lagrangian policy}. The reason for this name will
+become clear once we formulate the optimization problem as a linear program and
+consider its dual.
 
-We make two remarks about the set of Lagrangian policies. First, we note that
-that the policy corresponding to the all-zero vector $\lambda = (0, 0, \dots,
-0)$ chooses the first decision for any request. This policy is uniteresting. For
-technical reasons and/or notational convenience, we include it in certain
-theorems and exclude in others. However, as it will turn there exists a
-Lagrangian policy $\pi_\lambda$ with $\lambda \neq (0, 0, \dots, 0)$ that is
+We make three remarks about the Lagrangian policies. First, observe that
+Lagrangian policies are both deterministic and measurable.
+
+Second, note that that the policy corresponding to the all-zero vector $\lambda
+= (0, 0, \dots, 0)$ chooses the first decision for any request. This policy is
+uniteresting. For technical reasons and/or notational convenience, we include it
+in certain theorems and exclude in others. However, as it will turn there exists
+a Lagrangian policy $\pi_\lambda$ with $\lambda \neq (0, 0, \dots, 0)$ that is
 close to an optimal policy the optimization problems
 \eqref{equation:sample-policy-optimization} and
 \eqref{equation:distribution-policy-optimization}.
 
-Second, we note that for any positive real number $c > 0$ and any vector
-$\lambda \in \R^{M+1}$, the policies $\pi_{c \lambda}$ and $\pi_\lambda$ are
-identical. Thus, without loss of generality, we can assume that $\|\lambda\|_2
-\le 1$. If $\lambda = 0$ is excluded, we can assume that $\|\lambda\|_2 = 1$.
-Depending on the context, the Lagrangian policies are parameterized by $\lambda$
-lying in either $\R^{M+1}$, $\R^{M+1} \setminus \{0\}$, unit ball, or unit
-sphere. The advantage of the unit ball and the unit sphere is that they are
-compact sets.
+Third, note that for any positive real number $c > 0$ and any vector $\lambda
+\in \R^{M+1}$, the policies $\pi_{c \lambda}$ and $\pi_\lambda$ are identical.
+Thus, without loss of generality, we can assume that $\|\lambda\|_2 \le 1$. If
+$\lambda = 0$ is excluded, we can assume that $\|\lambda\|_2 = 1$. Depending on
+the context, the Lagrangian policies are parameterized by $\lambda$ lying in
+either $\R^{M+1}$, $\R^{M+1} \setminus \{0\}$, unit ball, or unit sphere. The
+advantage of the unit ball and the unit sphere is that they are compact sets.
 
 \section{Failure of deterministic policies}
 
@@ -203,9 +205,9 @@ The output of a policy for requests other than $R_t$ does not play any role and
 it can be arbitrary. More importantly, any policy that does not satisfy
 condition \eqref{equation:uniform-random-policy-on-two-outcomes} is suboptimal.
 
-However, as we will see later, deterministic Lagrangian policies are almost
-optimal assuming that the requests are sampled i.i.d. from a distribution with a
-probability density.
+However, as we will see later, Lagrangian policies are almost optimal assuming
+that the requests are sampled i.i.d. from a distribution with a probability
+density.
 
 \section{Distributions with a density}
 
@@ -240,14 +242,15 @@ without a probability density. The strength of the result is that the convergenc
 is uniform over all Lagrangian policies. The proof is a standard application
 of statistical learning theory; see~\cite{Devroye-Lugosi-2001}.
 
-\begin{theorem}
+\begin{theorem}[Uniform convergence]
 Let $D$ be any distribution over $\Requests$. Let $\delta \in (0,1)$ and $T$ be
 a positive integer. Suppose $R, R_1, R_2, \dots, R_T$ is an i.i.d. sample from
 $D$. Then, with probability at least $1-\delta$, for all $\lambda \in \R^{M+1}$ and for all $j=0,1,2,\dots,M$,
-$$
+\begin{multline*}
 \left| \Exp_{R \sim D} \left[ \sum_{i=1}^N \pi_\lambda(R)_i \cdot R_{i,j}  \right]  -  \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N R_{t,i,j} \cdot \pi_\lambda(R_t)_i  \right|
+\\
 \le \sqrt{\frac{8(M+1) (\ln(4T) + 2 \ln N)}{T}} + \sqrt{ \frac{2\log(1/\delta)}{T} } \: .
-$$
+\end{multline*}
 \end{theorem}
 
 \begin{proof}
@@ -323,9 +326,9 @@ U = \left\{ \left(\pi_\lambda(r_1), \dots, \pi_\lambda(r_T) \right) ~:~ \lambda 
 $$
 Clearly, $|V| \le (M+1) |U|$. It remains to upper bound the cardinality of $U$.
 
-Consider any $\lambda \in \R^{M+1}$ and the corresponding deterministic
-Lagrangian policy $\pi_\lambda$. The output of the policy $\pi_\lambda$ on a
-request $r_t$ is determined by $\binom{N}{2}$ indicators
+Consider any $\lambda \in \R^{M+1}$ and the corresponding Lagrangian policy
+$\pi_\lambda$. The output of the policy $\pi_\lambda$ on a request $r_t$ is
+determined by $\binom{N}{2}$ indicators
 $$
 \mathbf{1} \left[\lambda_0 r_{t,i,0} - \lambda_1 r_{t,i,1} - \dots - \lambda_M r_{t,i,M} \ge \lambda_0 r_{t,i',0} - \lambda_1 r_{t,i',1} - \dots - \lambda_M r_{t,i',M}\right]
 $$
@@ -365,33 +368,62 @@ $$
 
 \section{Linear programs}
 
-In order to show that Lagrangian policies are close to the policy, we study the
-linear program
-\begin{align*}
+The optimization problem \eqref{equation:sample-policy-optimization} is
+equivalent to the linear program below provided that the requests $R_1, R_2,
+\dots, R_T$ are pairwise distinct. If the requests are sampled i.i.d. from a
+probability with a density, they are pairwise distinct with probability one.
+\begin{equation}
+\label{equation:primal-linear-program}
+\begin{aligned}
 \maximize_{x_{1,1}, \dots, x_{T,N} \in \R} \qquad & \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N R_{t,i,0} \cdot x_{t,i} \\
 \subjectto \qquad & \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N R_{t,i,j} \cdot x_{t,i} \le B_j & \text{for all $j=1,2,\dots,M$} \\
 & \sum_{i=1}^N x_{t,i} = 1 & \text{for all $t=1,2,\dots,T$} \\
 & x_{t,i} \ge 0 & \text{for all $i=1,2,\dots,N$ and all $t=1,2,\dots,T$}
-\end{align*}
-Its dual is
-\begin{align*}
+\end{aligned}
+\end{equation}
+The vector $(x_{t,1}, x_{t,2}, \dots, x_{t,N})$ encodes the policy output
+$\pi(R_t)$. The output of the policy on inputs other than $R_1, R_2, \dots, R_T$
+is unspecified. We refer to the linear program
+\eqref{equation:primal-linear-program} as \emph{the primal linear program}.
+
+The dual of the primal linear program \eqref{equation:primal-linear-program}
+\begin{equation}
+\label{equation:dual-linear-program}
+\begin{aligned}
 \minimize_{\substack{\mu_1, \dots, \mu_T \in \R \\ \lambda_1, \dots, \lambda_M \in \R}} \qquad & \sum_{t=1}^T \mu_t + \sum_{j=1}^M B_j \lambda_j \\
 \subjectto \qquad
 & \mu_t + \frac{1}{T} \sum_{j=1}^M R_{t,i,j} \lambda_j  \ge \frac{1}{T} R_{t,i,0} & \text{for all $i=1,2,\dots,N$ and all $t=1,2,\dots,T$} \\
 & \lambda_j \ge 0 & \text{for all $j=1,2,\dots,M$}
-\end{align*}
-We prove several results about these linear programs.
+\end{aligned}
+\end{equation}
+We refer to this linear program as \emph{the dual linear program}.
 
-\begin{proposition}[Feasibility]
-\label{proposition:feasibility}
-The primal program is bounded. If the primal program is feasible, the dual
-program is feasible and both programs have an optimal solution.
-\end{proposition}
+We prove several results about these linear programs. We start with easy
+observations first. The feasible region of the primal linear program is bounded.
+Indeed, the feasible region is a subset of $\left(\Delta_N\right)^T \subset
+\R^{N \times T}$. The primal program is either feasible and has an optimal
+solution, or it is infeasible; it cannot be unbounded. By the strong duality
+theorem, if the primal program is feasible, the dual program is feasible as well
+and has an optimal solution. However, even if the primal program is feasible,
+the dual program can be have an unbounded feasible set, and even unbounded set
+of optimal solutions.
+
+Next, we prove that the optimal values of the dual variables $\mu_1, \dots,
+\mu_T$ and the optimal values of ``some'' primal variables, $x_{1,1}, \dots,
+x_{T,N}$, can be computed from the optimal values of only $\lambda_1, \dots,
+\lambda_M$. We then prove that, in fact, the optimal values of ``almost all''
+primal variables $x_{1,1}, \dots, x_{T,N}$ can be recovered from the optimal
+values of $\lambda_1, \dots, \lambda_M$ provided that the requests are in a
+``general position'', a term that we define precisely later. Finally, we show
+that if the requests are sampled i.i.d. from a probability distribution with a
+probability density then they are in general position with probability one. In
+summary, the optimal solutions of both linear programs can be essentially
+encoded using only $M$ parameters $\lambda_1, \dots, \lambda_M$.
 
 \begin{proposition}[Computing $\mu$]
 \label{proposition:computing_mu}
-Let $\mu_1, \dots, \mu_T$, $\lambda_1, \dots, \lambda_M$ be an optimal solution of the dual program.
-Then,
+Let $\mu_1, \dots, \mu_T$, $\lambda_1, \dots, \lambda_M$ be any optimal solution
+of the dual program. Then,
 $$
 \mu_t = \frac{1}{T} \max_{i=1,2,\dots,N} \left( R_{t,i,0} - \sum_{j=1}^M R_{t,i,j} \lambda_j \right) \: .
 $$
@@ -413,9 +445,9 @@ objective function, the inequality must hold with equality.
 
 \begin{proposition}[Computing primal from dual]
 \label{proposition:computing_primal_from_dual}
-Let $\mu_1, \dots, \mu_T$, $\lambda_1, \dots, \lambda_M$ be an optimal solution of the dual program.
-Let $x_{1,1}, \dots, x_{t,N}$ be the optimal solution of the primal program.
-For any index $t$, if
+Let $\mu_1, \dots, \mu_T$, $\lambda_1, \dots, \lambda_M$ be any optimal solution
+of the dual program. Let $x_{1,1}, \dots, x_{t,N}$ be any optimal solution of
+the primal program. For any index $t$, $1 \le t \le T$, if the argmax
 $$
 i(t) = \argmax_{i=1,2,\dots,N} \left( R_{t,i,0} - \sum_{j=1}^M R_{t,i,j} \lambda_j \right)
 $$
@@ -446,25 +478,50 @@ $$
 The primal constraint $\sum_{i=1}^N x_{t,i} = 1$ then implies that $x_{t,i(t)} = 1$.
 \end{proof}
 
-Proposition~\ref{proposition:computing_mu} allows us to compute $\mu_1, \dots,
-\mu_T$ from optimal $\lambda_1, \dots, \lambda_M$.
-Proposition~\ref{proposition:computing_primal_from_dual} allows us to compute
-some values of $x_{t,i}$.
+\begin{definition}[General position]
+Let $R_1, R_2, \dots, R_T \in \Requests$ be requests. The requests are in
+\emph{general position} if for every choice $(i_1,i_1'), (i_2,i_2'), \dots,
+(i_T,i_T')$ of pairs of integer indices such that $1 \le i_1 < i_1' \le N$, $1
+\le i_2 < i_2' \le N$, \dots, $1 \le i_T < i_T' \le N$, from the $T$ vectors
+$R_{1,i_1} - R_{1,i_1'}$, $R_{2,i_2} - R_{2,i_2'}$, $R_{T,i_2} - R_{T,i_T'}$ in
+$\R^{M+1}$ any $M+1$ of them are linearly independent.
+\end{definition}
 
-\begin{lemma}[Ties are rare]
-Suppose that the requests $R_1, R_2, \dots, R_T$ are sampled i.i.d. from a
-probability distribution $D$ with a probability density (with respect to the
-Lebesgue measure on $\Requests$). Let $\mu_1, \dots, \mu_T$, $\lambda_1, \dots,
-\lambda_M$ be an optimal solution of the dual program. With probability one, for
-at least $T-M$ values of the index $t$, the argmax
-$$
+\begin{lemma}[Few ties]
+Suppose that the requests $R_1, R_2, \dots, R_T$ be requests in general
+position. Let $\mu_1, \dots, \mu_T$, $\lambda_1, \dots, \lambda_M$ be an optimal
+solution of the dual program. With probability one, for at least $T-M$ values of
+the index $t$, the argmax
+\begin{equation}
+\label{equation:argmax}
 \argmax_{i=1,2,\dots,N} \left( R_{t,i,0} - \sum_{j=1}^M R_{t,i,j} \lambda_j \right)
-$$
+\end{equation}
 is uniquely defined.
 \end{lemma}
 
 \begin{proof}
-TODO
+Let $\T$ be the set of indices $t$ for which the argmax is not unique. Formally,
+$$
+\T = \left\{ t \in \Z ~:~ 1 \le t \le T, \text{argmax \eqref{equation:argmax} is \emph{not} unique} \right\}
+$$
+By the definition of $\T$, for every $t \in \T$
+there exists a pair of indices $(i_t,i'_t)$, $i_t < i'_t$ such that
+$$
+R_{t,i_t,0} - \sum_{j=1}^M R_{t,i_t,j} \lambda_j = R_{t,i'_t,0} - \sum_{j=1}^M R_{t,i'_t,j} \lambda_j \: .
+$$
+In other words, $\lambda_1, \lambda_2, \dots, \lambda_M$ satisfy the $|\T|$ linear equations
+$$
+\sum_{j=1}^M (R_{t,i_t,j} - R_{t,i'_t,j}) \lambda_j = R_{t,i_t,0} - R_{t,i'_t,0} \: ;
+$$
+one equation for every $t \in \T$.
+
+Suppose by contradiction that $|\T| \ge M + 1$. Let $\T' \subseteq \T$ be any
+subset of size exactly $M+1$. Consider the system of linear equations
+corresponding to $\T'$. Since the request are in general position, the $M+1$
+equations in this system are linearly independent. However, since there are only
+$M$ variables, this system of equations does not have any solution. This
+contradicts that $\lambda_1, \lambda_2, \dots, \lambda_M$ satisfy all these
+equations.
 \end{proof}
 
 \begin{lemma}[Lagrangian policies are close to optimal]
