@@ -55,10 +55,13 @@ $$
 $$
 is the probability simplex. We would like to come up with a policy that is an
 ``close'' to an optimal solution of the optimization problem
-\begin{align*}
+\begin{equation}
+\label{equation:sample-policy-optimization}
+\begin{aligned}
 \maximize_{\pi \in \Pi} \qquad & \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N R_{t,i,0} \cdot \pi(R_t)_i \\
 \subjectto \qquad & \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N R_{t,i,j} \cdot \pi(R_t)_i \le B_j & \text{for all $j=1,2,\dots,M$}
-\end{align*}
+\end{aligned}
+\end{equation}
 The maximization is over the set $\Pi$ of all set of measurable functions
 $\pi:\Requests \to \Delta_N$ with respect to the $\sigma$-algebras defined by
 the Borel sets of $\Requests$ and $\Delta_N$ respectively.
@@ -74,23 +77,48 @@ Uber needs to choose one of $K$ possible prices for the request. $R_{t,i,0}$
 could be the probability of the trip happening, $R_{t,i,1}$ could be the price
 paid by the rider, $R_{t,i,2}$ could be the price paid to the driver, etc. The
 right-hand sides of the constraints are the business objectives Uber wishes to
-achieve over the period of say, one day or one week.
+achieve over the period of say, one day or one week. In applications at Uber,
+instead of $B_j$ the value $T \cdot B_j$ would be given, which would neccesitate
+to know $T$. In other words, instead of per-request business objective total
+business objective is provided. We abstract out the problem of forecasting $T$
+and we assume that $T$ is known ahead of time. In applications, the value of $T$
+would predicted by a forecasting machine learning model.
 
-The optimization problem can be expressed as a standard linear program:
+The optimization problem~\eqref{equation:sample-policy-optimization} cannot be
+solved directly, since we don't have all the coefficients $R_{t,i,j}$ available
+upfront. Instead, the requests arrive one at a time, and for each request we
+need to choose the probability vector $(x_{t,1}, x_{t,2}, \dots, x_{t,N}) \in
+\Delta_N$. In order to make the decision for $t$-th request, the probability
+vector is computed on the fly using the policy $\pi$ applied to the request
+$R_t$. In order to find the policy $\pi$, we solve a different optimization
+problem
+\begin{equation}
+\label{equation:distribution-policy-optimization}
+\begin{aligned}
+\maximize_{\pi \in \Pi} \qquad & \Exp_{R \sim D} \left[ \sum_{i=1}^N \pi(R)_i \cdot R_{i,0} \right] \\
+\subjectto \qquad & \Exp_{R \sim D} \left[ \sum_{i=1}^N \pi(R)_i \cdot R_{i,j} \right] \le B_j & \text{for all $j=1,2,\dots,M$} \\
+\end{aligned}
+\end{equation}
+We then apply policy $\pi$ to future requests.
 
-\begin{align*}
-\maximize_{x_{1,1}, \dots, x_{T,N} \in \R} \qquad & \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N R_{t,i,0} \cdot x_{t,i} \\
-\subjectto \qquad & \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N R_{t,i,j} \cdot x_{t,i} \le B_j & \text{for all $j=1,2,\dots,M$} \\
-& \sum_{i=1}^N x_{t,i} = 1 & \text{for all $t=1,2,\dots,T$} \\
-& x_{t,i} \ge 0 & \text{for all $i=1,2,\dots,N$ and all $t=1,2,\dots,T$}
-\end{align*}
+The optimization problem~\eqref{equation:sample-policy-optimization} cannot be
+solved directly either, since the distribution $D$ is unknown. However, we
+assume that we have a historical sample of requests available that we can use.
+We assume that the historical sample is generated i.i.d. from $D$ as well.
+Using the historical sample, we formulate an optimization problem. The problem
+is identical to \eqref{equation:sample-policy-optimization} with the proviso
+that $R_1, R_2, \dots, R_T$ now refers to the historical sample.
 
-However, as opposed to a standard linear program, we don't have all the
-coefficients $R_{t,i,j}$ available upfront. Instead, the requests come one at a
-time, and for each request we need to choose the probability vector $(x_{t,1},
-x_{t,2}, \dots, x_{t,N}) \in \Delta_N$. In order to make the decision for $t$-th
-request quickly, the probability vector is computed on the fly using the policy
-$\pi$ applied to the request $R_t$.
+We study the relationship between the optimization problems
+\eqref{equation:sample-policy-optimization} and
+\eqref{equation:distribution-policy-optimization}. As we will see later, the
+optimization problem \eqref{equation:sample-policy-optimization} can be
+equivalently formulated as a linear program. Using linear programming duality,
+we shrink the set $\Pi$ of measurable policies to a much smaller class of the
+so-called Lagrangian policies. We show that a Lagrangian policy is a good
+approximation of the optimal policy. Futhermore, we show that a good Lagrangian
+policy on historical requests is a good policy for the distribution $D$ as well
+future requests.
 
 We focus on a regime where the number of requests $T$ is much greater than both
 $N$ and $M$. The assumption that the entries of a request matrix $R_t$ lie in
@@ -107,10 +135,6 @@ delay. However, in order to keep our model simple, we assume that $R_t$ is
 available at the time when the decision for $t$-th request needs to be made, and
 we assume that the entries in $R_t$ are perfectly accurate.
 
-We also make the simplifying assumption that the number of requests $T$ is known
-upfront. In applications, this value would be predicted by a machine learning
-model.
-
 We use the following notation for the rest of the paper. For $i=1,2,\dots,N$, we
 define $e_i$ to be the vector in $\R^N$ with $i$-th entry equal to $1$ and all
 other entries equal to zero, that is,
@@ -120,39 +144,43 @@ $$
 
 \section{Lagrangian policies}
 
-We consider policies parametrized by $M+1$ real numbers $\lambda_0, \lambda_1,
+We consider policies parameterized by $M+1$ real numbers $\lambda_0, \lambda_1,
 \dots, \lambda_M$. As will become clear later, the $\lambda_1, \dots, \lambda_M$
 can be interpreted as the dual variables associated with the constraints of the
-linear program. However, for now, they are arbitrary real numbers. For any
-$(M+1)$-dimnesional vector $\lambda = (\lambda_0, \lambda_1, \dots, \lambda_M)
-\in \R^{M+1}$ we define a policy $\pi_\lambda:\Requests \to \Delta_N$ as
-follows. For any request $R \in \Requests$, we define
-$$
+optimization problems. However, for now, they are arbitrary real numbers. For
+any $(M+1)$-dimnesional vector $\lambda = (\lambda_0, \lambda_1, \dots,
+\lambda_M) \in \R^{M+1}$ we define a policy $\pi_\lambda:\Requests \to \Delta_N$
+as follows. For any request $R \in \Requests$, we define
+\begin{equation}
+\label{equation:lagrangian-policy}
 \pi_\lambda(R) = e_{i^*}
 \qquad \text{where} \qquad
 i^* = \argmax_{i=1,2,\dots,N} \lambda_0 R_{i,0} - \lambda_1 R_{i,1} - \lambda_2 R_{i,2} - \dots - \lambda_M R_{i,M} \: .
-$$
+\end{equation}
 The ties in the $\argmax$ are broken towards the smaller index $i$. Obviously,
 the policy $\pi_\lambda$ is deterministic and measurable. We call a policy of
-this form a \emph{deterministic Lagrangian policy}, as it corresponds to a
-Lagrangian relaxation of the linear program.
+this form a \emph{deterministic Lagrangian policy}. The reason for this
+name will become clear once we formulate the optimization problem as a linear
+program and consider its dual.
 
-We denote by $\Pi_\Lambda^\mathrm{det}$ the set of deterministic Lagrangian
-policies corresponding to nonzero vectors $\lambda \in \R^{M+1}$. Formally, that is,
-$$
-\Pi_\Lambda^\mathrm{det} = \left\{\pi_\lambda ~:~ \lambda \in \R^{M+1}, \lambda \neq 0 \right\} \: .
-$$
-We exclude the all-zero vector $\lambda$ because it is the point of
-discontinuity for a certain function that we will define later.
+We make two remarks about the set of Lagrangian policies. First, we note that
+that the policy corresponding to the all-zero vector $\lambda = (0, 0, \dots,
+0)$ chooses the first decision for any request. This policy is uniteresting. For
+technical reasons and/or notational convenience, we include it in certain
+theorems and exclude in others. However, as it will turn there exists a
+Lagrangian policy $\pi_\lambda$ with $\lambda \neq (0, 0, \dots, 0)$ that is
+close to an optimal policy the optimization problems
+\eqref{equation:sample-policy-optimization} and
+\eqref{equation:distribution-policy-optimization}.
 
-For any positive number $c > 0$ and vector $\lambda \in \R^{M+1}$, the policies
-$\pi_{c \lambda}$ and $\pi_\lambda$ are the same. We can thus assume without
-loss of generality that $\|\lambda\|_2 = 1$. Thus,
-$$
-\Pi_\Lambda^\mathrm{det} = \left\{\pi_\lambda ~:~ \lambda \in \R^{M+1}, \|\lambda\|_2 = 1 \right\} \: .
-$$
-Later we will use that fact that the set $\{ \lambda \in \R^{M+1} ~:~  \|\lambda\|_2 = 1\}$
-is compact.
+Second, we note that for any positive real number $c > 0$ and any vector
+$\lambda \in \R^{M+1}$, the policies $\pi_{c \lambda}$ and $\pi_\lambda$ are
+identical. Thus, without loss of generality, we can assume that $\|\lambda\|_2
+\le 1$. If $\lambda = 0$ is excluded, we can assume that $\|\lambda\|_2 = 1$.
+Depending on the context, the Lagrangian policies are parameterized by $\lambda$
+lying in either $\R^{M+1}$, $\R^{M+1} \setminus \{0\}$, unit ball, or unit
+sphere. The advantage of the unit ball and the unit sphere is that they are
+compact sets.
 
 \section{Failure of deterministic policies}
 
@@ -179,7 +207,38 @@ However, as we will see later, deterministic Lagrangian policies are almost
 optimal assuming that the requests are sampled i.i.d. from a distribution with a
 probability density.
 
+\section{Distributions with a density}
+
+So far we avoided to make any assumption on the distribution $D$. For technical
+reasons, it is convenient to assume that $D$ has a probability density with
+respect to the Lebesgue measure on $\Requests = [-1,1]^{N \times (M+1)}$. The
+fundamental technical reason for the existence of a probability density is to
+avoid having ties in the argmax in equation \eqref{equation:lagrangian-policy}
+defining Lagrangian policies.
+
+If the distribution $D$ does not have a probability density, we can always
+create a ``nearby'' distribution $D'$ that does. One way of doing it is by
+adding a small independent noise to each entry $R_{t,i,j}$ of a request. Namely,
+we replace $R_{t,i,j}$ with
+$$
+R'_{t,i,j} = (1-\epsilon)R_{t,i,j} + \epsilon Z_{t,i,j}
+$$
+where $\epsilon \in (0,1)$ is a small positive number and $Z_{t,i,j}$ is drawn
+independently from the uniform distribution over $[-1,1]$. The value of
+$\epsilon$ can be arbitrily small. The value of the order $\epsilon =
+\Theta(1/\sqrt{T})$ is commensurate with other errors that appear in our
+analysis.
+
 \section{Uniform convergence for Lagrangian policies}
+
+The first major result that we prove is that for all Lagrangian policies the
+objective functions and the corresponding constraints of the two optimization
+problems \eqref{equation:sample-policy-optimization} and
+\eqref{equation:distribution-policy-optimization} converge to one another as the
+sample size $T$ increases. This result holds for any distribution $D$ with or
+without a probability density. The strength of the result is that the convergence
+is uniform over all Lagrangian policies. The proof is a standard application
+of statistical learning theory; see~\cite{Devroye-Lugosi-2001}.
 
 \begin{theorem}
 Let $D$ be any distribution over $\Requests$. Let $\delta \in (0,1)$ and $T$ be
@@ -503,5 +562,8 @@ $$
 $$
 Taking $s \to \infty$, we get that $\Exp\left[ \max_{k=1,2,\dots,K} |Y_k| \right] \le 0$.
 \end{proof}
+
+\bibliographystyle{plain}
+\bibliography{bibliography}
 
 \end{document}
