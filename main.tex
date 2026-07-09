@@ -158,7 +158,7 @@ as follows. For any request $R \in \Requests$, we define
 \label{equation:lagrangian-policy}
 \pi_\lambda(R) = e_{i^*}
 \qquad \text{where} \qquad
-i^* = \argmax_{i=1,2,\dots,N} \lambda_0 R_{i,0} - \lambda_1 R_{i,1} - \lambda_2 R_{i,2} - \dots - \lambda_M R_{i,M} \: .
+i^* = \argmax_{i=1,2,\dots,N} \lambda_0 R_{i,0} + \lambda_1 R_{i,1} + \lambda_2 R_{i,2} + \dots + \lambda_M R_{i,M} \: .
 \end{equation}
 The ties in the $\argmax$ are broken towards the smaller index $i$. We call a
 policy of this form a \emph{Lagrangian policy}. The reason for this name will
@@ -221,16 +221,33 @@ defining Lagrangian policies.
 
 If the distribution $D$ does not have a probability density, we can always
 create a ``nearby'' distribution $D'$ that does. One way of doing it is by
-adding a small independent noise to each entry $R_{t,i,j}$ of a request. Namely,
-we replace $R_{t,i,j}$ with
+adding a small independent noise to each entry $R_{t,i,j}$ of the requests.
+Namely, we replace $R_{t,i,j}$ with
 $$
 R'_{t,i,j} = (1-\epsilon)R_{t,i,j} + \epsilon Z_{t,i,j}
+\qquad \text{for $t=1,2,\dots,T$, $i=1,2,\dots,N$, $j=0,1,2,\dots,M$}
 $$
-where $\epsilon \in (0,1)$ is a small positive number and $Z_{t,i,j}$ is drawn
-independently from the uniform distribution over $[-1,1]$. The value of
+where $\epsilon \in (0,1)$ is a small positive number and the variables
+$Z_{t,i,j}$ drawn i.i.d. from the uniform distribution over $[-1,1]$ and are
+independent of the random variables $R_1, R_2, \dots, R_T$. The value of
 $\epsilon$ can be arbitrily small. The value of the order $\epsilon =
 \Theta(1/\sqrt{T})$ is commensurate with other errors that appear in our
 analysis.
+
+\begin{lemma}
+Let $R$ be a random request drawn from an arbitrary probability distribution $D$
+over $\Requests$. Let $Z_{i,j}$, $i=1,2,\dots,N$, $j=0,1,2,\dots,M$, be i.i.d.
+random variables with uniform distribution over $[-1,1]$. Let $\epsilon \in
+(0,1)$. Let $R'$ be a request defined by
+$$
+R'_{i,j} = (1-\epsilon)R_{i,j} + \epsilon Z_{i,j}
+\qquad \text{for $i=1,2,\dots,N$, $j=0,1,2,\dots,M$} \: .
+$$
+Let $D'$ be the distribution of $R'$. Then, for all $j=0,1,\dots,M$
+$$
+\left|\Exp_{R \sim D} \left[ \sum_{i=1}^N \pi_\lambda(R)_i \cdot R_{i,j}  \right] - \Exp_{R \sim D'} \left[ \sum_{i=1}^N \pi_\lambda(R')_i \cdot R_{i,j}  \right] \right| \le \epsilon \: .
+$$
+\end{lemma}
 
 \section{Uniform convergence for Lagrangian policies}
 
@@ -576,12 +593,12 @@ equations.
 \end{proof}
 
 \begin{lemma}[Lagrangian policies are close to optimal]
-Suppose that the requests $R_1, R_2, \dots, R_T$ are in general
-position. Let $\mu_1, \dots, \mu_T$, $\lambda_1, \dots, \lambda_M$ be an optimal
-solution of the dual program. Let $x_{1,1}, \dots, x_{T,N}$ be any optimal
-solution of the primal program. Let $\lambda_0 = 1$ and $lambda = (\lambda_0,
-\lambda_1, \dots, \lambda_M)$ and let $\pi_\lambda$ corresponding Lagrangian
-policy. Then, for every $j=0,1,\dots,M$,
+Suppose that the requests $R_1, R_2, \dots, R_T$ are in general position. Let
+$\mu_1, \dots, \mu_T$, $\lambda_1, \dots, \lambda_M$ be an optimal solution of
+the dual program. Let $x_{1,1}, \dots, x_{T,N}$ be any optimal solution of the
+primal program. Let $lambda = (1, - \lambda_1, - \lambda_2, \dots, - \lambda_M)$
+and let $\pi_\lambda$ corresponding Lagrangian policy. Then, for every
+$j=0,1,\dots,M$,
 $$
 \frac{1}{T} \left| \sum_{t=1}^T \sum_{i=1}^N R_{t,i,j} \left( \pi_\lambda(R_t) - x_{t,i} \right) \right| \le \frac{2M}{T} \: .
 $$
@@ -614,23 +631,53 @@ Thus,
 
 \section{Optimization problem for the expected values}
 
-Recall that $D$ is a distribution over requests. We assume that a request $R$ is
-sampled from $D$ at random. We consider the following optimization problem over all possible
-measurable policies $\pi:\Requests \to \Delta_N$.
+Recall the optimization problem over all possible measurable policies $\pi:\Requests \to \Delta_N$.
 
-\begin{align*}
-\maximize_{\pi} \qquad & \Exp_{R \sim D} \left[ \sum_{i=1}^N \pi(R)_i \cdot R_{i,0} \right] \\
+\begin{equation}
+\label{equation:distribution-policy-optimization-2}
+\begin{aligned}
+\maximize_{\pi \in \Pi} \qquad & \Exp_{R \sim D} \left[ \sum_{i=1}^N \pi(R)_i \cdot R_{i,0} \right] \\
 \subjectto \qquad & \Exp_{R \sim D} \left[ \sum_{i=1}^N \pi(R)_i \cdot R_{i,j} \right] \le B_j & \text{for all $j=1,2,\dots,M$} \\
-\end{align*}
+\end{aligned}
+\end{equation}
+
+The problem might be infeasible. However, if it feasible and and the
+distribution $D$ has a probability density (with respect to Lebesgue measure on
+$\Requests$), then there exists an optimal solution that is a Lagrangian policy.
 
 \begin{theorem}[Lagrangian policies are optimal]
-Let $D$ be a probability density (with respect to Lebesgue measure on $\Requests$).
-Then, there exists $\lambda \in \R^{M+1}$ such that $\|\lambda\|_2 = 1$
-and $\pi_\lambda$ is an optimal solution of the optimization problem.
+Let $D$ be a probability distribution over $\Requests$ with a probability
+density. Suppose that the optimization problem has a feasible solution, i.e.,
+there exists a measurablepolicy $\pi: \Requests \to \Delta_N$ that satisfies all
+the constraints. Then, there exists $\lambda \in \R^{M+1}$ such that
+$\|\lambda\|_2 = 1$ and $\pi_\lambda$ is an optimal solution of the optimization
+problem.
 \end{theorem}
 
 \begin{proof}
-TODO
+Let $V$ be the optimal value of the optimization problem. That is,
+$$
+V = \sup \left\{ \Exp_{R \sim D} \left[ \sum_{i=1}^N \pi(R)_i \cdot R_{i,0} \right] ~:~ \pi \in \Pi, \text{and } \Exp_{R \sim D} \left[ \sum_{i=1}^N \pi(R)_i \cdot R_{i,j} \right] \le B_j \text{ for all $j=1,2,\dots,M$} \right\} \: .
+$$
+Since the optimization problem is feasible, $V > -\infty$ and, in particular, $V \in [-1,1]$.
+
+Let $\epsilon > 0$. Since the optimization problem is feasible, there exists a
+measurable policy $\pi^*: \Requests \to \Delta_N$ that is feasible and
+$\epsilon$-optimal. That is,
+$$
+\Exp_{R \sim D} \left[ \sum_{i=1}^N \pi^*(R)_i \cdot R_{i,j} \right] \le B_j \qquad \text{for all $j=1,2,\dots,M$} \: .
+$$
+and
+$$
+\Exp_{R \sim D} \left[ \sum_{i=1}^N \pi^*(R)_i \cdot R_{i,0} \right] \ge V - \epsilon \: .
+$$
+
+Let $R_1, R_2, \dots$ be an infinite sequence of requests sampled i.i.d. from
+$D$. Let $(\lambda_1^{(T)}, \dots, \lambda_M^{(T)})$ be the optimal solution of
+the dual program
+\eqref{equation:dual-program}
+for the first $T$ requests $R_1, R_2, \dots, R_T$.
+
 \end{proof}
 
 \appendix
