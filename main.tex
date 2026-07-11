@@ -12,6 +12,7 @@
 \newcommand{\Requests}{\mathfrak{R}}
 \newcommand{\T}{\mathcal{T}}
 \newcommand{\I}{\mathcal{I}}
+\newcommand{\E}{\mathcal{E}}
 
 \DeclareMathOperator*{\argmax}{argmax}
 \DeclareMathOperator*{\argmin}{argmin}
@@ -506,8 +507,8 @@ $\R^{M+1}$ any $M+1$ of them are linearly independent.
 \begin{theorem}[General position]
 \label{theorem:general-position}
 Suppose that the requests $R_1, R_2, \dots, R_T$ are sampled i.i.d. from a
-probability distribution $D$ with a probability density. Then, the requests are in
-general position with probability one.
+probability distribution $D$ with a probability density. Then, the requests are
+in general position with probability one.
 \end{theorem}
 
 \begin{proof}
@@ -553,9 +554,8 @@ rank is $M+1$.
 \begin{theorem}[Few ties]
 \label{theorem:few-ties}
 Suppose that the requests $R_1, R_2, \dots, R_T$ are in general position. Let
-$\mu_1, \dots, \mu_T$, $\lambda_1, \dots, \lambda_M$ be an optimal solution of
-the dual program. With probability one, for at least $T-M$ values of the index
-$t$, the argmax
+$\lambda_1, \dots, \lambda_M$ be any real numbers. With probability one, for at
+least $T-M$ values of the index $t$, the argmax
 \begin{equation}
 \label{equation:argmax}
 \argmax_{i=1,2,\dots,N} \left( R_{t,i,0} - \sum_{j=1}^M R_{t,i,j} \lambda_j \right)
@@ -588,12 +588,13 @@ equations.
 \end{proof}
 
 \begin{lemma}[Lagrangian policies are close to optimal]
+\label{lemma:lagrangian-policies-are-close-to-optimal}
 Suppose that the requests $R_1, R_2, \dots, R_T$ are in general position. Let
 $\mu_1, \dots, \mu_T$, $\lambda_1, \dots, \lambda_M$ be an optimal solution of
 the dual program. Let $x_{1,1}, \dots, x_{T,N}$ be any optimal solution of the
-primal program. Let $lambda = (1, - \lambda_1, - \lambda_2, \dots, - \lambda_M)$
-and let $\pi_\lambda$ corresponding Lagrangian policy. Then, for every
-$j=0,1,\dots,M$,
+primal program. Let $\lambda = (1, - \lambda_1, - \lambda_2, \dots, -
+\lambda_M)$ and let $\pi_\lambda$ be the corresponding Lagrangian policy. Then,
+for every $j=0,1,\dots,M$,
 $$
 \frac{1}{T} \left| \sum_{t=1}^T \sum_{i=1}^N R_{t,i,j} \left( \pi_\lambda(R_t) - x_{t,i} \right) \right| \le \frac{2M}{T} \: .
 $$
@@ -642,37 +643,34 @@ $\Requests$), then there exists an optimal solution that is a Lagrangian policy.
 
 \begin{lemma}[Concentration inequality]
 \label{lemma:concentration-inequality}
-Let $D$ be any distribution over $\Requests$. Let $\delta \in (0,1)$ and $T$ be
-a positive integer. Suppose $R, R_1, R_2, \dots, R_T$ is an i.i.d. sample from
-$D$. Let $\pi: \Requests \to \Delta_N$ be an arbitrary measurable policy. Then,
-with probability at least $1-\delta$, for all $j=0,1,2,\dots,M$,
+Let $D$ be any distribution over $\Requests$. Let $\delta \in (0,1)$. Let $T$ be
+a positive integer. Let $j$ be an integer such that $0 \le j \le M$.
+Let $\pi: \Requests \to \Delta_N$ be an arbitrary measurable policy.
+Suppose $R, R_1, R_2, \dots, R_T$ is an i.i.d. sample from $D$.
+Then, with probability at least $1-\delta$,
 $$
-\left| \Exp_{R \sim D} \left[ \sum_{i=1}^N \pi(R)_i \cdot R_{i,j}  \right]  -  \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N R_{t,i,j} \cdot \pi(R_t)_i  \right|
-\le \sqrt{ \frac{2\log(2(M+1)/\delta)}{T}}
+\left| \Exp_{R \sim D} \left[ \sum_{i=1}^N \pi(R)_i \cdot R_{i,j} \right]  -  \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N R_{t,i,j} \cdot \pi(R_t)_i  \right|
+\le \sqrt{ \frac{2\log(2/\delta)}{T}}
 $$
 \end{lemma}
 
 \begin{proof}
-Let $X_{t,j} = \sum_{i=1}^N \pi(R_t)_i \cdot R_{t,i,j}$ for all $t=1,2,\dots,T$ and all $j=0,1,2,\dots,M$.
-Let $Y_j = \frac{1}{T} \sum_{t=1}^T X_{t,j}$ for all $j=0,1,2,\dots,M$.
-Since $X_{t,j}$ lies in the interval $[-1,1]$, by Hoeffding's inequality,
+Let $X_t = \sum_{i=1}^N \pi(R_t)_i \cdot R_{t,i,j}$ for all $t=1,2,\dots,T$. Let
+$Y = \frac{1}{T} \sum_{t=1}^T X_t$. Since $X_t$ lies in the interval $[-1,1]$,
+by Hoeffding's inequality,
 $$
-\Pr \left[ \left| \Exp[Y_j] - Y_j \right| \ge \epsilon \right]  \le 2 \exp\left( - \frac{\epsilon^2 T}{2} \right) \: .
+\Pr \left[ \left| \Exp[Y] - Y \right| \ge \epsilon \right]  \le 2 \exp\left( - \frac{\epsilon^2 T}{2} \right) \: .
 $$
-Union bound over all $j=0,1,2,\dots,M$ gives
-$$
-\Pr \left[ \max_{j=0,1,2,\dots,M} \left| \Exp[Y_j] - Y_j \right| \ge \epsilon \right]  \le 2(M+1) \exp\left( - \frac{\epsilon^2 T}{2} \right) \: .
-$$
-We set $\delta = 2(M+1) \exp\left( - \frac{\epsilon^2 T}{2} \right)$ and
+We set $\delta = 2 \exp\left( - \frac{\epsilon^2 T}{2} \right)$ and
 solve for $\epsilon$. We get that with probability at least $1-\delta$,
 $$
-\max_{j=0,1,2,\dots,M} \left| \Exp[Y_j] - Y_j \right| \le \sqrt{ \frac{2\log(2(M+1)/\delta)}{T}} \: .
+\left| \Exp[Y] - Y \right| \le \sqrt{ \frac{2\log(2/\delta)}{T}} \: .
 $$
 The theorem follows from the fact that
 $$
-\Exp[Y_j] = \Exp_{R \sim D} \left[ \sum_{i=1}^N \pi(R)_i \cdot R_{i,j}  \right]
+\Exp[Y] = \Exp_{R \sim D} \left[ \sum_{i=1}^N \pi(R)_i \cdot R_{i,j}  \right]
 \quad \text{and} \quad
-Y_j = \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N R_{t,i,j} \cdot \pi(R_t)_i \: .
+Y = \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N R_{t,i,j} \cdot \pi(R_t)_i \: .
 $$
 \end{proof}
 
@@ -696,19 +694,21 @@ Since the optimization problem is feasible, $V > -\infty$ and, in particular, $V
 Fix $\epsilon > 0$. Since the optimization problem is feasible, there exists a
 measurable policy $\pi^*: \Requests \to \Delta_N$ that is feasible and
 $\epsilon$-optimal. That is,
-$$
+\begin{equation}
+\label{inequality:optimal-policy-feasibility}
 \Exp_{R \sim D} \left[ \sum_{i=1}^N \pi^*(R)_i \cdot R_{i,j} \right] \le B_j \qquad \text{for all $j=1,2,\dots,M$} \: .
-$$
+\end{equation}
 and
-$$
+\begin{equation}
+\label{inequality:optimal-policy-optimality}
 \Exp_{R \sim D} \left[ \sum_{i=1}^N \pi^*(R)_i \cdot R_{i,0} \right] \ge V - \epsilon \: .
-$$
+\end{equation}
 
 Let $R_1, R_2, \dots$ be an infinite sequence of requests sampled i.i.d. from
 $D$. Let $T$ be a positive integer. Let
 \begin{align*}
-\delta_T & = \frac{1}{\pi^2 T^2} \\
-B_{T,j}' & = B_j + \epsilon + \sqrt{ \frac{2\log(2(M+1)/\delta_T)}{T}} \qquad \text{for all $j=1,2,\dots,M$.}
+\delta_T & = \frac{1}{(M+1)\pi^2 T^2} \\
+B_{T,j}' & = B_j + \sqrt{ \frac{2\log(2/\delta_T)}{T}} \qquad \text{for all $j=1,2,\dots,M$.}
 \end{align*}
 We consider the modified versions of the primal and dual linear
 programs~\eqref{equation:primal-linear-program}
@@ -735,16 +735,92 @@ and
 \end{aligned}
 \end{equation}
 
-With probability at least $1-\delta_T$, the primal linear
-program~\eqref{equation:primal-linear-program-modified} has a feasible solution.
-Indeed, by Lemma~\ref{lemma:concentration-inequality}, with probability at least
-$1-\delta_T$,
+Let $\E$ be the probability event that for all infinitely many values of $T=1,2,\dots$
+and for all $j=0,1,2,\dots,M$,
+\begin{equation}
+\label{inequality:optimal-policy-concentration}
+\left| \Exp_{R \sim D} \left[ \sum_{i=1}^N \pi^*(R)_i \cdot R_{i,j} \right] - \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N R_{t,i,j} \cdot \pi^*(R_t)_i  \right|
+\le \sqrt{ \frac{2\log(2/\delta_T)}{T}}
+\end{equation}
+and, at the same time, for all infinitely many values of $T=1,2,\dots$, the
+requests $R_1, R_2,\dots,R_T$ are in general position. We argue that probability
+that $\E$ happens is at least $5/6$. For a fixed $T$ and a fixed $j$, by
+Lemma~\ref{lemma:concentration-inequality}, the inequality
+\eqref{inequality:optimal-policy-concentration} holds with probability at least $1
+- \delta_T$. Since $\sum_{j=0}^M \sum_{T=1}^\infty \delta_T = \sum_{j=0}^M
+\sum_{T=1}^\infty \frac{1}{(M+1)\pi^2 T^2} = \frac{1}{6}$, by union bound, the
+inequality \eqref{inequality:optimal-policy-concentration} holds for all
+infinitely many values of $T$ and all $j=0,1,\dots,M$ with probability at least
+$5/6$. Theorem~\ref{theorem:general-position} implies that with probability one,
+the requests $R_1, R_2, \dots, R_T$ are in general position. By union bound, the
+requests $R_1, R_2, \dots, R_T$ are in general position for all infinite many
+values of $T$. Thus $\E$ happens with probability at least $5/6$.
 
-Let $\lambda_1^{(T)}, \dots, \lambda_M^{(T)}$, $\mu_1^{(T)}, \dots, \mu_T^{(T)}$
-be an optimal solution of the dual linear program~\eqref{equation:dual-linear-program-modified}.
-Let $\lambda^{(T)} = (1, -\lambda_1^{(T)}, -\lambda_2^{(T)}, \dots, -\lambda_M^{(T)})$ and let
-$\pi_\lambda^{(T)}$ be the corresponding Lagrangian policy.
+For the rest proof, we fix $R_1, R_2, \dots$ to be a particular non-random
+sequence that belongs to the probability event $\E$.
 
+We combine inequalities~\eqref{inequality:optimal-policy-concentration},
+\eqref{inequality:optimal-policy-feasibility} and the definition of $B_{T,j}'$
+and we get
+\begin{equation}
+\label{inequality:optimal-policy-feasibility-on-sample}
+\frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N R_{t,i,j} \cdot \pi^*(R_t)_i \le B_{T,j}'
+\qquad \text{for all $j=1,2,\dots,M$ and all $T=1,2,\dots$.}
+\end{equation}
+Similarly, we combine inequalities~\eqref{inequality:optimal-policy-concentration},
+and \eqref{inequality:optimal-policy-optimality} and get that
+\begin{equation}
+\label{inequality:optimal-policy-optimality-on-sample}
+\frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N R_{t,i,0} \cdot \pi^*(R_t)_i \ge V - \epsilon - \sqrt{ \frac{2\log(2/\delta_T)}{T}}
+\qquad \text{for all $T=1,2,\dots$.}
+\end{equation}
+
+The inequality~\eqref{inequality:optimal-policy-feasibility-on-sample} implies
+that $x_{t,i} = \pi^*(R_t)_i$, $i=1,2,\dots,N$, $t=1,2,\dots$ is a feasible
+solution of the modified primal linear
+program~\eqref{equation:primal-linear-program-modified}. In particular, this
+means that the modified primal linear
+program~\eqref{equation:primal-linear-program-modified} is feasible.
+
+Let $x^{(T)}_{t,i}$, $t=1,2,\dots,T$, $i=1,2,\dots,N$, be an optimal solution of
+the modified primal program~\eqref{equation:primal-linear-program-modified}.
+Since $x_{t,i} = \pi^*(R_t)_i$ is a feasible solution of the modified primal
+program~\eqref{equation:primal-linear-program-modified},
+\begin{equation}
+\label{inequality:sample-optimal-policy-beats-optimality-on-sample}
+\frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N R_{t,i,0} \cdot x^{(T)}_{t,i}
+\ge \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N R_{t,i,0} \cdot \pi^*(R_t)_i
+\qquad \text{for all $T=1,2,\dots$.}
+\end{equation}
+We combine the last inequality with inequality~\eqref{inequality:optimal-policy-optimality-on-sample}
+and get that
+\begin{equation}
+\label{inequality:sample-optimal-policy-is-close-optimal}
+\frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N R_{t,i,0} \cdot x^{(T)}_{t,i}
+\ge V - \epsilon - \sqrt{ \frac{2\log(2/\delta_T)}{T}}
+\qquad \text{for all $T=1,2,\dots$.}
+\end{equation}
+The feasibility of the $x^{(T)}_{t,i}$, $t=1,2,\dots,T$, $i=1,2,\dots,N$ implies that
+\begin{equation}
+\label{inequality:sample-optimal-policy-feasibility}
+\frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N R_{t,i,j} \cdot x^{(T)}_{t,i} \le B_{T,j}'
+\qquad \text{for all $j=1,2,\dots,M$ and all $T=1,2,\dots$.}
+\end{equation}
+
+Since the modified primal program~\eqref{equation:primal-linear-program-modified} has a
+bounded feasible set and it is feasible, its dual~\eqref{equation:dual-linear-program-modified} is feasible and has an
+optimal solution. Let $\lambda_1^{(T)}, \dots, \lambda_M^{(T)}$, $\mu_1^{(T)},
+\dots, \mu_T^{(T)}$ be an optimal solution of the dual linear
+program~\eqref{equation:dual-linear-program-modified}. Let $\lambda^{(T)} = (1,
+-\lambda_1^{(T)}, -\lambda_2^{(T)}, \dots, -\lambda_M^{(T)})$ and let
+$\pi_{\lambda^{(T)}}$ be the corresponding Lagrangian policy.
+
+
+Since the requests $R_1, R_2, \dots, R_T$ are in general position,
+Lemma~\ref{lemma:lagrangian-policies-are-close-to-optimal} implies that
+$$
+\frac{1}{T} \left| \sum_{t=1}^T \sum_{i=1}^N R_{t,i,j} \left( \pi_{\lambda^{(T)}}(R_t) - x^{(T)}_{t,i} \right) \right| \le \frac{2M}{T} \: .
+$$
 \end{proof}
 
 \appendix
