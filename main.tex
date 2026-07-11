@@ -62,8 +62,8 @@ Measurability of $\pi$ is defined with respect to the $\sigma$-algebras defined
 by the Borel sets of $\Requests$ and $\Delta_N$ respectively. We denote by $\Pi$
 the set of all policies.
 
-We would like to come up with a policy that is ``close'' to an optimal
-solution of the optimization problem
+We would like to come up with a policy that is ``close'' to an optimal solution
+of the optimization problem
 \begin{equation}
 \label{equation:sample-policy-optimization}
 \begin{aligned}
@@ -241,21 +241,6 @@ independent of the random variables $R_1, R_2, \dots, R_T$. The value of
 $\epsilon$ can be arbitrily small. The value of the order $\epsilon =
 \Theta(1/\sqrt{T})$ is commensurate with other errors that appear in our
 analysis.
-
-\begin{lemma}
-Let $R$ be a random request drawn from an arbitrary probability distribution $D$
-over $\Requests$. Let $Z_{i,j}$, $i=1,2,\dots,N$, $j=0,1,2,\dots,M$, be i.i.d.
-random variables with uniform distribution over $[-1,1]$. Let $\epsilon \in
-(0,1)$. Let $R'$ be a request defined by
-$$
-R'_{i,j} = (1-\epsilon)R_{i,j} + \epsilon Z_{i,j}
-\qquad \text{for $i=1,2,\dots,N$, $j=0,1,2,\dots,M$} \: .
-$$
-Let $D'$ be the distribution of $R'$. Then, for all $j=0,1,\dots,M$
-$$
-\left|\Exp_{R \sim D} \left[ \sum_{i=1}^N \pi_\lambda(R)_i \cdot R_{i,j}  \right] - \Exp_{R \sim D'} \left[ \sum_{i=1}^N \pi_\lambda(R')_i \cdot R_{i,j}  \right] \right| \le \epsilon \: .
-$$
-\end{lemma}
 
 \section{Uniform convergence for Lagrangian policies}
 
