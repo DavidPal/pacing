@@ -180,7 +180,7 @@ Lagrangian policies are both deterministic and measurable.
 Second, note that the policy corresponding to the all-zero vector $\lambda
 = (0, 0, \dots, 0)$ chooses the first decision for any request. This policy is
 uninteresting. For technical reasons and/or notational convenience, we include it
-in certain theorems and exclude in others. However, as it will turn out, there exists
+in certain theorems and exclude it in others. However, as it will turn out, there exists
 a Lagrangian policy $\pi_\lambda$ with $\lambda \neq (0, 0, \dots, 0)$ that is
 close to an optimal policy of the optimization problems
 \eqref{equation:sample-policy-optimization} and
@@ -191,7 +191,7 @@ Third, note that for any positive real number $c > 0$ and any vector $\lambda
 Thus, without loss of generality, we can assume that $\|\lambda\|_2 \le 1$. If
 $\lambda = 0$ is excluded, we can assume that $\|\lambda\|_2 = 1$. Depending on
 the context, the Lagrangian policies are parameterized by $\lambda$ lying in
-either $\R^{M+1}$, $\R^{M+1} \setminus \{0\}$, unit ball, or unit sphere. The
+either $\R^{M+1}$, $\R^{M+1} \setminus \{0\}$, the unit ball, or the unit sphere. The
 advantage of the unit ball and the unit sphere is that they are compact sets.
 
 \section{Failure of deterministic policies}
@@ -221,7 +221,7 @@ density.
 
 \section{Distributions with a density}
 
-So far we avoided making any assumption on the distribution $D$. For technical
+So far, we have avoided making any assumption on the distribution $D$. For technical
 reasons, it is convenient to assume that $D$ has a probability density with
 respect to the Lebesgue measure on $\Requests = [-1,1]^{N \times (M+1)}$. The
 fundamental technical reason for the existence of a probability density is to
@@ -237,7 +237,7 @@ R'_{t,i,j} = (1-\epsilon)R_{t,i,j} + \epsilon Z_{t,i,j}
 \qquad \text{for $t=1,2,\dots,T$, $i=1,2,\dots,N$, $j=0,1,2,\dots,M$}
 $$
 where $\epsilon \in (0,1)$ is a small positive number and the variables
-$Z_{t,i,j}$ drawn i.i.d. from the uniform distribution over $[-1,1]$ and are
+$Z_{t,i,j}$ are drawn i.i.d. from the uniform distribution over $[-1,1]$ and are
 independent of the random variables $R_1, R_2, \dots, R_T$. The value of
 $\epsilon$ can be arbitrarily small.
 
@@ -382,7 +382,8 @@ $$
 The optimization problem \eqref{equation:sample-policy-optimization} is
 equivalent to the linear program below provided that the requests $R_1, R_2,
 \dots, R_T$ are pairwise distinct. If the requests are sampled i.i.d. from a
-probability distribution with a density, they are pairwise distinct with probability one.
+probability distribution with a density, they are pairwise distinct with
+probability one.
 \begin{equation}
 \label{equation:primal-linear-program}
 \begin{aligned}
@@ -398,7 +399,7 @@ $\pi(R_t)$. The output of the policy on inputs other than $R_1, R_2, \dots, R_T$
 is unspecified. We refer to the linear program
 \eqref{equation:primal-linear-program} as \emph{the primal linear program}.
 
-The dual of the primal linear program \eqref{equation:primal-linear-program}
+The dual of the primal linear program \eqref{equation:primal-linear-program} is
 \begin{equation}
 \label{equation:dual-linear-program}
 \begin{aligned}
@@ -418,7 +419,7 @@ Indeed, the feasible region is a subset of $\left(\Delta_N\right)^T \subset
 solution, or it is infeasible; it cannot be unbounded. By the strong duality
 theorem, if the primal program is feasible, the dual program is feasible as well
 and has an optimal solution. However, even if the primal program is feasible,
-the dual program can have an unbounded feasible set, and even unbounded set
+the dual program can have an unbounded feasible set, and even an unbounded set
 of optimal solutions.
 
 Next, we prove that the optimal values of the dual variables $\mu_1, \dots,
@@ -429,9 +430,9 @@ primal variables $x_{1,1}, \dots, x_{T,N}$ can be recovered from the optimal
 values of $\lambda_1, \dots, \lambda_M$ provided that the requests are in a
 ``general position'', a term that we define precisely later. We show that if the
 requests are sampled i.i.d. from a probability distribution with a probability
-density then they are in general position with probability one. In summary, the
-optimal solutions of both linear programs can be essentially encoded using only
-$M$ parameters $\lambda_1, \dots, \lambda_M$. Finally, we show that the
+density then they are in a general position with probability one. In summary,
+the optimal solutions of both linear programs can be essentially encoded using
+only $M$ parameters $\lambda_1, \dots, \lambda_M$. Finally, we show that the
 resulting Lagrangian policy $\pi_\lambda$ is close to the optimal solution of
 the primal program.
 
@@ -507,7 +508,7 @@ $\R^{M+1}$ any $M+1$ of them are linearly independent.
 \label{theorem:general-position}
 Suppose that the requests $R_1, R_2, \dots, R_T$ are sampled i.i.d. from a
 probability distribution $D$ with a probability density. Then, the requests are
-in general position with probability one.
+in a general position with probability one.
 \end{theorem}
 
 \begin{proof}
@@ -552,7 +553,7 @@ rank is $M+1$.
 
 \begin{theorem}[Few ties]
 \label{theorem:few-ties}
-Suppose that the requests $R_1, R_2, \dots, R_T$ are in general position. Let
+Suppose that the requests $R_1, R_2, \dots, R_T$ are in a general position. Let
 $\lambda_1, \dots, \lambda_M$ be any real numbers. With probability one, for at
 least $T-M$ values of the index $t$, the argmax
 \begin{equation}
@@ -579,7 +580,7 @@ $$
 $$
 
 Suppose by contradiction that $|\T| \ge M + 1$. Since the requests are in
-general position, the augmented matrix of this system has rank $M+1$. By
+a general position, the augmented matrix of this system has rank $M+1$. By
 Lemma~\ref{lemma:overdetermined-system-of-linear-equations} with $L = |\T|$,
 this system of equations has no solution. This contradicts the assumption that
 $\lambda_1, \lambda_2, \dots, \lambda_M$ is a solution of this system of
@@ -588,7 +589,7 @@ equations.
 
 \begin{lemma}[Lagrangian policies are close to optimal]
 \label{lemma:lagrangian-policies-are-close-to-optimal}
-Suppose that the requests $R_1, R_2, \dots, R_T$ are in general position. Let
+Suppose that the requests $R_1, R_2, \dots, R_T$ are in a general position. Let
 $\mu_1, \dots, \mu_T$, $\lambda_1, \dots, \lambda_M$ be an optimal solution of
 the dual program. Let $x_{1,1}, \dots, x_{T,N}$ be any optimal solution of the
 primal program. Let $\lambda = (1, - \lambda_1, - \lambda_2, \dots, -
@@ -746,24 +747,24 @@ and
 \end{equation}
 Finally, let $\delta_T' = \frac{1}{\pi^2 T^2}$.
 
-Let $\E_1$ be the probability event that for infinitely many values of $T=1,2,\dots$
-and for all $j=0,1,2,\dots,M$,
+Let $\E_1$ be the probability event that for all $T \ge 1$ and all
+$j=0,1,2,\dots,M$,
 \begin{equation}
 \label{inequality:optimal-policy-concentration}
 \left| \Exp_{R \sim D} \left[ \sum_{i=1}^N \pi^*(R)_i \cdot R_{i,j} \right] - \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N R_{t,i,j} \cdot \pi^*(R_t)_i  \right|
 \le \sqrt{ \frac{2\log(2/\delta_T)}{T}} \: .
 \end{equation}
-Let $\E_2$ be the probability event that for infinitely many values of $T=1,2,\dots$,
-for all $j=0,1,2,\dots,M$, and for all $\lambda \in \R^{M+1}$,
+Let $\E_2$ be the probability event that for all $T \ge 1$,
+all $j=0,1,2,\dots,M$, and all $\lambda \in \R^{M+1}$,
 \begin{multline}
 \label{inequality:uniform-convergence}
 \left| \Exp_{R \sim D} \left[ \sum_{i=1}^N \pi_\lambda(R)_i \cdot R_{i,j}  \right]  -  \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N R_{t,i,j} \cdot \pi_\lambda(R_t)_i  \right|
 \\
 \le \sqrt{\frac{8(M+1) (\ln(4T) + 2 \ln N)}{T}} + \sqrt{ \frac{2\log(1/\delta'_T)}{T} } \: .
 \end{multline}
-Let $\E_3$ be the probability event that, for infinitely many values of
-$T=1,2,\dots$, the requests $R_1, R_2,\dots,R_T$ are in general position. Let
-$\E$ be the intersection of the events $\E_1$, $\E_2$, $\E_3$.
+Let $\E_3$ be the probability event that, for all $T \ge 1$, the requests $R_1,
+R_2,\dots,R_T$ are in a general position. Let $\E$ be the intersection of the
+events $\E_1$, $\E_2$, $\E_3$.
 
 For a fixed $T$ and a fixed $j$, by Lemma~\ref{lemma:concentration-inequality},
 the inequality \eqref{inequality:optimal-policy-concentration} holds with
@@ -776,12 +777,13 @@ Theorem~\ref{theorem:uniform-convergence}, the inequality
 \delta_T'$. Since $\sum_{T=1}^\infty \delta_T' = \sum_{T=1}^\infty
 \frac{1}{\pi^2 T^2} = \frac{1}{6}$, by union bound, the probability of event
 $\E_2$ is at least $5/6$. For a fixed $T$, the requests $R_1, R_2,\dots,R_T$ are
-in general position with probability one. By a union bound, the probability of
+in a general position with probability one. By a union bound, the probability of
 event $\E_3$ is also one. Finally, the probability of event $\E$ is at least $1
 - 1/6 - 1/6 - 0 = 2/3$.
 
-For the rest of the proof, we fix $R_1, R_2, \dots$ to be a particular non-random
-sequence that belongs to the probability event $\E$.
+For the rest of the proof, let $R_1, R_2, \dots$ be a particular non-random
+sequence of requests that belongs to the probability event $\E$. Such sequence
+clearly exists, since the probability of the event is positive.
 
 We combine inequalities~\eqref{inequality:optimal-policy-concentration},
 \eqref{inequality:optimal-policy-feasibility} and the definition of $B_{T,j}'$
@@ -832,14 +834,14 @@ The feasibility of the $x^{(T)}_{t,i}$, $t=1,2,\dots,T$, $i=1,2,\dots,N$ implies
 \end{equation}
 
 Since the modified primal
-program~\eqref{equation:primal-linear-program-modified} has a bounded feasible
-set and it is feasible, its dual~\eqref{equation:dual-linear-program-modified}
-is feasible and has an optimal solution. Let $\lambda_1^{(T)}, \dots,
+program~\eqref{equation:primal-linear-program-modified} is feasible and it has a
+bounded feasible set, its dual~\eqref{equation:dual-linear-program-modified} is
+feasible and has an optimal solution. Let $\lambda_1^{(T)}, \dots,
 \lambda_M^{(T)}$, $\mu_1^{(T)}, \dots, \mu_T^{(T)}$ be an optimal solution of
 the dual linear program~\eqref{equation:dual-linear-program-modified}. Let
 $\lambda^{(T)} = (1, -\lambda_1^{(T)}, -\lambda_2^{(T)}, \dots,
 -\lambda_M^{(T)})$ and let $\pi_{\lambda^{(T)}}$ be the corresponding Lagrangian
-policy. Since the requests $R_1, R_2, \dots, R_T$ are in general position,
+policy. Since the requests $R_1, R_2, \dots, R_T$ are in a general position,
 Lemma~\ref{lemma:lagrangian-policies-are-close-to-optimal} implies that
 \begin{equation}
 \label{inequality:lagrangian-policy-rounding-error}
@@ -866,21 +868,21 @@ for all $j=1,2,\dots,M$,
 \: .
 \end{multline}
 
-Since $\lambda^{(T)}$ is a non-zero vector, we can normalize it to unit length,
-the policy $\pi_{\lambda^{(T)}}$ does not change, and the
+Since $\lambda^{(T)}$ is a non-zero vector, we can normalize it to unit length
+and the policy $\pi_{\lambda^{(T)}}$ remains the same. In particular, the
 inequalities~\eqref{inequality:lagrangian-policy-optimality}
-and~\eqref{inequality:lagrangian-policy-feasibility} continue to hold. Thus,
-without loss of generality, we can assume that $\lambda^{(1)}, \lambda^{(2)},
-\dots$ is a sequence of unit length vectors in $\R^{M+1}$. Since the unit sphere
-is a compact set, Bolzano-Weierstrass theorem implies that it has a convergent
-subsequence $\lambda^{(T_1)}, \lambda^{(T_2)}, \dots$. We denote its limit
-$\lambda$. We take the limit of
+and~\eqref{inequality:lagrangian-policy-feasibility} continue to hold after
+normalization. After normalization, $\lambda^{(1)}, \lambda^{(2)}, \dots$ is an
+infinite sequence of unit length vectors in $\R^{M+1}$. Since the unit sphere in
+$\R^{M+1}$ is a compact set, the Bolzano-Weierstrass theorem implies that it has
+a convergent subsequence $\lambda^{(T_1)}, \lambda^{(T_2)}, \dots$. We denote
+its limit $\lambda$. We take the limit of
 inequalities~\eqref{inequality:lagrangian-policy-optimality}
 and~\eqref{inequality:lagrangian-policy-feasibility} along the convergent
 subsequence. Lemma~\ref{lemma:continuity-for-lagrangian-policies} implies that
-the limits of the left hand sides of the inequalities exist. The error
-terms on right hand sides of the inequalities approach zero as $T$ goes to infinity.
-We get that
+the limits of the left hand sides of the inequalities exist. The error terms on
+right hand sides of the inequalities approach zero as $T$ goes to infinity. We
+get that
 \begin{align*}
 \Exp_{R \sim D} \left[ \sum_{i=1}^N \pi_{\lambda}(R)_i \cdot R_{i,0}  \right] & \ge V - \epsilon \\
 \Exp_{R \sim D} \left[ \sum_{i=1}^N \pi_{\lambda}(R)_i \cdot R_{i,j}  \right] & \le B_j
@@ -927,11 +929,11 @@ For any $s \in \R$,
 & \le \sum_{k=1}^K \left( e^{s^2\sigma^2/2} + e^{s^2\sigma^2/2} \right) \\
 & = 2K e^{s^2\sigma^2/2} \: .
 \end{align*}
-The first equality follows from that $|Y_k| = \max \left\{Y_k, -Y_k\right\}$.
-The first inequality follows from Jensen's inequality for the convex function $x
-\mapsto e^{sx}$. The second inequality follows from the fact that maximum of
-non-negative numbers is upper bounded by their sum. The last inequality follows from
-the sub-Gaussian property for $Y_k$.
+The first equality follows from the fact that $|Y_k| = \max \left\{Y_k,
+-Y_k\right\}$. The first inequality follows from Jensen's inequality for the
+convex function $x \mapsto e^{sx}$. The second inequality follows from the fact
+that maximum of non-negative numbers is upper bounded by their sum. The last
+inequality follows from the sub-Gaussian property for $Y_k$.
 
 Thus, for any $s \in \R$,
 $$
