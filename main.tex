@@ -190,34 +190,54 @@ Third, note that for any positive real number $c > 0$ and any vector $\lambda
 \in \R^{M+1}$, the policies $\pi_{c \lambda}$ and $\pi_\lambda$ are identical.
 Thus, without loss of generality, we can assume that $\|\lambda\|_2 \le 1$. If
 $\lambda = 0$ is excluded, we can assume that $\|\lambda\|_2 = 1$. Depending on
-the context, the Lagrangian policies are parameterized by $\lambda$ lying in
-either $\R^{M+1}$, $\R^{M+1} \setminus \{0\}$, the unit ball, or the unit sphere. The
-advantage of the unit ball and the unit sphere is that they are compact sets.
+the context, the Lagrangian policies are parameterized by $\lambda$ that lies in
+either $\R^{M+1}$, $\R^{M+1} \setminus \{0\}$, the unit ball, or the unit
+sphere. The advantage of the unit ball and the unit sphere is that they are
+compact sets.
 
 \section{Failure of deterministic policies}
 
-In general, deterministic policies are not good solutions for certain sequences of
-requests. In this section, we provide the simplest possible example that
-illustrates the point. Suppose $N=2$ and $M=1$ and $T$ can be arbitrary. For
-all requests,
+In general, deterministic policies are not good solutions of the optimization
+problems~\eqref{equation:sample-policy-optimization}
+and~\eqref{equation:distribution-policy-optimization}. In this section, we
+provide the simplest possible example that illustrates the point.
+
+Suppose $N=2$, $M=1$, $B_1 = \frac{1}{2}$, $T \ge 1$ is arbitrary, and
 $$
 R_t
-= \begin{pmatrix} R_{t,1,0} & R_{t,1,1} \\ R_{t,2,0} & R_{t,2,1} \end{pmatrix}
-= \begin{pmatrix} 1 & 1 \\ 0 & 0 \end{pmatrix}
+= \begin{bmatrix} R_{t,1,0} & R_{t,1,1} \\ R_{t,2,0} & R_{t,2,1} \end{bmatrix}
+= \begin{bmatrix} 1 & 1 \\ 0 & 0 \end{bmatrix}
+\qquad \text{for all $t=1,2,\dots,T$.}
 $$
-and $B_1 = \frac{1}{2}$. Any optimal policy $\pi^*$ for this sequence of
-requests satisfies
+All optimal solutions $\pi^*$ of the optimization
+problem~\eqref{equation:sample-policy-optimization} satisfy
 \begin{equation}
 \label{equation:uniform-random-policy-on-two-outcomes}
-\pi^*(R_t) = \left( \frac{1}{2}, \frac{1}{2} \right) \: .
+\pi^*(\left[\begin{smallmatrix} 1 & 1 \\ 0 & 0 \end{smallmatrix}\right]) = \left( \frac{1}{2}, \frac{1}{2} \right) \: .
 \end{equation}
-The output of a policy for requests other than $R_t$ does not play any role and
-it can be arbitrary. More importantly, any policy that does not satisfy
-condition \eqref{equation:uniform-random-policy-on-two-outcomes} is suboptimal.
+The output of $\pi^*$ for requests other than $\left[\begin{smallmatrix} 1 & 1
+\\ 0 & 0 \end{smallmatrix}\right]$ does not play any role and it can be
+arbitrary. More importantly, any deterministic policy is not a feasible solution
+of the optimization problem.
 
-However, as we will see later, Lagrangian policies are almost optimal assuming
-that the requests are sampled i.i.d. from a distribution with a probability
-density.
+The same is problem arises for the optimization
+problem~\eqref{equation:distribution-policy-optimization}. Same as before,
+suppose $N=2$ and $M=1$ and $B_1=\frac{1}{2}$. The distribution $D$ assigns
+probability $1$ to the request $\left[\begin{smallmatrix} 1 & 1 \\ 0 & 0
+\end{smallmatrix}\right]$ and probability zero to any other request. Any optimal
+solutions of the optimization
+problem~\eqref{equation:distribution-policy-optimization} satisfy
+\eqref{equation:uniform-random-policy-on-two-outcomes}. Same as before, any
+deterministic policy is not an feasible solution of the optimization problem.
+
+On the other hand, as we will see later, for distributions with densities these
+problems vanish. Namely, deterministic Lagrangian policies are optimal solutions
+for optimization problem~\eqref{equation:distribution-policy-optimization} when
+the distribution $D$ has a probability density. Futhermore, if the requests are
+sampled i.i.d. from a probability distribution with a density, a deterministic
+Lagrangian policy is close to an optimal solution for the optimization
+problem~\eqref{equation:sample-policy-optimization}.
+
 
 \section{Distributions with a density}
 
@@ -518,12 +538,13 @@ such that $1 \le i_1 < i_1' \le N$, $1 \le i_2 < i_2' \le N$, \dots, $1 \le i_T
 that $1 \le t_1 < t_2 < \dots < t_{M+1} \le T$, consider the $(M+1) \times
 (M+1)$ matrix
 $$
-A_{\I,\T} = \begin{pmatrix}
+A_{\I,\T}
+= \begin{bmatrix}
 R_{t_1,i_{t_1},0} - R_{t_1,i_{t_1}',0} &  \dots & R_{t_1,i_{t_1},M} - R_{t_1,i_{t_1}',M} \\
 R_{t_2,i_{t_2},0} - R_{t_2,i_{t_2}',0} &  \dots & R_{t_2,i_{t_2},M} - R_{t_2,i_{t_2}',M} \\
  \vdots & & \vdots \\
 R_{t_{M+1},i_{t_{M+1}},0} - R_{t_{M+1},i_{t_{M+1}}',0} & \dots & R_{t_{M+1},i_{t_{M+1}},M} - R_{t_{M+1},i_{t_{M+1}}',M}
-\end{pmatrix}
+\end{bmatrix}
 $$
 The matrix $A_{\I,\T}$ is sampled from a distribution that has a density with respect to
 the Lebesgue measure on $\R^{(M+1) \times (M+1)}$. Since the Lebesgue measure of
@@ -587,18 +608,21 @@ $\lambda_1, \lambda_2, \dots, \lambda_M$ is a solution of this system of
 equations.
 \end{proof}
 
-\begin{lemma}[Lagrangian policies are close to optimal]
-\label{lemma:lagrangian-policies-are-close-to-optimal}
+\begin{theorem}[Lagrangian policies are close to optimal]
+\label{theorem:lagrangian-policies-are-close-to-optimal}
 Suppose that the requests $R_1, R_2, \dots, R_T$ are in a general position. Let
 $\mu_1, \dots, \mu_T$, $\lambda_1, \dots, \lambda_M$ be an optimal solution of
 the dual program. Let $x_{1,1}, \dots, x_{T,N}$ be any optimal solution of the
-primal program. Let $\lambda = (1, - \lambda_1, - \lambda_2, \dots, -
-\lambda_M)$ and let $\pi_\lambda$ be the corresponding Lagrangian policy. Then,
+primal program. Let
+$$
+\lambda = (1, - \lambda_1, - \lambda_2, \dots, - \lambda_M)
+$$
+and let $\pi_\lambda$ be the corresponding Lagrangian policy. Then,
 for every $j=0,1,\dots,M$,
 $$
-\frac{1}{T} \left| \sum_{t=1}^T \sum_{i=1}^N R_{t,i,j} \left( \pi_\lambda(R_t)_i - x_{t,i} \right) \right| \le \frac{2M}{T} \: .
+\left| \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N R_{t,i,j} \cdot \pi_\lambda(R_t)_i - \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N R_{t,i,j} \cdot x_{t,i}  \right| \le \frac{2M}{T} \: .
 $$
-\end{lemma}
+\end{theorem}
 
 \begin{proof}
 Let $\T$ be the set of indices $t$ for which the argmax is not unique. Formally,
@@ -607,17 +631,17 @@ $$
 $$
 Theorem~\ref{theorem:few-ties} implies that $|\T| \le M$.
 
-Let $\T^c = \left\{ t \in \Z ~:~ 1 \le t \le T, t \not \in \T \right\}$ be the complement of $\T$.
+Let $\T^c = \left\{1,2,\dots,T\right\} \setminus \T$ be the complement of $\T$.
 Proposition~\ref{proposition:computing_primal_from_dual} implies that $x_{t,i} =
 \pi(R_t)_{i}$ for all $t \in \T^c$ and all $i = 1,2,\dots,N$.
 
 Thus,
 \begin{align*}
-& \frac{1}{T} \left| \sum_{t=1}^T \sum_{i=1}^N R_{t,i,j} \left( \pi_\lambda(R_t) - x_{t,i} \right) \right| \\
+& \left| \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N R_{t,i,j} \cdot \pi_\lambda(R_t)_i - \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N R_{t,i,j} \cdot x_{t,i}  \right| \\
 & \qquad = \frac{1}{T} \left| \sum_{t \in \T}^T \sum_{i=1}^N R_{t,i,j} \left( \pi_\lambda(R_t)_i - x_{t,i}  \right) + \sum_{t \in \T^c}^T \sum_{i=1}^N R_{t,i,j} \left( \pi_\lambda(R_t)_i - x_{t,i} \right) \right|  \\
 & \qquad = \frac{1}{T} \left| \sum_{t \in \T}^T \sum_{i=1}^N R_{t,i,j} \left( \pi_\lambda(R_t)_i - x_{t,i} \right) \right| \\
-& \qquad \le \frac{1}{T} \sum_{t \in \T}^T \sum_{i=1}^N \left| R_{t,i,j} \left( \pi_\lambda(R_t)_i - x_{t,i} \right) \right| \\
-& \qquad \le \frac{1}{T} \sum_{t \in \T}^T \left( \max_{i=1,2,\dots,N} \left| R_{t,i,j} \right| \right) \cdot \left( \sum_{i=1}^N \left| \left( \pi_\lambda(R_t)_i - x_{t,i} \right) \right| \right) \\
+& \qquad \le \frac{1}{T} \sum_{t \in \T}^T \sum_{i=1}^N \left| R_{t,i,j} \right| \cdot \left| \pi_\lambda(R_t)_i - x_{t,i} \right| \\
+& \qquad \le \frac{1}{T} \sum_{t \in \T}^T \left( \max_{i=1,2,\dots,N} \left| R_{t,i,j} \right| \right) \cdot \left( \sum_{i=1}^N \left| \pi_\lambda(R_t)_i - x_{t,i} \right| \right) \\
 & \qquad \le \frac{1}{T} \sum_{t \in \T}^T \left( \max_{i=1,2,\dots,N} \left| R_{t,i,j} \right| \right) \cdot \left( \sum_{i=1}^N \left| \pi_\lambda(R_t)_i \right| + \left| x_{t,i} \right| \right) \\
 & \qquad \le \frac{2|\T|}{T} \\
 & \qquad \le \frac{2M}{T} \: .
@@ -627,19 +651,11 @@ Thus,
 
 \section{Optimization problem for the expected values}
 
-Recall the optimization problem over all possible measurable policies $\pi:\Requests \to \Delta_N$.
-
-\begin{equation}
-\label{equation:distribution-policy-optimization-2}
-\begin{aligned}
-\maximize_{\pi \in \Pi} \qquad & \Exp_{R \sim D} \left[ \sum_{i=1}^N \pi(R)_i \cdot R_{i,0} \right] \\
-\subjectto \qquad & \Exp_{R \sim D} \left[ \sum_{i=1}^N \pi(R)_i \cdot R_{i,j} \right] \le B_j & \text{for all $j=1,2,\dots,M$} \\
-\end{aligned}
-\end{equation}
-
-The problem might be infeasible. However, if it is feasible and the
-distribution $D$ has a probability density (with respect to Lebesgue measure on
-$\Requests$), then there exists an optimal solution that is a Lagrangian policy.
+In this section, we study the optimization problem
+\eqref{equation:distribution-policy-optimization}. The problem might be
+infeasible. However, if it is feasible and the distribution $D$ has a
+probability density (with respect to Lebesgue measure on $\Requests$), then
+there exists an optimal solution that is a deterministic Lagrangian policy.
 
 \begin{lemma}[Continuity for Lagrangian policies]
 \label{lemma:continuity-for-lagrangian-policies}
@@ -650,6 +666,10 @@ f_j(\lambda) = \Exp_{R \sim D} \left[ \sum_{i=1}^N \pi_{\lambda}(R)_i \cdot R_{i
 $$
 is continuous on $\R^{M+1} \setminus \{(0,0,\dots,0)\}$.
 \end{lemma}
+
+\begin{proof}
+TODO
+\end{proof}
 
 \begin{lemma}[Concentration inequality]
 \label{lemma:concentration-inequality}
@@ -688,15 +708,15 @@ $$
 Let $D$ be a probability distribution over $\Requests$ with a probability
 density. Suppose that the optimization problem has a feasible solution, i.e.,
 there exists a measurable policy $\pi: \Requests \to \Delta_N$ that satisfies
-all the constraints in~\eqref{equation:distribution-policy-optimization-2}.
+all the constraints in~\eqref{equation:distribution-policy-optimization}.
 Then, there exists $\lambda \in \R^{M+1}$ such that $\|\lambda\|_2 = 1$ and the
 Lagrangian policy $\pi_\lambda$ is an optimal solution of the optimization
-problem~\eqref{equation:distribution-policy-optimization-2}.
+problem~\eqref{equation:distribution-policy-optimization}.
 \end{theorem}
 
 \begin{proof}
 Let $V$ be the optimal value of the optimization
-problem~\eqref{equation:distribution-policy-optimization-2}. That is,
+problem~\eqref{equation:distribution-policy-optimization}. That is,
 $$
 V = \sup \left\{ \Exp_{R \sim D} \left[ \sum_{i=1}^N \pi(R)_i \cdot R_{i,0} \right] ~:~ \pi \in \Pi, \Exp_{R \sim D} \left[ \sum_{i=1}^N \pi(R)_i \cdot R_{i,j} \right] \le B_j \text{ for all $j=1,2,\dots,M$} \right\} \: .
 $$
@@ -842,10 +862,10 @@ the dual linear program~\eqref{equation:dual-linear-program-modified}. Let
 $\lambda^{(T)} = (1, -\lambda_1^{(T)}, -\lambda_2^{(T)}, \dots,
 -\lambda_M^{(T)})$ and let $\pi_{\lambda^{(T)}}$ be the corresponding Lagrangian
 policy. Since the requests $R_1, R_2, \dots, R_T$ are in a general position,
-Lemma~\ref{lemma:lagrangian-policies-are-close-to-optimal} implies that
+Thoerem~\ref{theorem:lagrangian-policies-are-close-to-optimal} implies that
 \begin{equation}
 \label{inequality:lagrangian-policy-rounding-error}
-\frac{1}{T} \left| \sum_{t=1}^T \sum_{i=1}^N R_{t,i,j} \left( \pi_{\lambda^{(T)}}(R_t)_i - x^{(T)}_{t,i} \right) \right| \le \frac{2M}{T} \: .
+\left| \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N R_{t,i,j} \cdot \pi_{\lambda^{(T)}}(R_t)_i - \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N R_{t,i,j} \cdot x^{(T)}_{t,i}  \right| \le \frac{2M}{T} \: .
 \end{equation}
 We combine inequality~\eqref{inequality:lagrangian-policy-rounding-error} with
 inequalities~\eqref{inequality:sample-optimal-policy-is-close-optimal}
@@ -895,7 +915,7 @@ Since the inequality holds for any positive $\epsilon$,
 && \text{for all $j=1,2,\dots,M$.}
 \end{align*}
 In other words, $\pi_\lambda$ is a Lagrangian policy that is a feasible solution
-of the optimization problem~\eqref{equation:distribution-policy-optimization-2}
+of the optimization problem~\eqref{equation:distribution-policy-optimization}
 and the objective value of $\pi_\lambda$ is at least $V$. This means that
 $\pi_\lambda$ is an optimal solution of the optimization problem.
 \end{proof}
