@@ -160,7 +160,7 @@ We consider policies parameterized by $M+1$ real numbers $\lambda_0, \lambda_1,
 \dots, \lambda_M$. As will become clear later, the $\lambda_1, \dots, \lambda_M$
 can be interpreted as the dual variables associated with the constraints of the
 optimization problems. However, for now, they are arbitrary real numbers. For
-any $(M+1)$-dimnesional vector $\lambda = (\lambda_0, \lambda_1, \dots,
+any $(M+1)$-dimensional vector $\lambda = (\lambda_0, \lambda_1, \dots,
 \lambda_M) \in \R^{M+1}$ we define a policy $\pi_\lambda:\Requests \to \Delta_N$
 as follows. For any request $R \in \Requests$, we define
 \begin{equation}
@@ -177,12 +177,12 @@ consider its dual.
 We make three remarks about the Lagrangian policies. First, observe that
 Lagrangian policies are both deterministic and measurable.
 
-Second, note that that the policy corresponding to the all-zero vector $\lambda
+Second, note that the policy corresponding to the all-zero vector $\lambda
 = (0, 0, \dots, 0)$ chooses the first decision for any request. This policy is
-uniteresting. For technical reasons and/or notational convenience, we include it
-in certain theorems and exclude in others. However, as it will turn there exists
+uninteresting. For technical reasons and/or notational convenience, we include it
+in certain theorems and exclude in others. However, as it will turn out, there exists
 a Lagrangian policy $\pi_\lambda$ with $\lambda \neq (0, 0, \dots, 0)$ that is
-close to an optimal policy the optimization problems
+close to an optimal policy of the optimization problems
 \eqref{equation:sample-policy-optimization} and
 \eqref{equation:distribution-policy-optimization}.
 
@@ -196,9 +196,9 @@ advantage of the unit ball and the unit sphere is that they are compact sets.
 
 \section{Failure of deterministic policies}
 
-In general, determistic policies are not good solutions for certain sequences of
+In general, deterministic policies are not good solutions for certain sequences of
 requests. In this section, we provide the simplest possible example that
-illustrates the point. Suppose $N=2$ and $M=1$ and $T$ can be atrbitrary. For
+illustrates the point. Suppose $N=2$ and $M=1$ and $T$ can be arbitrary. For
 all requests,
 $$
 R_t
@@ -221,7 +221,7 @@ density.
 
 \section{Distributions with a density}
 
-So far we avoided to make any assumption on the distribution $D$. For technical
+So far we avoided making any assumption on the distribution $D$. For technical
 reasons, it is convenient to assume that $D$ has a probability density with
 respect to the Lebesgue measure on $\Requests = [-1,1]^{N \times (M+1)}$. The
 fundamental technical reason for the existence of a probability density is to
@@ -239,7 +239,7 @@ $$
 where $\epsilon \in (0,1)$ is a small positive number and the variables
 $Z_{t,i,j}$ drawn i.i.d. from the uniform distribution over $[-1,1]$ and are
 independent of the random variables $R_1, R_2, \dots, R_T$. The value of
-$\epsilon$ can be arbitrily small. The value of the order $\epsilon =
+$\epsilon$ can be arbitrarily small. The value of the order $\epsilon =
 \Theta(1/\sqrt{T})$ is commensurate with other errors that appear in our
 analysis.
 
@@ -361,7 +361,7 @@ Clearly, $|U| \le |W|$. It remains to upper bound the cardinality of $W$. The
 cardinality of $W$ is upper bounded by the number of behaviors of homogeneous
 hyperplanes in $\R^{M+1}$ on $\binom{N}{2} T$ points. The Vapnik-Chervonenkis
 dimension of homogeneous hyperplanes in $\R^{M+1}$ is $M+1$.\footnote{The
-Vapnik-Chervonenkis dimension is not affacted by the inclusion of the constant
+Vapnik-Chervonenkis dimension is not affected by the inclusion of the constant
 $1$ predictor that corresponds to $\lambda = 0$.} Thus, the number of behaviors
 of homogeneous hyperplanes in $\R^{M+1}$ on $\binom{N}{2} T$ points and thus the
 cardinality of $W$ is at most
@@ -384,7 +384,7 @@ $$
 The optimization problem \eqref{equation:sample-policy-optimization} is
 equivalent to the linear program below provided that the requests $R_1, R_2,
 \dots, R_T$ are pairwise distinct. If the requests are sampled i.i.d. from a
-probability with a density, they are pairwise distinct with probability one.
+probability distribution with a density, they are pairwise distinct with probability one.
 \begin{equation}
 \label{equation:primal-linear-program}
 \begin{aligned}
@@ -420,7 +420,7 @@ Indeed, the feasible region is a subset of $\left(\Delta_N\right)^T \subset
 solution, or it is infeasible; it cannot be unbounded. By the strong duality
 theorem, if the primal program is feasible, the dual program is feasible as well
 and has an optimal solution. However, even if the primal program is feasible,
-the dual program can be have an unbounded feasible set, and even unbounded set
+the dual program can have an unbounded feasible set, and even unbounded set
 of optimal solutions.
 
 Next, we prove that the optimal values of the dual variables $\mu_1, \dots,
@@ -532,7 +532,7 @@ singular matrices is zero, the probability that $A_{\I,\T}$ is singular is zero 
 
 The event that the requests are \emph{not} in a general position is the union of
 the events that the matrix $A_{\I,\T}$ is singular over all possible choices of
-$\I$ and $\T$. Since there are only finitely of these choices for $\I$ and $\T$,
+$\I$ and $\T$. Since there are only finitely many of these choices for $\I$ and $\T$,
 the probability of the union is zero.
 \end{proof}
 
@@ -638,11 +638,11 @@ Recall the optimization problem over all possible measurable policies $\pi:\Requ
 \end{aligned}
 \end{equation}
 
-The problem might be infeasible. However, if it feasible and and the
+The problem might be infeasible. However, if it is feasible and the
 distribution $D$ has a probability density (with respect to Lebesgue measure on
 $\Requests$), then there exists an optimal solution that is a Lagrangian policy.
 
-\begin{lemma}[Continutity for Lagrangian policies]
+\begin{lemma}[Continuity for Lagrangian policies]
 \label{lemma:continuity-for-lagrangian-policies}
 Let $D$ be a probability distribution over $\Requests$ with a probability
 density. For any $j=0,1,2,\dots,M$, the function $f_j:\R^{M+1} \to \R$,
@@ -748,14 +748,14 @@ and
 \end{equation}
 Finally, let $\delta_T' = \frac{1}{\pi^2 T^2}$.
 
-Let $\E_1$ be the probability event that for all infinitely many values of $T=1,2,\dots$
+Let $\E_1$ be the probability event that for infinitely many values of $T=1,2,\dots$
 and for all $j=0,1,2,\dots,M$,
 \begin{equation}
 \label{inequality:optimal-policy-concentration}
 \left| \Exp_{R \sim D} \left[ \sum_{i=1}^N \pi^*(R)_i \cdot R_{i,j} \right] - \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N R_{t,i,j} \cdot \pi^*(R_t)_i  \right|
 \le \sqrt{ \frac{2\log(2/\delta_T)}{T}} \: .
 \end{equation}
-Let $\E_2$ be the probability event that for all infinitely many values of $T=1,2,\dots$,
+Let $\E_2$ be the probability event that for infinitely many values of $T=1,2,\dots$,
 for all $j=0,1,2,\dots,M$, and for all $\lambda \in \R^{M+1}$,
 \begin{multline}
 \label{inequality:uniform-convergence}
@@ -763,7 +763,7 @@ for all $j=0,1,2,\dots,M$, and for all $\lambda \in \R^{M+1}$,
 \\
 \le \sqrt{\frac{8(M+1) (\ln(4T) + 2 \ln N)}{T}} + \sqrt{ \frac{2\log(1/\delta'_T)}{T} } \: .
 \end{multline}
-Let $\E_3$ the probability event that, for all infinitely many values of
+Let $\E_3$ be the probability event that, for infinitely many values of
 $T=1,2,\dots$, the requests $R_1, R_2,\dots,R_T$ are in general position. Let
 $\E$ be the intersection of the events $\E_1$, $\E_2$, $\E_3$.
 
@@ -774,15 +774,15 @@ probability at least $1 - \delta_T$. Since $\sum_{j=0}^M \sum_{T=1}^\infty
 \frac{1}{6}$, by union bound, the probability of event $\E_1$ is at least $5/6$.
 For a fixed $T$ and all $j=0,1,2,\dots,M$ and $\lambda \in \R^{M+1}$, by
 Theorem~\ref{theorem:uniform-convergence}, the inequality
-\eqref{inequality:uniform-convergence} with probability at least $1 -
-\delta_T'$. Since Since $\sum_{T=1}^\infty \delta_T' = \sum_{T=1}^\infty
+\eqref{inequality:uniform-convergence} holds with probability at least $1 -
+\delta_T'$. Since $\sum_{T=1}^\infty \delta_T' = \sum_{T=1}^\infty
 \frac{1}{\pi^2 T^2} = \frac{1}{6}$, by union bound, the probability of event
 $\E_2$ is at least $5/6$. For a fixed $T$, the requests $R_1, R_2,\dots,R_T$ are
-in general position with probability one. By union bounds, the probability of
+in general position with probability one. By a union bound, the probability of
 event $\E_3$ is also one. Finally, the probability of event $\E$ is at least $1
 - 1/6 - 1/6 - 0 = 2/3$.
 
-For the rest proof, we fix $R_1, R_2, \dots$ to be a particular non-random
+For the rest of the proof, we fix $R_1, R_2, \dots$ to be a particular non-random
 sequence that belongs to the probability event $\E$.
 
 We combine inequalities~\eqref{inequality:optimal-policy-concentration},
@@ -872,11 +872,11 @@ Since $\lambda^{(T)}$ is a non-zero vector, we can normalize it to unit length,
 the policy $\pi_{\lambda^{(T)}}$ does not change, and the
 inequalities~\eqref{inequality:lagrangian-policy-optimality}
 and~\eqref{inequality:lagrangian-policy-feasibility} continue to hold. Thus,
-without loss generality, we can assume that $\lambda^{(1)}, \lambda^{(2)},
+without loss of generality, we can assume that $\lambda^{(1)}, \lambda^{(2)},
 \dots$ is a sequence of unit length vectors in $\R^{M+1}$. Since the unit sphere
 is a compact set, Bolzano-Weierstrass theorem implies that it has a convergent
 subsequence $\lambda^{(T_1)}, \lambda^{(T_2)}, \dots$. We denote its limit
-$\lambda$. We limit of
+$\lambda$. We take the limit of
 inequalities~\eqref{inequality:lagrangian-policy-optimality}
 and~\eqref{inequality:lagrangian-policy-feasibility} along the convergent
 subsequence. Lemma~\ref{lemma:continuity-for-lagrangian-policies} implies that
@@ -897,7 +897,7 @@ Since the inequality holds for any positive $\epsilon$,
 In other words, $\pi_\lambda$ is a Lagrangian policy that is a feasible solution
 of the optimization problem~\eqref{equation:distribution-policy-optimization-2}
 with objective value at least $V$. Thus, $\pi_\lambda$ is an optimal solution
-the optimization problem.
+of the optimization problem.
 \end{proof}
 
 \appendix
