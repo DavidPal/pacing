@@ -846,16 +846,10 @@ program~\eqref{equation:primal-linear-program-modified},
 \end{equation}
 We combine the last inequality with inequality~\eqref{inequality:optimal-policy-optimality-on-sample}
 and get that
-$$
-\frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N R_{t,i,0} \cdot x^{(T)}_{t,i}
-\ge V - \epsilon - \sqrt{\frac{2\ln(2/\delta_T)}{T}}
-\qquad \text{for all $T=1,2,\dots$.}
-$$
-Since $\epsilon$ can be arbitrary and $x^{(T)}$ does not depend on $\epsilon$,
 \begin{equation}
 \label{inequality:sample-optimal-policy-is-close-optimal}
 \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N R_{t,i,0} \cdot x^{(T)}_{t,i}
-\ge V - \sqrt{\frac{2\ln(2/\delta_T)}{T}}
+\ge V - \epsilon - \sqrt{\frac{2\ln(2/\delta_T)}{T}}
 \qquad \text{for all $T=1,2,\dots$.}
 \end{equation}
 The feasibility of the $x^{(T)}_{t,i}$, $t=1,2,\dots,T$, $i=1,2,\dots,N$ implies that
@@ -884,7 +878,7 @@ inequalities~\eqref{inequality:sample-optimal-policy-is-close-optimal}
 and \eqref{inequality:uniform-convergence}. We get that
 \begin{multline}
 \label{inequality:lagrangian-policy-optimality}
-\Exp_{R \sim D} \left[ \sum_{i=1}^N \pi_{\lambda^{(T)}}(R)_i \cdot R_{i,0}  \right] \ge V - \sqrt{ \frac{2\ln(2/\delta_T)}{T}} - \sqrt{\frac{8(M+1) (\ln(4T) + 2 \ln N)}{T}} \\
+\Exp_{R \sim D} \left[ \sum_{i=1}^N \pi_{\lambda^{(T)}}(R)_i \cdot R_{i,0}  \right] \ge V - \epsilon - \sqrt{ \frac{2\ln(2/\delta_T)}{T}} - \sqrt{\frac{8(M+1) (\ln(4T) + 2 \ln N)}{T}} \\
 - \sqrt{ \frac{2\ln(1/\delta'_T)}{T} } - \frac{2M}{T}  \: .
 \end{multline}
 Similarly, we combine the inequality~\eqref{inequality:lagrangian-policy-rounding-error}
@@ -908,13 +902,25 @@ normalization. After normalization, $\lambda^{(1)}, \lambda^{(2)}, \dots$ is an
 infinite sequence of unit length vectors in $\R^{M+1}$. Since the unit sphere in
 $\R^{M+1}$ is a compact set, the Bolzano-Weierstrass theorem implies that it has
 a convergent subsequence $\lambda^{(T_1)}, \lambda^{(T_2)}, \dots$. We denote
-its limit $\lambda$. We take the limit of
+its limit $\lambda_\epsilon$. We take the limit of
 inequalities~\eqref{inequality:lagrangian-policy-optimality}
 and~\eqref{inequality:lagrangian-policy-feasibility} along the convergent
 subsequence. Lemma~\ref{lemma:continuity-for-lagrangian-policies} implies that
 the limits of the left hand sides of the inequalities exist. The error terms on
 right hand sides of the inequalities approach zero as $T$ goes to infinity. We
 get that
+\begin{align*}
+\Exp_{R \sim D} \left[ \sum_{i=1}^N \pi_{\lambda_\epsilon}(R)_i \cdot R_{i,0}  \right] & \ge V - \epsilon \\
+\Exp_{R \sim D} \left[ \sum_{i=1}^N \pi_{\lambda_\epsilon}(R)_i \cdot R_{i,j}  \right] & \le B_j
+&& \text{for all $j=1,2,\dots,M$.}
+\end{align*}
+We consider a sequence $\epsilon_1, \epsilon_2, \dots$ of positive real numbers
+that converges to zero. For each $\epsilon_i$, we can find a vector
+$\lambda_{\epsilon_i}$ such that the inequalities hold. The vectors
+$\lambda_{\epsilon_i}$ lie in the unit sphere in $\R^{M+1}$. Since the unit
+sphere is a compact set, Bolzano-Weierstrass theorem implies that the sequence
+has a convergent subsequence. Let $\lambda$ be its limit.
+We take the limit of the inequalities along the convergent subsequence and get that
 \begin{align*}
 \Exp_{R \sim D} \left[ \sum_{i=1}^N \pi_{\lambda}(R)_i \cdot R_{i,0}  \right] & \ge V \\
 \Exp_{R \sim D} \left[ \sum_{i=1}^N \pi_{\lambda}(R)_i \cdot R_{i,j}  \right] & \le B_j
