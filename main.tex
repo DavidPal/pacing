@@ -457,7 +457,7 @@ resulting Lagrangian policy $\pi_\lambda$ is close to the optimal solution of
 the primal program.
 
 \begin{proposition}[Computing $\mu$]
-\label{proposition:computing_mu}
+\label{proposition:computing-mu}
 Let $\mu_1, \dots, \mu_T$, $\lambda_1, \dots, \lambda_M$ be any optimal solution
 of the dual program. Then,
 $$
@@ -480,7 +480,7 @@ objective function, the inequality must hold with equality.
 \end{proof}
 
 \begin{proposition}[Computing primal from dual]
-\label{proposition:computing_primal_from_dual}
+\label{proposition:computing-primal-from-dual}
 Let $\mu_1, \dots, \mu_T$, $\lambda_1, \dots, \lambda_M$ be any optimal solution
 of the dual program. Let $x_{1,1}, \dots, x_{t,N}$ be any optimal solution of
 the primal program. For any index $t$, $1 \le t \le T$, if the argmax
@@ -495,7 +495,7 @@ Suppose
 $$
 i(t) = \argmax_{i=1,2,\dots,N} \left( R_{t,i,0} - \sum_{j=1}^M R_{t,i,j} \lambda_j \right)
 $$
-is uniquely defined. Proposition~\ref{proposition:computing_mu} implies that
+is uniquely defined. Proposition~\ref{proposition:computing-mu} implies that
 $$
 \mu_t = \frac{1}{T} \max_{i=1,2,\dots,N} \left( R_{t,i,0} - \sum_{j=1}^M R_{t,i,j} \lambda_j \right) = \frac{1}{T} \left( R_{t,i(t),0} - \sum_{j=1}^M R_{t,i(t),j} \lambda_j \right) \: .
 $$
@@ -520,7 +520,7 @@ Let $R_1, R_2, \dots, R_T \in \Requests$ be requests. The requests are in a
 \emph{general position} if for every choice $(i_1,i_1'), (i_2,i_2'), \dots,
 (i_T,i_T')$ of pairs of integer indices such that $1 \le i_1 < i_1' \le N$, $1
 \le i_2 < i_2' \le N$, \dots, $1 \le i_T < i_T' \le N$, from the $T$ vectors
-$R_{1,i_1} - R_{1,i_1'}$, $R_{2,i_2} - R_{2,i_2'}$, $\dots$, $R_{T,i_2} -
+$R_{1,i_1} - R_{1,i_1'}$, $R_{2,i_2} - R_{2,i_2'}$, $\dots$, $R_{T,i_T} -
 R_{T,i_T'}$ in $\R^{M+1}$ any $M+1$ of them are linearly independent.
 \end{definition}
 
@@ -632,8 +632,8 @@ $$
 Theorem~\ref{theorem:few-ties} implies that $|\T| \le M$.
 
 Let $\T^c = \left\{1,2,\dots,T\right\} \setminus \T$ be the complement of $\T$.
-Proposition~\ref{proposition:computing_primal_from_dual} implies that $x_{t,i} =
-\pi(R_t)_{i}$ for all $t \in \T^c$ and all $i = 1,2,\dots,N$.
+Proposition~\ref{proposition:computing-primal-from-dual} implies that $x_{t,i} =
+\pi_\lambda(R_t)_i$ for all $t \in \T^c$ and all $i = 1,2,\dots,N$.
 
 Thus,
 \begin{align*}
