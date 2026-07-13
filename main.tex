@@ -613,7 +613,7 @@ equations.
 \begin{theorem}[Lagrangian policies are close to optimal]
 \label{theorem:lagrangian-policies-are-close-to-optimal}
 Suppose that the requests $R_1, R_2, \dots, R_T$ are in a general position. Let
-$\mu_1, \dots, \mu_T$, $\lambda_1, \dots, \lambda_M$ be an optimal solution of
+$\mu_1, \dots, \mu_T$, $\lambda_1, \dots, \lambda_M$ be any optimal solution of
 the dual program. Let $x_{1,1}, \dots, x_{T,N}$ be any optimal solution of the
 primal program. Let
 $$
@@ -768,7 +768,6 @@ and
 & \lambda_j \ge 0 && \qquad \text{for all $j=1,2,\dots,M$}
 \end{aligned}
 \end{equation}
-Finally, let $\delta_T' = \frac{1}{\pi^2 T^2}$.
 
 Let $\E_1$ be the probability event that for all $T \ge 1$ and all
 $j=0,1,2,\dots,M$,
@@ -783,8 +782,12 @@ all $j=0,1,2,\dots,M$, and all $\lambda \in \R^{M+1}$,
 \label{inequality:uniform-convergence}
 \left| \Exp_{R \sim D} \left[ \sum_{i=1}^N \pi_\lambda(R)_i \cdot R_{i,j}  \right]  -  \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N R_{t,i,j} \cdot \pi_\lambda(R_t)_i  \right|
 \\
-\le \sqrt{\frac{8(M+1) (\ln(4T) + 2 \ln N)}{T}} + \sqrt{ \frac{2\ln(1/\delta'_T)}{T} } \: .
+\le \sqrt{\frac{8(M+1) (\ln(4T) + 2 \ln N)}{T}} + \sqrt{ \frac{2\ln(1/\delta'_T)}{T} }
 \end{multline}
+where
+$$
+\delta_T' = \frac{1}{\pi^2 T^2} \: .
+$$
 Let $\E_3$ be the probability event that, for all $T \ge 1$, the requests $R_1,
 R_2,\dots,R_T$ are in a general position. Let $\E$ be the intersection of the
 events $\E_1$, $\E_2$, $\E_3$.
@@ -809,16 +812,15 @@ For the rest of the proof, let $R_1, R_2, \dots$ be a particular non-random
 sequence of requests that belongs to the probability event $\E$. Such sequence
 clearly exists, since the probability of the event is positive.
 
-We combine inequalities~\eqref{inequality:optimal-policy-concentration},
-\eqref{inequality:optimal-policy-feasibility} and the definition of $B_{T,j}'$
-and we get
+We combine inequalities~\eqref{inequality:optimal-policy-concentration}
+and \eqref{inequality:optimal-policy-feasibility}. We get
 \begin{equation}
 \label{inequality:optimal-policy-feasibility-on-sample}
 \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N R_{t,i,j} \cdot \pi^*(R_t)_i \le B_{T,j}'
 \qquad \text{for all $j=1,2,\dots,M$ and all $T=1,2,\dots$.}
 \end{equation}
-Similarly, we combine inequalities~\eqref{inequality:optimal-policy-concentration},
-and \eqref{inequality:optimal-policy-optimality} and get that
+Similarly, we combine inequalities~\eqref{inequality:optimal-policy-concentration}
+and \eqref{inequality:optimal-policy-optimality}. We get
 \begin{equation}
 \label{inequality:optimal-policy-optimality-on-sample}
 \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N R_{t,i,0} \cdot \pi^*(R_t)_i \ge V - \epsilon - \sqrt{ \frac{2\ln(2/\delta_T)}{T}}
