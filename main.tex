@@ -919,8 +919,10 @@ that converges to zero. For each $\epsilon_i$, we can find a vector
 $\lambda_{\epsilon_i}$ such that the inequalities hold. The vectors
 $\lambda_{\epsilon_i}$ lie in the unit sphere in $\R^{M+1}$. Since the unit
 sphere is a compact set, Bolzano-Weierstrass theorem implies that the sequence
-has a convergent subsequence. Let $\lambda$ be its limit.
-We take the limit of the inequalities along the convergent subsequence and get that
+has a convergent subsequence. Let $\lambda$ be its limit. We take the limit of
+the inequalities along the convergent subsequence.
+Lemma~\ref{lemma:continuity-for-lagrangian-policies} implies that the limits of
+the left hand sides of the inequalities exist. We get that
 \begin{align*}
 \Exp_{R \sim D} \left[ \sum_{i=1}^N \pi_{\lambda}(R)_i \cdot R_{i,0}  \right] & \ge V \\
 \Exp_{R \sim D} \left[ \sum_{i=1}^N \pi_{\lambda}(R)_i \cdot R_{i,j}  \right] & \le B_j
