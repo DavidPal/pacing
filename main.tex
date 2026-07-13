@@ -705,6 +705,7 @@ $$
 \end{proof}
 
 \begin{theorem}[Lagrangian policies are optimal]
+\label{theorem:lagrangian-policies-are-optimal}
 Let $D$ be a probability distribution over $\Requests$ with a probability
 density. Suppose that the optimization problem has a feasible solution, i.e.,
 there exists a measurable policy $\pi: \Requests \to \Delta_N$ that satisfies
@@ -796,8 +797,9 @@ Theorem~\ref{theorem:uniform-convergence}, the inequality
 \eqref{inequality:uniform-convergence} holds with probability at least $1 -
 \delta_T'$. Since $\sum_{T=1}^\infty \delta_T' = \sum_{T=1}^\infty
 \frac{1}{\pi^2 T^2} = \frac{1}{6}$, by union bound, the probability of event
-$\E_2$ is at least $5/6$. For a fixed $T$, the requests $R_1, R_2,\dots,R_T$ are
-in a general position with probability one. By a union bound, the probability of
+$\E_2$ is at least $5/6$. For a fixed $T$, by
+Theorem~\ref{theorem:general-position}, the requests $R_1, R_2,\dots,R_T$ are in
+a general position with probability one. By a union bound, the probability of
 event $\E_3$ is also one. Finally, the probability of event $\E$ is at least $1
 - 1/6 - 1/6 - 0 = 2/3$.
 
