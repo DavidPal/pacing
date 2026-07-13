@@ -902,36 +902,50 @@ normalization. After normalization, $\lambda^{(1)}, \lambda^{(2)}, \dots$ is an
 infinite sequence of unit length vectors in $\R^{M+1}$. Since the unit sphere in
 $\R^{M+1}$ is a compact set, the Bolzano-Weierstrass theorem implies that it has
 a convergent subsequence $\lambda^{(T_1)}, \lambda^{(T_2)}, \dots$. We denote
-its limit $\lambda_\epsilon$. We take the limit of
-inequalities~\eqref{inequality:lagrangian-policy-optimality}
+its limit $\lambda^{(\epsilon)}$.\footnote{The notation $\lambda^{(\epsilon)}$
+is used to emphasize the dependence on $\epsilon$. The dependence on $\epsilon$
+might not be obvious. The probability event $\E_1$ depends on policy $\pi^*$ which
+depends on $\epsilon$. Thus, the sequence of requests $R_1, R_2, \dots$ depends
+on $\epsilon$. Consequentially, the modified linear
+programs~\eqref{equation:primal-linear-program-modified}
+and~\eqref{equation:dual-linear-program-modified} depend on $\epsilon$. Their
+solutions $x^{(T)}$ and $\lambda^{(T)}$ depend on $\epsilon$ as well.} We take
+the limit of inequalities~\eqref{inequality:lagrangian-policy-optimality}
 and~\eqref{inequality:lagrangian-policy-feasibility} along the convergent
 subsequence. Lemma~\ref{lemma:continuity-for-lagrangian-policies} implies that
 the limits of the left hand sides of the inequalities exist. The error terms on
 right hand sides of the inequalities approach zero as $T$ goes to infinity. We
 get that
-\begin{align*}
-\Exp_{R \sim D} \left[ \sum_{i=1}^N \pi_{\lambda_\epsilon}(R)_i \cdot R_{i,0}  \right] & \ge V - \epsilon \\
-\Exp_{R \sim D} \left[ \sum_{i=1}^N \pi_{\lambda_\epsilon}(R)_i \cdot R_{i,j}  \right] & \le B_j
+\begin{align}
+\label{inequality:lagrangian-policy-optimality-limit-1}
+\Exp_{R \sim D} \left[ \sum_{i=1}^N \pi_{\lambda^{(\epsilon)}}(R)_i \cdot R_{i,0}  \right] & \ge V - \epsilon \: , \\
+\label{inequality:lagrangian-policy-feasibility-limit-1}
+\Exp_{R \sim D} \left[ \sum_{i=1}^N \pi_{\lambda^{(\epsilon)}}(R)_i \cdot R_{i,j}  \right] & \le B_j
 && \text{for all $j=1,2,\dots,M$.}
-\end{align*}
+\end{align}
 We consider a sequence $\epsilon_1, \epsilon_2, \dots$ of positive real numbers
-that converges to zero. For each $\epsilon_i$, we can find a vector
-$\lambda_{\epsilon_i}$ such that the inequalities hold. The vectors
-$\lambda_{\epsilon_i}$ lie in the unit sphere in $\R^{M+1}$. Since the unit
-sphere is a compact set, Bolzano-Weierstrass theorem implies that the sequence
-has a convergent subsequence. Let $\lambda$ be its limit. We take the limit of
-the inequalities along the convergent subsequence.
-Lemma~\ref{lemma:continuity-for-lagrangian-policies} implies that the limits of
-the left hand sides of the inequalities exist. We get that
-\begin{align*}
-\Exp_{R \sim D} \left[ \sum_{i=1}^N \pi_{\lambda}(R)_i \cdot R_{i,0}  \right] & \ge V \\
-\Exp_{R \sim D} \left[ \sum_{i=1}^N \pi_{\lambda}(R)_i \cdot R_{i,j}  \right] & \le B_j
+that converges to zero, and a corresponding sequence $\lambda^{(\epsilon_1)},
+\lambda^{(\epsilon_2)}, \dots$ of vectors in the unit sphere in $\R^{M+1}$.
+Since the unit sphere in $\R^{M+1}$ is a compact set, Bolzano-Weierstrass
+theorem implies that the sequence has a convergent subsequence. Let $\lambda$ be
+its limit. We take the limit of
+inequalities~\eqref{inequality:lagrangian-policy-optimality-limit-1}
+and~\eqref{inequality:lagrangian-policy-feasibility-limit-1} along the
+convergent subsequence. Lemma~\ref{lemma:continuity-for-lagrangian-policies}
+implies that the limits of the left hand sides of the inequalities exist. We get
+that
+\begin{align}
+\label{inequality:lagrangian-policy-optimality-limit-2}
+\Exp_{R \sim D} \left[ \sum_{i=1}^N \pi_\lambda(R)_i \cdot R_{i,0}  \right] & \ge V \: , \\
+\label{inequality:lagrangian-policy-feasibility-limit-2}
+\Exp_{R \sim D} \left[ \sum_{i=1}^N \pi_\lambda(R)_i \cdot R_{i,j}  \right] & \le B_j
 && \text{for all $j=1,2,\dots,M$.}
-\end{align*}
-In other words, $\pi_\lambda$ is a Lagrangian policy that is a feasible solution
-of the optimization problem~\eqref{equation:distribution-policy-optimization}
-and the objective value of $\pi_\lambda$ is at least $V$. This means that
-$\pi_\lambda$ is an optimal solution of the optimization problem.
+\end{align}
+The last two inequalities mean that $\pi_\lambda$ is a Lagrangian policy that is
+a feasible solution of the optimization
+problem~\eqref{equation:distribution-policy-optimization} and the objective
+value of $\pi_\lambda$ is at least $V$. This means that $\pi_\lambda$ is an
+optimal solution of the optimization problem.
 \end{proof}
 
 \appendix
