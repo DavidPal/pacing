@@ -38,23 +38,6 @@
 \makeatother
 \setstcolor{red}
 
-% TikZ styles for matching market diagrams
-\definecolor{babyblue}{RGB}{137,207,240}
-\tikzset{
-    matching/.style={
-        every node/.style={circle, draw, thick, minimum size=0.7cm, inner sep=0pt},
-        man/.style={fill=babyblue},
-        woman/.style={fill=pink!60},
-        edge/.style={ultra thick},
-        matchedge/.style={ultra thick, red},
-    },
-}
-
-% Helpers for the Gale-Shapley animation: highlight a woman's name in a man's
-% preference list once she has been proposed to by him.
-\newcommand{\prefw}[1]{\colorbox{white}{$#1$}}
-\newcommand{\proposed}[2]{\alt<#1->{\colorbox{yellow!85}{$#2$}}{\prefw{#2}}}
-
 
 \title{Pacing}
 
@@ -130,7 +113,7 @@ $$
 \begin{itemize}
 \item We don't know the sequence of requests $R_1, R_2, \dots, R_T$ ahead of time.
 \item So, we can't solve the linear program or the policy optimization problem directly.
-\item We make a simple assumption that the requests are sampled i.i.d. from a fixed, but unknown, distribution $D$.
+\item We make the assumption that the requests are sampled i.i.d. from a fixed, but unknown, distribution $D$.
 \item Find a policy $\pi: \R^{N \times (M+1)} \to \Delta_N$ such that
 \end{itemize}
 
@@ -150,17 +133,18 @@ $$
 \frametitle{Lagrangian Policies}
 
 \begin{theorem}[Lagrangian Policy]
-Let $D$ be a distribution on $\R^{N \times (M+1)}$ with a probability density.
-The distributional policy optimization problem has an optimal solution of the
-form $\pi_\lambda:\R^{N \times (M+1)} \to \Delta_N$ given by
+Let $D$ be a distribution with a probability density on a bounded subset of
+$\R^{N \times (M+1)}$. The distributional policy optimization problem has an
+optimal solution of the form $\pi_\lambda:\R^{N \times (M+1)} \to \Delta_N$
+given by
 $$
 \pi_\lambda(R) = e_{i^*} \qquad \text{for any request $R \in \R^{N \times (M+1)}$}
 $$
 where
 \begin{align*}
 e_{i^*} & = \underbrace{(0,0,\dots,0,1,0,\dots,0)}_{\text{$1$ is at position  $i^*$}} \in \R^N \\
-\lambda & = (\lambda_0, \lambda_1, \dots, \lambda_M) \in \R^{M+1} \\
-i^* & = \argmax_{i=1,2,\dots,N} \lambda_0 R_{i,0} + \lambda_1 R_{i,1} + \lambda_2 R_{i,2} + \dots + \lambda_M R_{i,M}
+\lambda & = (\lambda_1, \dots, \lambda_M) \in \R^M \\
+i^* & = \argmax_{i=1,2,\dots,N} R_{i,0} - \lambda_1 R_{i,1} - \lambda_2 R_{i,2} - \dots - \lambda_M R_{i,M}
 \end{align*}
 Tie breaking in argmax is towards the smaller index $i$.
 \end{theorem}
@@ -178,6 +162,110 @@ Tie breaking in argmax is towards the smaller index $i$.
 \item Linear programming duality.
 \end{itemize}
 \item Lagrangian policies are the same as multiclass linear classifiers, or, in other words, multiclass Perceptrons.
+\end{itemize}
+
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{How do we find the multipliers $\lambda$?}
+
+We solve the dual program on an historical sample of requests.
+
+\begin{align*}
+\minimize_{\substack{\mu_1, \dots, \mu_T \in \R \\ \lambda_1, \dots, \lambda_M \in \R}} \quad & \sum_{t=1}^T \mu_t + \sum_{j=1}^M B_j \lambda_j \\
+\subjectto \quad & \mu_t + \frac{1}{T} \sum_{j=1}^M R_{t,i,j} \lambda_j  \ge \frac{1}{T} R_{t,i,0} && \quad 1 \le i \le N, 1 \le t \le T \\
+& \lambda_j \ge 0 && \quad 1 \le j \le M
+\end{align*}
+
+How do we know that $\pi_\lambda$ is a good policy?
+
+We use again
+\begin{itemize}
+\item Uniform convergence for Lagrangian policies.
+\item Linear programming duality.
+\end{itemize}
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Uniform Convergence for Lagrangian Policies}
+
+\begin{theorem}[Uniform Convergence for Lagrangian Policies]
+Let $D$ be a distribution on a bounded subset of $\R^{N \times (M+1)}$. Let $T$
+be a positive integer and let $\delta \in (0,1)$. Let $R_1, R_2, \dots, R_T$ be
+an i.i.d. sample from $D$. Then, with probability $1-\delta$,
+$$
+\max_{0 \le j \le M} \ \sup_{\lambda \in \R^M} \ \left| \Exp_{R \sim D} \left[ \sum_{i=1}^N \pi_\lambda(R)_i \cdot R_{i,j} \right] -  \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N \pi_\lambda(R)_i \cdot R_{t,i,j} \right| \le \epsilon
+$$
+where $\epsilon = O\left( \sqrt{\frac{M (\ln(T) + \ln N + \ln(1/\delta))}{T}} \right)$.
+\end{theorem}
+
+\end{frame}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Dual of the Linear Program}
+
+\begin{align*}
+\minimize_{\substack{\mu_1, \dots, \mu_T \in \R \\ \lambda_1, \dots, \lambda_M \in \R}} \quad & \sum_{t=1}^T \mu_t + \sum_{j=1}^M B_j \lambda_j \\
+\subjectto \quad & \mu_t + \frac{1}{T} \sum_{j=1}^M R_{t,i,j} \lambda_j  \ge \frac{1}{T} R_{t,i,0} && \quad 1 \le i \le N, 1 \le t \le T \\
+& \lambda_j \ge 0 && \quad 1 \le j \le M
+\end{align*}
+
+\begin{itemize}
+\item $\mu_1, \mu_2, \dots, \mu_T$ can be computed from the optimal values of $\lambda_1, \dots, \lambda_M$
+\item Most values of $x_{1,1}, x_{1,2}, \dots, x_{T,N}$ can be computed from the optimal values of $\lambda_1, \dots, \lambda_M$
+\end{itemize}
+
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Complementary slackness}
+
+\begin{lemma}[Complementary slackness]
+Suppose $\mu_1, \mu_2, \dots, \mu_T$, $\lambda_1, \dots, \lambda_M$ is the optimal solution of the dual program.
+\begin{itemize}
+\item If the strict inequality
+$$
+\mu_t + \frac{1}{T} \sum_{j=1}^M R_{t,i,j} \lambda_j  > \frac{1}{T} R_{t,i,0}
+$$
+holds, then $x_{t,i} = 0$.
+
+\item In particular, if
+$$
+i^* = \argmax_{i=1,2,\dots,N} R_{t,i,0} - \sum_{j=1}^M R_{t,i,j} \lambda_j
+$$
+is unique (i.e. no ties) then $x_{t,i^*} = 1$ and $x_{t,i} = 0$ for all $i \neq i^*$.
+\end{itemize}
+\end{lemma}
+
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{How many ties are there?}
+
+\begin{itemize}
+\item For how requests can there be ties in the argmax
+$$
+i^* = \argmax_{i=1,2,\dots,N} R_{t,i,0} - \sum_{j=1}^M R_{t,i,j} \lambda_j \ ?
+$$
+
+\item If the requests are in ``general position'' then there at most $M$ ties.
+
+\item Every tie corresponds to a linear equation for $(\lambda_1, \lambda_2, \dots, \lambda_M)$,
+$$
+R_{t,i,0} - \sum_{j=1}^M R_{t,i,j} \lambda_j = R_{t,i',0} - \sum_{j=1}^M R_{t,i',j} \lambda_j
+$$
+
+\item $M$ variables cannot satisfy $M+1$ linearly independent equations.
+
+\item If the requests are sampled from a distribution with a probability density,
+they are in general position with probability one.
 \end{itemize}
 
 \end{frame}
