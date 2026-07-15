@@ -1,8 +1,18 @@
+# LaTeX temporary files
 *.aux
 *.bbl
 *.blg
+*.fdb_latexmk
+*.fls
 *.log
 *.nav
+*.out
+*.snm
+*.synctex.gz
 *.toc
 
-main.pdf
+# VS Code
+.vscode/
+
+# Output file
+*.pdf
