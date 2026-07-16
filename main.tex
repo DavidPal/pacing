@@ -250,16 +250,69 @@ equation~\eqref{equation:lagrangian-policy} defining Lagrangian policies.
 
 If the distribution $D$ does not have a probability density, we can always
 create a ``nearby'' distribution $D'$ that does. One way of doing it is by
-adding small independent noise to each entry $R_{t,i,j}$ of the requests.
-Namely, we replace $R_{t,i,j}$ with
+adding small independent noise to each entry of the request matrix. Namely,
+suppose $R \sim D$. Let $Z$ be an independent random $N \times (M+1)$ matrix
+with entries drawn i.i.d. from the uniform distribution over $[-1,1]$. We
+construct a random sample $R'$ from $D'$ as
 $$
-R'_{t,i,j} = (1-\epsilon)R_{t,i,j} + \epsilon Z_{t,i,j}
-\qquad \text{for $t=1,2,\dots,T$, $i=1,2,\dots,N$, $j=0,1,2,\dots,M$}
+R' = (1-\epsilon)R + \epsilon Z
 $$
-where $\epsilon \in (0,1)$ is a small positive number and the variables
-$Z_{t,i,j}$ are drawn i.i.d. from the uniform distribution over $[-1,1]$ and are
-independent of the random variables $R_1, R_2, \dots, R_T$. The value of
-$\epsilon$ can be arbitrarily small.
+where $\epsilon \in (0,1)$ is a small positive number.
+
+Suppose that we are able to find a ``good'' policy $\pi:\Requests \to \Delta_N$
+for the distribution $D'$. We can convert it into a ``good'' policy
+$\widetilde{\pi}(R)$ for the distribution $D$ defined as
+$$
+\widetilde{\pi}(R) = \pi((1-\epsilon)R + \epsilon Z) \: .
+$$
+The action $\widetilde{\pi}(R)$ is random. Nevertheless, if $\pi(\cdot)$ can be
+computed efficiently, then $\widetilde{\pi}(R)$ can be computed efficiently as
+well. The theorem below shows states that the policy $\widetilde{\pi}(R)$ is
+``good'' for the distribution $D$.
+
+\begin{theorem}[Nearby distribution with a density]
+Let $D$ be a probability distribution over $\Requests$. Let $\epsilon \in
+(0,1)$. Let $R$ be random sample from $D$. Let $Z$ be an independent random $N \times (M+1)$ matrix with entries
+drawn i.i.d. from the uniform distribution over $[-1,1]$. Let $D'$ be a
+probability distribution over $\Requests$ defined by
+$$
+R' = (1-\epsilon)R + \epsilon Z \: .
+$$
+Let $\pi:\Requests \to \Delta_N$ be a policy. Let
+$$
+\widetilde{\pi}(R) = \pi((1-\epsilon)R + \epsilon Z) \: .
+$$
+Then, for any $j=0,1,2,\dots,M$,
+$$
+\left| \Exp \left[ \sum_{i=1}^N \widetilde{\pi}(R)_i \cdot R_{i,j} \right] - \Exp \left[ \sum_{i=1}^N \pi(R')_i \cdot R'_{i,j} \right] \right| \le \frac{2\epsilon}{1-\epsilon} \: .
+$$
+\end{theorem}
+
+\begin{proof}
+Straighforward calculation shows that
+\begin{align*}
+\Exp \left[ \sum_{i=1}^N \widetilde{\pi}(R)_i \cdot R_{i,j} \right]
+& = \Exp \left[ \sum_{i=1}^N \pi((1-\epsilon)R + \epsilon Z)_i \cdot R_{i,j} \right] \\
+& = \Exp \left[ \sum_{i=1}^N \pi(R')_i \cdot R_{i,j} \right] \\
+& = \Exp \left[ \sum_{i=1}^N \pi(R')_i \cdot \frac{R'_{i,j} - \epsilon Z_{i,j}}{1-\epsilon} \right] \\
+& = \frac{1}{1-\epsilon} \left( \Exp \left[ \sum_{i=1}^N \pi(R')_i \cdot R'_{i,j} \right] -  \epsilon \Exp \left[ \sum_{i=1}^N \pi(R')_i \cdot Z_{i,j} \right] \right) \: .
+\end{align*}
+Therefore,
+$$
+\Exp \left[ \sum_{i=1}^N \widetilde{\pi}(R)_i \cdot R_{i,j} \right] - \Exp \left[ \sum_{i=1}^N \pi(R')_i \cdot R'_{i,j} \right]
+=
+\frac{\epsilon}{1-\epsilon} \left( \Exp \left[ \sum_{i=1}^N \pi(R')_i \cdot R'_{i,j} \right] -  \Exp \left[ \sum_{i=1}^N \pi(R')_i \cdot Z_{i,j} \right] \right) \: .
+$$
+Both $\Exp \left[ \sum_{i=1}^N \pi(R')_i \cdot R'_{i,j} \right]$ and $\Exp
+\left[ \sum_{i=1}^N \pi(R')_i \cdot Z_{i,j} \right]$ lie in the interval
+$[-1,1]$. Therefore,
+\begin{align*}
+& \left| \Exp \left[ \sum_{i=1}^N \widetilde{\pi}(R)_i \cdot R_{i,j} \right] - \Exp \left[ \sum_{i=1}^N \pi(R')_i \cdot R'_{i,j} \right] \right| \\
+& \qquad \le \frac{\epsilon}{1-\epsilon} \left|\Exp \left[ \sum_{i=1}^N \pi(R')_i \cdot R'_{i,j} \right] -  \Exp \left[ \sum_{i=1}^N \pi(R')_i \cdot Z_{i,j} \right] \right| \\
+& \qquad \le \frac{\epsilon}{1-\epsilon} \left( \left|\Exp \left[ \sum_{i=1}^N \pi(R')_i \cdot R'_{i,j} \right] \right| + \left| \Exp \left[ \sum_{i=1}^N \pi(R')_i \cdot Z_{i,j} \right] \right| \right) \\
+& \qquad \le \frac{2\epsilon}{1-\epsilon} \: .
+\end{align*}
+\end{proof}
 
 \section{Uniform convergence for Lagrangian policies}
 
