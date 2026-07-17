@@ -255,20 +255,118 @@ suppose $R \sim D$. Let $Z$ be an independent random $N \times (M+1)$ matrix
 with entries drawn i.i.d. from the uniform distribution over $[-1,1]$. We
 construct a random sample $R'$ from $D'$ as
 $$
-R' = (1-\epsilon)R + \epsilon Z
+R' = (1-\alpha)R + \alpha Z
 $$
-where $\epsilon \in (0,1)$ is a small positive number.
+where $\alpha \in (0,1)$ is a small positive number.
 
-Suppose that we are able to find a ``good'' policy $\pi:\Requests \to \Delta_N$
-for the distribution $D'$. We can convert it into a ``good'' policy
-$\widetilde{\pi}(R)$ for the distribution $D$ defined as
+We reduce the problem of finding a near-optimal solution for the
+optimization~\eqref{equation:distribution-policy-optimization} for distribution
+$D$ to a modified optimization problem for distribution $D'$.
+\begin{equation}
+\label{equation:distribution-policy-optimization-modified}
+\begin{aligned}
+\maximize_{\pi' \in \Pi} \qquad & \Exp_{R' \sim D'} \left[ \sum_{i=1}^N \pi'(R')_i \cdot R'_{i,0} \right] \\
+\subjectto \qquad & \Exp_{R' \sim D'} \left[ \sum_{i=1}^N \pi'(R')_i \cdot R'_{i,j} \right] \le B_j + \alpha & \text{for all $j=1,2,\dots,M$}
+\end{aligned}
+\end{equation}
+First, we show that if the optimization
+problem~\eqref{equation:distribution-policy-optimization} is feasible then the
+optimization problem~\eqref{equation:distribution-policy-optimization-modified}
+is feasible as well. This is formally proved in
+Lemma~\ref{lemma:modified-problem-is-feasible}.
+
+Suppose that $\pi':\Requests \to \Delta_N$ is a near-optimal policy for the
+optimization problem~\eqref{equation:distribution-policy-optimization-modified}.
+We convert it to a near-optimal policy $\widetilde{\pi}$ for the optimization
+problem~\eqref{equation:distribution-policy-optimization}.
 $$
-\widetilde{\pi}(R) = \pi((1-\epsilon)R + \epsilon Z) \: .
+\widetilde{\pi}(R) = \pi'((1-\alpha)R + \alpha Z) = \pi'(R') \: .
+$$
+The policy $\widetilde{\pi}$ is random. Nevertheless, if $\pi'(\cdot)$ can be
+computed efficiently, then $\widetilde{\pi}(R)$ can be computed efficiently as well.
+
+That is,
+Suppose that problem~\eqref{equation:distribution-policy-optimization} is
+feasible. Let $V$ be its optimal value. Formally,
+$$
+V = \sup \left\{ \Exp_{R \sim D} \left[ \sum_{i=1}^N \pi(R)_i \cdot R_{i,0} \right] ~:~ \pi \in \Pi, \Exp_{R \sim D} \left[ \sum_{i=1}^N \pi(R)_i \cdot R_{i,j} \right] \le B_j \text{ for all $j=1,2,\dots,M$} \right\} \: .
+$$
+Let $\pi^*:\Requests \to \Delta_N$ be an $\epsilon$-optimal policy for the
+
+\begin{equation}
+\label{equation:distribution-policy-optimization-modified}
+\begin{aligned}
+\maximize_{\pi' \in \Pi} \qquad & \Exp_{R' \sim D'} \left[ \sum_{i=1}^N \pi'(R')_i \cdot R'_{i,0} \right] \\
+\subjectto \qquad & \Exp_{R' \sim D'} \left[ \sum_{i=1}^N \pi'(R')_i \cdot R'_{i,j} \right] \le B_j + \alpha & \text{for all $j=1,2,\dots,M$}
+\end{aligned}
+\end{equation}
+
+\begin{lemma}[Modified problem is feasible]
+\label{lemma:modified-problem-is-feasible}
+Let $D$ be a probability distribution over $\Requests$. Let $\alpha \in (0,1)$.
+Let $R$ be a random sample from $D$. Let $Z$ be an independent random $N \times
+(M+1)$ matrix with entries drawn i.i.d. from the uniform distribution over
+$[-1,1]$. Let $D'$ be a probability distribution over $\Requests$ defined by
+$$
+R' = (1-\alpha)R + \alpha Z
+$$
+Then, if the optimization
+problem~\eqref{equation:distribution-policy-optimization} is feasible then the
+optimization problem~\eqref{equation:distribution-policy-optimization-modified}
+is feasible.
+\end{lemma}
+
+\begin{proof}
+TODO
+\end{proof}
+
+
+Fix $\epsilon > 0$. Since the optimization problem is feasible, there exists a
+measurable policy $\pi^*: \Requests \to \Delta_N$ that is feasible and
+$\epsilon$-optimal. That is,
+\begin{equation}
+\label{inequality:optimal-policy-feasibility}
+\Exp_{R \sim D} \left[ \sum_{i=1}^N \pi^*(R)_i \cdot R_{i,j} \right] \le B_j \qquad \text{for all $j=1,2,\dots,M$} \: .
+\end{equation}
+and
+\begin{equation}
+\label{inequality:optimal-policy-optimality}
+\Exp_{R \sim D} \left[ \sum_{i=1}^N \pi^*(R)_i \cdot R_{i,0} \right] \ge V - \epsilon \: .
+\end{equation}
+
+
+that $\pi^*:\Requests \to \Delta_N$ is an $\epsilon$-optimal policy for the
+distribution $D$. That is,
+$$
+\Exp \left[ \sum_{i=1}^N \pi^*(R)_i \cdot R_{i,j} \right] \le
+$$
+
+According Theorem~\ref{theorem:lagrangian-policies-are-optimal} there exists a
+Lagrangian policy $\pi_\lambda$ that is optimal for the distribution $D'$.
+We can convert it into a near-optimal policy $\widetilde{\pi}(R)$ for distribution $D$. The policy $\widetilde{\pi}(R)$ is defined as
+
+The two distributions $D$ and $D'$ are related in the sense that if there exists
+a near-optimal policy for one distribution, then there exists a near-optimal
+policy for the other.
+
+Suppose that policy $\pi':\Requests \to \Delta_N$ is near-optimal for the for
+the distribution $D'$. We can convert it into a near-optimal policy
+$\widetilde{\pi}(R)$ for distribution $D$. The policy $\widetilde{\pi}(R)$ is
+defined as
+$$
+\widetilde{\pi}(R) = \pi'((1-\epsilon)R + \epsilon Z) = \pi'(R') \: .
 $$
 The action $\widetilde{\pi}(R)$ is random. Nevertheless, if $\pi(\cdot)$ can be
 computed efficiently, then $\widetilde{\pi}(R)$ can be computed efficiently as
-well. The theorem below shows states that the policy $\widetilde{\pi}(R)$ is
-``good'' for the distribution $D$.
+well.
+
+Similarly, if there exists a near-optimal $\pi:\Requests \to \Delta_N$ policy
+for the distribution $D$, policy for the distribution $D$, then there exists a
+near-optimal policy for the distribution $D'$. We can define it as
+$$
+\widehat{\pi}(R') = \pi\left(\frac{(1-\epsilon)R' - \epsilon Z}{1-\epsilon}\right) = \pi(R) \: .
+$$
+
 
 \begin{theorem}[Nearby distribution with a density]
 Let $D$ be a probability distribution over $\Requests$. Let $\epsilon \in
@@ -278,7 +376,7 @@ probability distribution over $\Requests$ defined by
 $$
 R' = (1-\epsilon)R + \epsilon Z \: .
 $$
-Let $\pi:\Requests \to \Delta_N$ be a policy. Let
+Let $\pi':\Requests \to \Delta_N$ be a policy. Let
 $$
 \widetilde{\pi}(R) = \pi((1-\epsilon)R + \epsilon Z) \: .
 $$
@@ -295,21 +393,21 @@ Straighforward calculation shows that
 & = \Exp \left[ \sum_{i=1}^N \pi((1-\epsilon)R + \epsilon Z)_i \cdot R_{i,j} \right] \\
 & = \Exp \left[ \sum_{i=1}^N \pi(R')_i \cdot R_{i,j} \right] \\
 & = \Exp \left[ \sum_{i=1}^N \pi(R')_i \cdot \frac{R'_{i,j} - \epsilon Z_{i,j}}{1-\epsilon} \right] \\
-& = \frac{1}{1-\epsilon} \left( \Exp \left[ \sum_{i=1}^N \pi(R')_i \cdot R'_{i,j} \right] -  \epsilon \Exp \left[ \sum_{i=1}^N \pi(R')_i \cdot Z_{i,j} \right] \right) \: .
+& = \frac{1}{1-\epsilon} \left( \Exp \left[ \sum_{i=1}^N \pi'(R')_i \cdot R'_{i,j} \right] -  \epsilon \Exp \left[ \sum_{i=1}^N \pi'(R')_i \cdot Z_{i,j} \right] \right) \: .
 \end{align*}
 Therefore,
 $$
-\Exp \left[ \sum_{i=1}^N \widetilde{\pi}(R)_i \cdot R_{i,j} \right] - \Exp \left[ \sum_{i=1}^N \pi(R')_i \cdot R'_{i,j} \right]
+\Exp \left[ \sum_{i=1}^N \widetilde{\pi}(R)_i \cdot R_{i,j} \right] - \Exp \left[ \sum_{i=1}^N \pi'(R')_i \cdot R'_{i,j} \right]
 =
-\frac{\epsilon}{1-\epsilon} \left( \Exp \left[ \sum_{i=1}^N \pi(R')_i \cdot R'_{i,j} \right] -  \Exp \left[ \sum_{i=1}^N \pi(R')_i \cdot Z_{i,j} \right] \right) \: .
+\frac{\epsilon}{1-\epsilon} \left( \Exp \left[ \sum_{i=1}^N \pi'(R')_i \cdot R'_{i,j} \right] -  \Exp \left[ \sum_{i=1}^N \pi'(R')_i \cdot Z_{i,j} \right] \right) \: .
 $$
 Both $\Exp \left[ \sum_{i=1}^N \pi(R')_i \cdot R'_{i,j} \right]$ and $\Exp
 \left[ \sum_{i=1}^N \pi(R')_i \cdot Z_{i,j} \right]$ lie in the interval
 $[-1,1]$. Therefore,
 \begin{align*}
 & \left| \Exp \left[ \sum_{i=1}^N \widetilde{\pi}(R)_i \cdot R_{i,j} \right] - \Exp \left[ \sum_{i=1}^N \pi(R')_i \cdot R'_{i,j} \right] \right| \\
-& \qquad \le \frac{\epsilon}{1-\epsilon} \left|\Exp \left[ \sum_{i=1}^N \pi(R')_i \cdot R'_{i,j} \right] -  \Exp \left[ \sum_{i=1}^N \pi(R')_i \cdot Z_{i,j} \right] \right| \\
-& \qquad \le \frac{\epsilon}{1-\epsilon} \left( \left|\Exp \left[ \sum_{i=1}^N \pi(R')_i \cdot R'_{i,j} \right] \right| + \left| \Exp \left[ \sum_{i=1}^N \pi(R')_i \cdot Z_{i,j} \right] \right| \right) \\
+& \qquad \le \frac{\epsilon}{1-\epsilon} \left|\Exp \left[ \sum_{i=1}^N \pi'(R')_i \cdot R'_{i,j} \right] -  \Exp \left[ \sum_{i=1}^N \pi'(R')_i \cdot Z_{i,j} \right] \right| \\
+& \qquad \le \frac{\epsilon}{1-\epsilon} \left( \left|\Exp \left[ \sum_{i=1}^N \pi'(R')_i \cdot R'_{i,j} \right] \right| + \left| \Exp \left[ \sum_{i=1}^N \pi'(R')_i \cdot Z_{i,j} \right] \right| \right) \\
 & \qquad \le \frac{2\epsilon}{1-\epsilon} \: .
 \end{align*}
 \end{proof}
