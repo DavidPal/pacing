@@ -311,7 +311,8 @@ Lemma~\ref{lemma:modified-problem-is-feasible}.
 Second, we show that any $\epsilon$-optimal policy $\pi':\Requests \to \Delta_N$
 for the optimization
 problem~\eqref{equation:distribution-policy-optimization-modified} can be
-converted to an $(???)$-optimal policy $\widetilde{\pi}$ for the optimization
+converted to an $\frac{\epsilon + \alpha}{1-\alpha}$-optimal policy
+$\widetilde{\pi}$ for the optimization
 problem~\eqref{equation:distribution-policy-optimization}. The policy
 $\widetilde{\pi}$ is defined as
 $$
@@ -337,43 +338,11 @@ feasible then the optimization
 problem~\eqref{equation:distribution-policy-optimization-modified} is feasible
 as well, and
 $$
-|V - V'| \le \alpha \: .
+V' \ge (1 - \alpha) V \: .
 $$
 \end{lemma}
 
 \begin{proof}
-Let be $\pi'$ be any feasible solution of the optimization
-problem~\eqref{equation:distribution-policy-optimization-modified}. We define the random
-variable
-$$
-\widetilde{\pi}(R) = \pi'(R')
-$$
-Using this random variable, we define the policy $\widehat{\pi}:\Requests \to \Delta_N$ as
-$$
-\widehat{\pi}(R) = \Exp[\widetilde{\pi}(R) ~|~ R]
-$$
-We claim that, for any $j=0,1,2,\dots,M$,
-$$
-\Exp_{R \sim D} \left[ \sum_{i=1}^N \widehat{\pi}(R)_i \cdot R_{i,j} \right] =  (1 - \alpha) \Exp \left[ \sum_{i=1}^N \pi'(R)_i \cdot R'_{i,j} \right] \: .
-$$
-Indeed,
-\begin{align*}
-\Exp_{R \sim D} \left[ \sum_{i=1}^N \widehat{\pi}(R)_i \cdot R_{i,j} \right]
-& = \Exp \left[ \sum_{i=1}^N \Exp[ \widetilde{\pi}(R) ~|~ R ]_i \cdot R_{i,j} \right] \\
-& = \Exp \left[ \sum_{i=1}^N \Exp[ \widetilde{\pi}(R)_i ~|~ R ] \cdot R_{i,j} \right] \\
-& = \Exp \left[ \sum_{i=1}^N \Exp[ \widetilde{\pi}(R)_i \cdot R_{i,j} ~|~ R ] \right] \\
-& = \Exp \left[ \sum_{i=1}^N \widetilde{\pi}(R)_i \cdot R_{i,j} \right] \\
-& = \Exp \left[ \sum_{i=1}^N \pi'(R')_i \cdot \frac{R'_{i,j} - \alpha Z_{i,j}}{1-\alpha} \right] \\
-& = \frac{1}{1-\alpha} \Exp \left[ \sum_{i=1}^N \pi'(R')_i \cdot R'_{i,j} \right] + \frac{\alpha}{1-\alpha} \Exp \left[ \sum_{i=1}^N \pi'(R')_i \cdot Z_{i,j} \right] \\
-\end{align*}
-In the calculation above, we used that $\Exp[ Z_{i,j} ] = 0$ and that $R$ and
-$Z$ are independent. The inequality follows from the fact $\pi$ is a feasible
-policy for the optimization
-problem~\eqref{equation:distribution-policy-optimization}.
-
-
-
-
 Let $\pi:\Requests \to \Delta_N$ be a feasible policy for the optimization
 problem~\eqref{equation:distribution-policy-optimization}. We define the random
 variable
@@ -384,11 +353,11 @@ Using this random variable, we define the policy $\pi':\Requests \to \Delta_N$ a
 $$
 \pi'(R') = \Exp[ \widehat{\pi}(R') ~|~ R' ] \: .
 $$
-
-We claim that, for any $j=0,1,2,\dots,M$,
-$$
-\Exp_{R' \sim D'} \left[ \sum_{i=1}^N \pi'(R')_i \cdot R'_{i,j} \right] =  (1 - \alpha) \Exp \left[ \sum_{i=1}^N \pi(R)_i \cdot R_{i,j} \right] \: .
-$$
+We claim that
+\begin{equation}
+\label{equation:reduction}
+\Exp_{R' \sim D'} \left[ \sum_{i=1}^N \pi'(R')_i \cdot R'_{i,j} \right] =  (1 - \alpha) \Exp \left[ \sum_{i=1}^N \pi(R)_i \cdot R_{i,j} \right] \qquad \text{for any $j=0,1,2,\dots,M$} \: .
+\end{equation}
 Indeed,
 \begin{align*}
 \Exp_{R' \sim D'} \left[ \sum_{i=1}^N \pi'(R')_i \cdot R'_{i,j} \right]
@@ -406,8 +375,9 @@ $Z$ are independent. The inequality follows from the fact $\pi$ is a feasible
 policy for the optimization
 problem~\eqref{equation:distribution-policy-optimization}.
 
-It is not easy to see that $\pi'$ is a feasible policy for the optimization
-problem~\eqref{equation:distribution-policy-optimization-modified}, since, for
+Equation~\eqref{equation:reduction} implies that $\pi'$ is a feasible policy for
+the optimization
+problem~\eqref{equation:distribution-policy-optimization-modified}. Indeed, for
 any $j=1,2,\dots,M$,
 \begin{align*}
 \Exp_{R' \sim D'} \left[ \sum_{i=1}^N \pi'(R')_i \cdot R'_{i,j} \right]
@@ -416,6 +386,7 @@ any $j=1,2,\dots,M$,
 = B_j' \: .
 \end{align*}
 
+Equation~\eqref{equation:reduction} implies that $\pi'$ also implies the inequality $V' \ge (1 - \alpha) V$.
 For any feasible solution $\pi$ of the optimization
 problem~\eqref{equation:distribution-policy-optimization} there exists a
 feasible solution $\pi'$ of the optimization
@@ -423,16 +394,10 @@ problem~\eqref{equation:distribution-policy-optimization-modified} such that
 $$
 \Exp_{R' \sim D'} \left[ \sum_{i=1}^N \pi'(R')_i \cdot R'_{i,0} \right] =  (1 - \alpha) \Exp \left[ \sum_{i=1}^N \pi(R)_i \cdot R_{i,0} \right] \: .
 $$
-Therefore,
+Therefore, taking the supremum over all feasible solutions $\pi$, we get that
 $$
 V' \ge (1 - \alpha) V \: .
 $$
-
-
-\end{proof}
-
-\begin{proof}
-TODO
 \end{proof}
 
 \begin{theorem}[Policy reduction]
@@ -446,34 +411,38 @@ problem~\eqref{equation:distribution-policy-optimization-modified}. Let
 $$
 \widetilde{\pi}(R) = \pi((1-\epsilon)R + \epsilon Z) \: .
 $$
-Then, $\widetilde{\pi}$ is an $???$-optimal policy for the optimization
-problem~\eqref{equation:distribution-policy-optimization}.
+If the optimization problem~\eqref{equation:distribution-policy-optimization} is
+feasible then the policy $\widetilde{\pi}$ is an $\frac{\epsilon +
+\alpha}{1-\alpha}$-optimal policy for it.
 \end{theorem}
 
 \begin{proof}
-Straighforward calculation shows that
+Straighforward calculation shows that for all $j=0,1,2,\dots,M$,
 \begin{align*}
 \Exp \left[ \sum_{i=1}^N \widetilde{\pi}(R)_i \cdot R_{i,j} \right]
 & = \Exp \left[ \sum_{i=1}^N \pi((1-\alpha)R + \epsilon Z)_i \cdot R_{i,j} \right] \\
 & = \Exp \left[ \sum_{i=1}^N \pi(R')_i \cdot R_{i,j} \right] \\
 & = \Exp \left[ \sum_{i=1}^N \pi(R')_i \cdot \frac{R'_{i,j} - \alpha Z_{i,j}}{1-\alpha} \right] \\
-& = \frac{1}{1-\alpha} \left( \Exp \left[ \sum_{i=1}^N \pi'(R')_i \cdot R'_{i,j} \right] -  \alpha \Exp \left[ \sum_{i=1}^N \pi'(R')_i \cdot Z_{i,j} \right] \right) \: .
+& = \frac{1}{1-\alpha} \Exp \left[ \sum_{i=1}^N \pi'(R')_i \cdot R'_{i,j} \right] -  \frac{\alpha}{1-\alpha} \Exp \left[ \sum_{i=1}^N \pi'(R')_i \cdot Z_{i,j} \right] \: .
 \end{align*}
-Therefore,
-$$
-\Exp \left[ \sum_{i=1}^N \widetilde{\pi}(R)_i \cdot R_{i,j} \right] - \Exp \left[ \sum_{i=1}^N \pi'(R')_i \cdot R'_{i,j} \right]
-=
-\frac{\alpha}{1-\alpha} \left( \Exp \left[ \sum_{i=1}^N \pi'(R')_i \cdot R'_{i,j} \right] -  \Exp \left[ \sum_{i=1}^N \pi'(R')_i \cdot Z_{i,j} \right] \right) \: .
-$$
-Both $\Exp \left[ \sum_{i=1}^N \pi(R')_i \cdot R'_{i,j} \right]$ and $\Exp
-\left[ \sum_{i=1}^N \pi(R')_i \cdot Z_{i,j} \right]$ lie in the interval
-$[-1,1]$. Therefore,
+Since $\pi'$ is an $\epsilon$-optimal policy for the optimization
+problem~\eqref{equation:distribution-policy-optimization-modified}, we get that
 \begin{align*}
-& \left| \Exp \left[ \sum_{i=1}^N \widetilde{\pi}(R)_i \cdot R_{i,j} \right] - \Exp \left[ \sum_{i=1}^N \pi(R')_i \cdot R'_{i,j} \right] \right| \\
-& \qquad \le \frac{\epsilon}{1-\epsilon} \left|\Exp \left[ \sum_{i=1}^N \pi'(R')_i \cdot R'_{i,j} \right] -  \Exp \left[ \sum_{i=1}^N \pi'(R')_i \cdot Z_{i,j} \right] \right| \\
-& \qquad \le \frac{\epsilon}{1-\epsilon} \left( \left|\Exp \left[ \sum_{i=1}^N \pi'(R')_i \cdot R'_{i,j} \right] \right| + \left| \Exp \left[ \sum_{i=1}^N \pi'(R')_i \cdot Z_{i,j} \right] \right| \right) \\
-& \qquad \le \frac{2\epsilon}{1-\epsilon} \: .
+\Exp \left[ \sum_{i=1}^N \widetilde{\pi}(R)_i \cdot R_{i,0} \right]
+& = \frac{1}{1-\alpha} \Exp \left[ \sum_{i=1}^N \pi'(R')_i \cdot R'_{i,0} \right] -  \frac{\alpha}{1-\alpha} \Exp \left[ \sum_{i=1}^N \pi'(R')_i \cdot Z_{i,0} \right] \\
+& \ge \frac{1}{1-\alpha} (V' - \epsilon) - \frac{\alpha}{1-\alpha}   \\
+& \ge V - \frac{\epsilon + \alpha}{1-\alpha} \: .
 \end{align*}
+We have used that $\Exp \left[ \sum_{i=1}^N \pi'(R')_i \cdot Z_{i,j} \right]$ lies in the interval $[-1,1]$.
+Similarly, for any $j=1,2,\dots,M$,
+\begin{align*}
+\Exp \left[ \sum_{i=1}^N \widetilde{\pi}(R)_i \cdot R_{i,j} \right]
+& = \frac{1}{1-\alpha} \Exp \left[ \sum_{i=1}^N \pi'(R')_i \cdot R'_{i,j} \right] -  \frac{\alpha}{1-\alpha} \Exp \left[ \sum_{i=1}^N \pi'(R')_i \cdot Z_{i,j} \right] \\
+& \le \frac{1}{1-\alpha} (B'_j + \epsilon) + \frac{\alpha}{1-\alpha} \\
+& = B_j + \frac{\epsilon + \alpha}{1-\alpha} \: .
+\end{align*}
+In other words, $\widetilde{\pi}$ is an $\frac{\epsilon + \alpha}{1-\alpha}$-optimal policy for the optimization
+problem~\eqref{equation:distribution-policy-optimization}.
 \end{proof}
 
 \section{Uniform convergence for Lagrangian policies}
