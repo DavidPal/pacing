@@ -179,8 +179,10 @@ problem~\eqref{equation:distribution-policy-optimization} if
 \Exp_{R \sim D} \left[ \sum_{i=1}^N \pi(R)_i \cdot R_{i,0} \right] & \ge V_D - \epsilon \: , \\
 \Exp_{R \sim D} \left[ \sum_{i=1}^N \pi(R)_i \cdot R_{i,j} \right] & \le B_j + \epsilon & \qquad \text{for all $j=1,2,\dots,M$} \: .
 \end{align*}
-We note that even if the problems are infeasible, they can have an $\epsilon$-optimal
-solution for some positive $\epsilon$.
+Note that an $\epsilon$-optimal solution might not be feasible; it is only
+``$\epsilon$-close'' to being feasible. Also note that even if the optimization
+problems are infeasible, they can have an $\epsilon$-optimal solution for some
+positive $\epsilon$.
 
 \section{Lagrangian policies}
 
