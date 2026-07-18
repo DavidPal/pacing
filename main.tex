@@ -97,8 +97,8 @@ made, sometimes with a significant delay. However, in order to keep our model
 simple, we ignore the difference between the predicted and actual reward and
 business metrics.
 
-In practice, the requests change over time, the sequence of requests has various
-seasonal patterns, often at multiple time scales. Nevertheless, the i.i.d.
+In practice, the requests change over time, the sequence of requests has
+seasonal patterns and often at multiple time scales. Nevertheless, the i.i.d.
 assumption is a good approximation for short enough time periods (e.g., one
 hour, one day, or one week).
 
@@ -156,7 +156,7 @@ $$
 
 We define the \emph{optimal value} of the optimization problem~\eqref{equation:sample-policy-optimization} as
 $$
-V = \sup \left\{ \frac{1}{T} \sum_{i=1}^N \pi(R)_i \cdot R_{i,0} ~:~ \pi \in \Pi, \frac{1}{T} \sum_{i=1}^N \pi(R)_i \cdot R_{i,j} \le B_j \text{ for all $j=1,2,\dots,M$} \right\} \: .
+V = \sup \left\{ \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N \pi(R)_i \cdot R_{i,0} ~:~ \pi \in \Pi, \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N \pi(R)_i \cdot R_{i,j} \le B_j \text{ for all $j=1,2,\dots,M$} \right\} \: .
 $$
 We define the \emph{optimal value} of the optimization problem~\eqref{equation:distribution-policy-optimization} as
 $$
@@ -169,8 +169,8 @@ We say that a policy $\pi:\Requests \to \Delta_N$ is an
 \emph{$\epsilon$-optimal} policy for the optimization
 problem~\eqref{equation:sample-policy-optimization} if
 \begin{align*}
-\frac{1}{T} \sum_{i=1}^N \pi(R)_i \cdot R_{i,0} & \ge V - \epsilon \: , \\
-\frac{1}{T} \sum_{i=1}^N \pi(R)_i \cdot R_{i,j} & \le B_j + \epsilon & \qquad \text{for all $j=1,2,\dots,M$} \: .
+\frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N \pi(R)_i \cdot R_{i,0} & \ge V - \epsilon \: , \\
+\frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N \pi(R)_i \cdot R_{i,j} & \le B_j + \epsilon & \qquad \text{for all $j=1,2,\dots,M$} \: .
 \end{align*}
 Similarly, we say that a policy $\pi:\Requests \to \Delta_N$ is an
 \emph{$\epsilon$-optimal} policy for the optimization
@@ -262,11 +262,11 @@ feasible solution or not an optimal solution.
 
 On the other hand, as we will see later, for distributions with densities these
 problems vanish. Namely, deterministic Lagrangian policies are optimal solutions
-for optimization problem~\eqref{equation:distribution-policy-optimization} when
-the distribution $D$ has a probability density. Furthermore, if the requests are
-sampled i.i.d. from a probability distribution with a density, a deterministic
-Lagrangian policy is close to an optimal solution for the optimization
-problem~\eqref{equation:sample-policy-optimization}.
+for the optimization problem~\eqref{equation:distribution-policy-optimization}
+when the distribution $D$ has a probability density. Furthermore, if the
+requests are sampled i.i.d. from a probability distribution with a density, a
+deterministic Lagrangian policy is close to an optimal solution for the
+optimization problem~\eqref{equation:sample-policy-optimization}.
 
 
 \section{Distributions with a density}
@@ -274,9 +274,10 @@ problem~\eqref{equation:sample-policy-optimization}.
 So far, we have avoided making any assumption on the distribution $D$. For
 technical reasons, it is convenient to assume that $D$ has a probability density
 with respect to the Lebesgue measure on $\Requests = [-1,1]^{N \times (M+1)}$.
-The fundamental technical reason for assuming the existence of a probability
-density is to avoid having ties in the argmax in
-equation~\eqref{equation:lagrangian-policy} defining Lagrangian policies.
+The fundamental reason for assuming the existence of a probability density is to
+avoid having ties in the argmax in equation~\eqref{equation:lagrangian-policy}
+defining Lagrangian policies. The ties cause problem in
+Proposition~\ref{proposition:computing-primal-from-dual}.
 
 If the distribution $D$ does not have a probability density, we can always
 create a ``nearby'' distribution $D'$ that does. One way of doing it is by
@@ -288,16 +289,19 @@ construct a random sample $R'$ from $D'$ as
 \label{equation:modified-sample}
 R' = (1-\alpha)R + \alpha Z
 \end{equation}
-where $\alpha \in (0,1)$ is a small positive number. The
-equation~\eqref{equation:modified-sample} defines the joint probability
+where $\alpha \in (0,1)$ is a ``small'' positive number. Since sampling error is
+of the order $O(\sqrt{M/T})$ and rounding error is of the order $O(M/T)$, a
+suitable value of $\alpha$ should not exceed these errors.
+
+The equation~\eqref{equation:modified-sample} defines the joint probability
 distribution for $(R,R')$. The marginal distribution of $R$ is $D$, and the
 marginal distribution of $R'$ is $D'$. Clearly, $R'$ and $R$ are not
 independent. In other words, the equation~\eqref{equation:modified-sample}
-provides a non-trivial coupling between $D$ and $D'$. This coupling will play
+provides a non-trivial coupling between $D$ and $D'$. This coupling will play a
 central role in this section.
 
 We reduce the problem of finding a near-optimal solution for the
-optimization~\eqref{equation:distribution-policy-optimization} for distribution
+optimization problem~\eqref{equation:distribution-policy-optimization} for distribution
 $D$ to a modified optimization problem for distribution $D'$. The modified
 optimization problem is
 \begin{equation}
@@ -311,7 +315,6 @@ where
 $$
 B_j' = B_j(1 - \alpha) \: .
 $$
-and $\Pi$ is the set of all measurable functions.
 
 First, we show that if the optimization
 problem~\eqref{equation:distribution-policy-optimization} is feasible then the
@@ -327,14 +330,14 @@ problem~\eqref{equation:distribution-policy-optimization}; see
 Theorem~\ref{theorem:policy-reduction}. The policy $\widetilde{\pi}$ is defined
 as
 $$
-\widetilde{\pi}(R) = \pi'((1-\alpha)R + \alpha Z)
+\widetilde{\pi}(R) = \pi'((1-\alpha)R + \alpha Z) \: ,
 $$
 where $Z$ is a random $N \times (M+1)$ matrix with entries drawn i.i.d. from the
 uniform distribution over $[-1,1]$, independent of $R$. The output
 $\widetilde{\pi}(R)$ is a random vector in $\Delta_N$. So, $\widetilde{\pi}$ is
-not a function from $\Requests$ to the set of random vectors in $\Delta_N$.
-Nevertheless, $\widetilde{\pi}(R)$ can be computed efficiently, provided that
-$\pi'(R')$ can be computed efficiently.
+not a function from $\Requests$ to $\Delta_N$. Nevertheless,
+$\widetilde{\pi}(R)$ can be computed efficiently, provided that $\pi'(R')$ can
+be computed efficiently.
 
 \begin{lemma}[Modified problem is feasible]
 \label{lemma:modified-problem-is-feasible}
@@ -359,7 +362,7 @@ Let $\pi:\Requests \to \Delta_N$ be a feasible policy for the optimization
 problem~\eqref{equation:distribution-policy-optimization}. We define the random
 variable
 $$
-\widehat{\pi}(R') = \pi(R) = \pi \left( \frac{R' - \alpha Z}{1-\alpha} \right)
+\widehat{\pi}(R') = \pi(R) = \pi \left( \frac{R' - \alpha Z}{1-\alpha} \right) \: .
 $$
 Using this random variable, we define the policy $\pi':\Requests \to \Delta_N$ as
 $$
@@ -375,17 +378,15 @@ Indeed,
 \Exp_{R' \sim D'} \left[ \sum_{i=1}^N \pi'(R')_i \cdot R'_{i,j} \right]
 & = \Exp \left[ \sum_{i=1}^N \Exp[ \widehat{\pi}(R') ~|~ R' ]_i \cdot R'_{i,j} \right] \\
 & = \Exp \left[ \sum_{i=1}^N \Exp[ \widehat{\pi}(R')_i ~|~ R' ] \cdot R'_{i,j} \right] \\
-& = \Exp \left[ \sum_{i=1}^N \Exp[ \widehat{\pi}(R')_i \cdot R_{i,j} ~|~ R' ] \right] \\
+& = \Exp \left[ \sum_{i=1}^N \Exp[ \widehat{\pi}(R')_i \cdot R'_{i,j} ~|~ R' ] \right] \\
 & = \Exp \left[ \sum_{i=1}^N \widehat{\pi}(R')_i \cdot R'_{i,j} \right] \\
 & = \Exp \left[ \sum_{i=1}^N \pi(R)_i \cdot R'_{i,j} \right] \\
 & = \Exp \left[ \sum_{i=1}^N \pi(R)_i \cdot \left( (1 - \alpha) R_{i,j} + \alpha Z_{i,j} \right) \right] \\
 & = (1 - \alpha) \Exp \left[ \sum_{i=1}^N \pi(R)_i \cdot R_{i,j} \right]  + \alpha \Exp \left[ \sum_{i=1}^N \pi(R)_i \cdot Z_{i,j} \right] \\
-& = (1 - \alpha) \Exp \left[ \sum_{i=1}^N \pi(R)_i \cdot R_{i,j} \right]
+& = (1 - \alpha) \Exp \left[ \sum_{i=1}^N \pi(R)_i \cdot R_{i,j} \right] \: .
 \end{align*}
 In the calculation above, we used that $\Exp[ Z_{i,j} ] = 0$ and that $R$ and
-$Z$ are independent. The inequality follows from the fact $\pi$ is a feasible
-policy for the optimization
-problem~\eqref{equation:distribution-policy-optimization}.
+$Z$ are independent.
 
 Equation~\eqref{equation:reduction} implies that $\pi'$ is a feasible policy for
 the optimization
@@ -415,32 +416,38 @@ $$
 \begin{theorem}[Policy reduction]
 \label{theorem:policy-reduction}
 Let $D$ be a probability distribution over $\Requests$. Let $\alpha \in (0,1)$.
-Let $R$ be random sample from $D$. Let $Z$ be an independent random $N \times
+Let $R$ be a random sample from $D$. Let $Z$ be an independent random $N \times
 (M+1)$ matrix with entries drawn i.i.d. from the uniform distribution over
 $[-1,1]$. Let $R' = (1-\alpha)R + \alpha Z$. Let $D'$ be the probability
 distribution of $R'$. Let $\pi':\Requests \to \Delta_N$ be an $\epsilon$-optimal
 policy for the optimization
 problem~\eqref{equation:distribution-policy-optimization-modified}. Let
 $$
-\widetilde{\pi}(R) = \pi((1-\alpha)R + \alpha Z) \: .
+\widetilde{\pi}(R) = \pi'((1-\alpha)R + \alpha Z) \: .
 $$
 The policy $\widetilde{\pi}$ is an $\frac{\epsilon + \alpha}{1-\alpha}$-optimal
-policy for optimization
+policy for the optimization
 problem~\eqref{equation:distribution-policy-optimization}.
 \end{theorem}
 
 \begin{proof}
-Straighforward calculation shows that for all $j=0,1,2,\dots,M$,
+Straightforward calculation shows that for all $j=0,1,2,\dots,M$,
 \begin{align*}
 \Exp \left[ \sum_{i=1}^N \widetilde{\pi}(R)_i \cdot R_{i,j} \right]
-& = \Exp \left[ \sum_{i=1}^N \pi((1-\alpha)R + \alpha Z)_i \cdot R_{i,j} \right] \\
-& = \Exp \left[ \sum_{i=1}^N \pi(R')_i \cdot R_{i,j} \right] \\
-& = \Exp \left[ \sum_{i=1}^N \pi(R')_i \cdot \frac{R'_{i,j} - \alpha Z_{i,j}}{1-\alpha} \right] \\
+& = \Exp \left[ \sum_{i=1}^N \pi'((1-\alpha)R + \alpha Z)_i \cdot R_{i,j} \right] \\
+& = \Exp \left[ \sum_{i=1}^N \pi'(R')_i \cdot R_{i,j} \right] \\
+& = \Exp \left[ \sum_{i=1}^N \pi'(R')_i \cdot \frac{R'_{i,j} - \alpha Z_{i,j}}{1-\alpha} \right] \\
 & = \frac{1}{1-\alpha} \Exp \left[ \sum_{i=1}^N \pi'(R')_i \cdot R'_{i,j} \right] -  \frac{\alpha}{1-\alpha} \Exp \left[ \sum_{i=1}^N \pi'(R')_i \cdot Z_{i,j} \right] \: .
 \end{align*}
-We use that $\Exp \left[ \sum_{i=1}^N \pi'(R')_i \cdot Z_{i,j} \right]$ lies in the interval $[-1,1]$
-and the fact that $\pi'$ is an $\epsilon$-optimal policy for the optimization
-problem~\eqref{equation:distribution-policy-optimization-modified}. We get that
+We use that $\Exp \left[ \sum_{i=1}^N \pi'(R')_i \cdot Z_{i,j} \right]$ lies in
+the interval $[-1,1]$ and the fact that $\pi'$ is an $\epsilon$-optimal policy
+for the optimization
+problem~\eqref{equation:distribution-policy-optimization-modified}. Let $V$ and
+$V'$ be the optimal values of the optimization
+problems~\eqref{equation:distribution-policy-optimization}
+and~\eqref{equation:distribution-policy-optimization-modified}.
+Lemma~\ref{lemma:modified-problem-is-feasible} implies that $V' \ge (1 - \alpha)
+V$. Combining all these facts we get that
 \begin{align*}
 \Exp \left[ \sum_{i=1}^N \widetilde{\pi}(R)_i \cdot R_{i,0} \right]
 & = \frac{1}{1-\alpha} \Exp \left[ \sum_{i=1}^N \pi'(R')_i \cdot R'_{i,0} \right] -  \frac{\alpha}{1-\alpha} \Exp \left[ \sum_{i=1}^N \pi'(R')_i \cdot Z_{i,0} \right] \\
@@ -798,7 +805,7 @@ $$
 $$
 
 Suppose by contradiction that $|\T| \ge M + 1$. Since the requests are in
-a general position, the augmented matrix of this system has rank $M+1$. By
+general position, the augmented matrix of this system has rank $M+1$. By
 Lemma~\ref{lemma:overdetermined-system-of-linear-equations} with $L = |\T|$,
 this system of equations has no solution. This contradicts the assumption that
 $\lambda_1, \lambda_2, \dots, \lambda_M$ is a solution of this system of
@@ -1121,7 +1128,7 @@ get that
 We consider a sequence $\epsilon_1, \epsilon_2, \dots$ of positive real numbers
 that converges to zero, and a corresponding sequence $\lambda^{(\epsilon_1)},
 \lambda^{(\epsilon_2)}, \dots$ of vectors in the unit sphere in $\R^{M+1}$.
-Since the unit sphere in $\R^{M+1}$ is a compact set, Bolzano-Weierstrass
+Since the unit sphere in $\R^{M+1}$ is a compact set, the Bolzano-Weierstrass
 theorem implies that the sequence has a convergent subsequence. Let $\lambda$ be
 its limit. We take the limit of
 inequalities~\eqref{inequality:lagrangian-policy-optimality-limit-1}
