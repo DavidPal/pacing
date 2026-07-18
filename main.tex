@@ -71,9 +71,9 @@ of the optimization problem
 \end{aligned}
 \end{equation}
 
-The value $R_{t,i,0}$ is the reward collected for the $t$-th request if we make
-decision $i$ for it. The value $R_{t,i,j}$ for $j = 1, 2, \dots, M$ is the
-$j$-th business metric for the $t$-th request if we make decision $i$ for it.
+The value $R_{t,i,0}$ is the reward collected for the $t$-th request if we choose
+action $i$ for it. The value $R_{t,i,j}$ for $j = 1, 2, \dots, M$ is the
+$j$-th business metric for the $t$-th request if we choose action $i$ for it.
 The right-hand sides of the constraints $B_1, B_2, \dots, B_M$ are given to us
 ahead of time.
 
@@ -92,13 +92,13 @@ ahead of time.
 In practical applications, the entries of the matrix $R_t$ are often predicted
 by machine learning models just before the action needs to be chosen. These
 predictions are only proxies for the actual reward and business metrics. The
-actual reward and business metrics are revealed only after the decision has been
-made, sometimes with a significant delay. However, in order to keep our model
+actual reward and business metrics are revealed only after the action has been
+chosen, sometimes with a significant delay. However, in order to keep our model
 simple, we ignore the difference between the predicted and actual reward and
 business metrics.
 
 In practice, the requests change over time, the sequence of requests has
-seasonal patterns and often at multiple time scales. Nevertheless, the i.i.d.
+seasonal patterns, often at multiple time scales. Nevertheless, the i.i.d.
 assumption is a good approximation for short enough time periods (e.g., one
 hour, one day, or one week).
 
@@ -156,7 +156,7 @@ $$
 
 We define the \emph{optimal value} of the optimization problem~\eqref{equation:sample-policy-optimization} as
 $$
-V = \sup \left\{ \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N \pi(R)_i \cdot R_{i,0} ~:~ \pi \in \Pi, \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N \pi(R)_i \cdot R_{i,j} \le B_j \text{ for all $j=1,2,\dots,M$} \right\} \: .
+V = \sup \left\{ \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N \pi(R_t)_i \cdot R_{t,i,0} ~:~ \pi \in \Pi, \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N \pi(R_t)_i \cdot R_{t,i,j} \le B_j \text{ for all $j=1,2,\dots,M$} \right\} \: .
 $$
 We define the \emph{optimal value} of the optimization problem~\eqref{equation:distribution-policy-optimization} as
 $$
@@ -169,8 +169,8 @@ We say that a policy $\pi:\Requests \to \Delta_N$ is an
 \emph{$\epsilon$-optimal} policy for the optimization
 problem~\eqref{equation:sample-policy-optimization} if
 \begin{align*}
-\frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N \pi(R)_i \cdot R_{i,0} & \ge V - \epsilon \: , \\
-\frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N \pi(R)_i \cdot R_{i,j} & \le B_j + \epsilon & \qquad \text{for all $j=1,2,\dots,M$} \: .
+\frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N \pi(R_t)_i \cdot R_{t,i,0} & \ge V - \epsilon \: , \\
+\frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N \pi(R_t)_i \cdot R_{t,i,j} & \le B_j + \epsilon & \qquad \text{for all $j=1,2,\dots,M$} \: .
 \end{align*}
 Similarly, we say that a policy $\pi:\Requests \to \Delta_N$ is an
 \emph{$\epsilon$-optimal} policy for the optimization
@@ -205,12 +205,12 @@ consider its dual.
 We make three remarks about the Lagrangian policies. First, observe that
 Lagrangian policies are both deterministic and measurable.
 
-Second, note that the policy corresponding to the all-zero vector $\lambda
-= (0, 0, \dots, 0)$ chooses the first decision for any request. This policy is
-uninteresting. For technical reasons and/or notational convenience, we include it
-in certain theorems and exclude it in others. However, as it will turn out, there exists
-a Lagrangian policy $\pi_\lambda$ with $\lambda \neq (0, 0, \dots, 0)$ that is
-close to an optimal policy of the optimization problems
+Second, note that the policy corresponding to the all-zero vector $\lambda = (0,
+0, \dots, 0)$ chooses the first action for any request. This policy is
+uninteresting. For technical reasons and notational convenience, we include it
+in certain theorems and exclude it in others. However, as it will turn out,
+there exists a Lagrangian policy $\pi_\lambda$ with $\lambda \neq (0, 0, \dots,
+0)$ that is close to an optimal policy of the optimization problems
 \eqref{equation:sample-policy-optimization} and
 \eqref{equation:distribution-policy-optimization}.
 
@@ -276,7 +276,7 @@ technical reasons, it is convenient to assume that $D$ has a probability density
 with respect to the Lebesgue measure on $\Requests = [-1,1]^{N \times (M+1)}$.
 The fundamental reason for assuming the existence of a probability density is to
 avoid having ties in the argmax in equation~\eqref{equation:lagrangian-policy}
-defining Lagrangian policies. The ties cause problem in
+defining Lagrangian policies. The ties cause problem, as explained in
 Proposition~\ref{proposition:computing-primal-from-dual}.
 
 If the distribution $D$ does not have a probability density, we can always
@@ -319,9 +319,11 @@ $$
 First, we show that if the optimization
 problem~\eqref{equation:distribution-policy-optimization} is feasible then the
 optimization problem~\eqref{equation:distribution-policy-optimization-modified}
-is feasible as well; see Lemma~\ref{lemma:modified-problem-is-feasible}.
+is feasible as well. Second, we show that the optimal values of the two
+optimization problems are related. These two claims are proved in
+Lemma~\ref{lemma:modified-problem-is-feasible}.
 
-Second, we show that any $\epsilon$-optimal policy $\pi':\Requests \to \Delta_N$
+Third we show that any $\epsilon$-optimal policy $\pi':\Requests \to \Delta_N$
 for the optimization
 problem~\eqref{equation:distribution-policy-optimization-modified} can be
 converted to an $\frac{\epsilon + \alpha}{1-\alpha}$-optimal policy
@@ -345,7 +347,7 @@ Let $D$ be a probability distribution over $\Requests$. Let $\alpha \in (0,1)$.
 Let $R$ be a random sample from $D$. Let $Z$ be an independent random $N \times
 (M+1)$ matrix with entries drawn i.i.d. from the uniform distribution over
 $[-1,1]$. Let $R' = (1-\alpha)R + \alpha Z$. Let $D'$ be the probability
-distribution of $R'$. Let $V$ and $V'$ be the optimal values of the optimization
+distribution of $R'$. Let $V_D$ and $V_{D'}$ be the optimal values of the optimization
 problems~\eqref{equation:distribution-policy-optimization} and
 \eqref{equation:distribution-policy-optimization-modified}, respectively. If the
 optimization problem~\eqref{equation:distribution-policy-optimization} is
@@ -353,7 +355,7 @@ feasible then the optimization
 problem~\eqref{equation:distribution-policy-optimization-modified} is feasible
 as well. Furthermore,
 $$
-V' \ge (1 - \alpha) V \: .
+V_{D'} \ge (1 - \alpha) V_D \: .
 $$
 \end{lemma}
 
@@ -409,7 +411,7 @@ $$
 $$
 Therefore, taking the supremum over all feasible solutions $\pi$, we get that
 $$
-V' \ge (1 - \alpha) V \: .
+V_{D'} \ge (1 - \alpha) V_D \: .
 $$
 \end{proof}
 
@@ -446,13 +448,13 @@ problem~\eqref{equation:distribution-policy-optimization-modified}. Let $V$ and
 $V'$ be the optimal values of the optimization
 problems~\eqref{equation:distribution-policy-optimization}
 and~\eqref{equation:distribution-policy-optimization-modified}.
-Lemma~\ref{lemma:modified-problem-is-feasible} implies that $V' \ge (1 - \alpha)
-V$. Combining all these facts we get that
+Lemma~\ref{lemma:modified-problem-is-feasible} implies that $V_{D'} \ge (1 - \alpha)
+V_D$. Combining all these facts we get that
 \begin{align*}
 \Exp \left[ \sum_{i=1}^N \widetilde{\pi}(R)_i \cdot R_{i,0} \right]
 & = \frac{1}{1-\alpha} \Exp \left[ \sum_{i=1}^N \pi'(R')_i \cdot R'_{i,0} \right] -  \frac{\alpha}{1-\alpha} \Exp \left[ \sum_{i=1}^N \pi'(R')_i \cdot Z_{i,0} \right] \\
-& \ge \frac{1}{1-\alpha} (V' - \epsilon) - \frac{\alpha}{1-\alpha}   \\
-& \ge V - \frac{\epsilon + \alpha}{1-\alpha} \: ,
+& \ge \frac{1}{1-\alpha} (V_{D'} - \epsilon) - \frac{\alpha}{1-\alpha}   \\
+& \ge V_D - \frac{\epsilon + \alpha}{1-\alpha} \: ,
 \end{align*}
 and, for any $j=1,2,\dots,M$,
 \begin{align*}
@@ -524,14 +526,14 @@ $R'_1, R'_2, \dots, R'_T$ are mutually independent. We have
 
 Condition on the event $R_1=r_1, R_2=r_2, \dots, R_T=r_T$ and consider the set of $T$-dimensional vectors
 $$
-V = \left\{ \left(\sum_{i=1}^N \pi_\lambda(r_1)_i \cdot r_{1,i,j}, \dots, \sum_{i=1}^N \pi_\lambda(r_T)_i \cdot r_{T,i,j} \right) ~:~ \lambda \in \R^{M+1}, j=0,1,2,\dots,M \right\} \: .
+S = \left\{ \left(\sum_{i=1}^N \pi_\lambda(r_1)_i \cdot r_{1,i,j}, \dots, \sum_{i=1}^N \pi_\lambda(r_T)_i \cdot r_{T,i,j} \right) ~:~ \lambda \in \R^{M+1}, j=0,1,2,\dots,M \right\} \: .
 $$
-The set $V$ is finite. We reduce the supremum over an uncountably infinite set to a maximum over the finite set $V$,
+The set $S$ is finite. We reduce the supremum over an uncountably infinite set to a maximum over the finite set $S$,
 $$
 \Exp\left[\sup_{\substack{\lambda \in \R^{M+1} \\ j=0,1,2,\dots,M}} \left| \sum_{t=1}^T \sum_{i=1}^N \sigma_t \cdot \pi_\lambda(R_t)_i \cdot R_{t,i,j}  \right| ~\middle|~ R_1=r_1, R_2=r_2, \dots, R_T=r_T \right]
-= \Exp\left[\max_{v \in V} \left| \sum_{t=1}^T \sigma_t v_t \right| \right]  \: .
+= \Exp\left[\max_{v \in S} \left| \sum_{t=1}^T \sigma_t v_t \right| \right]  \: .
 $$
-Consider any vector $v = (v_1, v_2, \dots, v_T)$ in $V$. Any entry $v_t$ of $v$ satisfies
+Consider any vector $v = (v_1, v_2, \dots, v_T)$ in $S$. Any entry $v_t$ of $v$ satisfies
 $$
 |v_t| = \left|\sum_{i=1}^N \pi_\lambda(r_t)_i \cdot r_{t,i,j}\right| \le \left(\sum_{i=1}^N \pi_\lambda(r_t)_i\right) \cdot  \max_{i=1,2,\dots,N} |r_{t,i,j}| \le 1 \: .
 $$
@@ -541,10 +543,10 @@ satisfies
 $$
 \Exp[e^{sY_v}] \le e^{s^2T/2} \qquad \text{for all $s \in \R$.}
 $$
-Let $K$ be such that $|V| \le K$ for any choice of $r_1, r_2, \dots, r_T \in
+Let $K$ be such that $|S| \le K$ for any choice of $r_1, r_2, \dots, r_T \in
 \Requests$. Lemma~\ref{lemma:maximum-of-sub-gaussian-variables} implies that
 $$
-\Exp\left[\max_{v \in V} \left| \sum_{t=1}^T \sigma_t v_t \right| \right] \le \sqrt{2T \ln(2K)} \: .
+\Exp\left[\max_{v \in S} \left| \sum_{t=1}^T \sigma_t v_t \right| \right] \le \sqrt{2T \ln(2K)} \: .
 $$
 Thus, taking expectations over $R_1, R_2, \dots, R_T$, we get that
 $$
@@ -555,11 +557,11 @@ $$
 \Exp[Z] \le \sqrt{\frac{8 \ln(2K)}{T}} \: .
 $$
 
-It remains to find an upper bound $K$ on the cardinality of the set $V$. Let
+It remains to find an upper bound $K$ on the cardinality of the set $S$. Let
 $$
 U = \left\{ \left(\pi_\lambda(r_1), \dots, \pi_\lambda(r_T) \right) ~:~ \lambda \in \R^{M+1} \right\} \: .
 $$
-Clearly, $|V| \le (M+1) |U|$. It remains to upper bound the cardinality of $U$.
+Clearly, $|S| \le (M+1) |U|$. It remains to upper bound the cardinality of $U$.
 
 Consider any $\lambda \in \R^{M+1}$ and the corresponding Lagrangian policy
 $\pi_\lambda$. The output of the policy $\pi_\lambda$ on a request $r_t$ is
@@ -590,9 +592,9 @@ cardinality of $W$ is at most
 $$
 |W| \le \sum_{k=0}^{M+1} \binom{T \binom{N}{2}}{k} \le \left(T \binom{N}{2} + 1 \right)^{M+1} \le (N^2T)^{M+1} \: .
 $$
-Therefore, the cardinality of $V$ is upper bounded as
+Therefore, the cardinality of $S$ is upper bounded as
 $$
-|V| \le (M+1) |W| \le (M+1) \left(N^2T \right)^{M+1} \le 2^{M+1} \left(N^2T \right)^{M+1} = \left(2N^2T \right)^{M+1} \: .
+|S| \le (M+1) |W| \le (M+1) \left(N^2T \right)^{M+1} \le 2^{M+1} \left(N^2T \right)^{M+1} = \left(2N^2T \right)^{M+1} \: .
 $$
 Using the value $K=\left(2N^2T \right)^{M+1}$, we get that
 $$
@@ -791,7 +793,7 @@ is uniquely defined.
 \begin{proof}
 Let $\T$ be the set of indices $t$ for which the argmax is not unique. Formally,
 $$
-\T = \left\{ t \in \Z ~:~ 1 \le t \le T, \text{argmax \eqref{equation:argmax} is \emph{not} unique} \right\}
+\T = \left\{ t \in \Z ~:~ 1 \le t \le T, \text{argmax \eqref{equation:argmax} is \emph{not} unique} \right\} \: .
 $$
 By the definition of $\T$, for every $t \in \T$
 there exists a pair of indices $(i_t,i'_t)$, $i_t < i'_t$ such that
@@ -831,7 +833,7 @@ $$
 \begin{proof}
 Let $\T$ be the set of indices $t$ for which the argmax is not unique. Formally,
 $$
-\T = \left\{ t \in \Z ~:~ 1 \le t \le T, \text{argmax \eqref{equation:argmax} is \emph{not} unique} \right\}
+\T = \left\{ t \in \Z ~:~ 1 \le t \le T, \text{argmax \eqref{equation:argmax} is \emph{not} unique} \right\} \: .
 $$
 Theorem~\ref{theorem:few-ties} implies that $|\T| \le M$.
 
@@ -943,7 +945,7 @@ and
 Let $R_1, R_2, \dots$ be an infinite sequence of requests sampled i.i.d. from
 $D$. Let $T$ be a positive integer. Let
 \begin{align*}
-\delta_T & = \frac{1}{(M+1)\pi^2 T^2} \\
+\delta_T & = \frac{1}{5(M+1)T(T+1)} \\
 B_{T,j}' & = B_j + \sqrt{ \frac{2\ln(2/\delta_T)}{T}} \qquad \text{for all $j=1,2,\dots,M$.}
 \end{align*}
 We consider the modified versions of the primal and dual linear
@@ -988,7 +990,7 @@ all $j=0,1,2,\dots,M$, and all $\lambda \in \R^{M+1}$,
 \end{multline}
 where
 $$
-\delta_T' = \frac{1}{\pi^2 T^2} \: .
+\delta_T' = \frac{1}{5 T(T+1)} \: .
 $$
 Let $\E_3$ be the probability event that, for all $T \ge 1$, the requests $R_1,
 R_2,\dots,R_T$ are in general position. Let $\E$ be the intersection of the
@@ -997,18 +999,18 @@ events $\E_1$, $\E_2$, $\E_3$.
 For a fixed $T$ and a fixed $j$, by Lemma~\ref{lemma:concentration-inequality},
 the inequality \eqref{inequality:optimal-policy-concentration} holds with
 probability at least $1 - \delta_T$. Since $\sum_{j=0}^M \sum_{T=1}^\infty
-\delta_T = \sum_{j=0}^M \sum_{T=1}^\infty \frac{1}{(M+1)\pi^2 T^2} =
-\frac{1}{6}$, by union bound, the probability of event $\E_1$ is at least $5/6$.
+\delta_T = \sum_{j=0}^M \sum_{T=1}^\infty \frac{1}{5(M+1) T(T+1)} =
+\frac{1}{5}$, by union bound, the probability of event $\E_1$ is at least $4/5$.
 For a fixed $T$ and all $j=0,1,2,\dots,M$ and $\lambda \in \R^{M+1}$, by
 Theorem~\ref{theorem:uniform-convergence}, the inequality
 \eqref{inequality:uniform-convergence} holds with probability at least $1 -
 \delta_T'$. Since $\sum_{T=1}^\infty \delta_T' = \sum_{T=1}^\infty
-\frac{1}{\pi^2 T^2} = \frac{1}{6}$, by union bound, the probability of event
-$\E_2$ is at least $5/6$. For a fixed $T$, by
+\frac{1}{5 T(T+1)} = \frac{1}{5}$, by union bound, the probability of event
+$\E_2$ is at least $4/5$. For a fixed $T$, by
 Theorem~\ref{theorem:general-position}, the requests $R_1, R_2,\dots,R_T$ are in
 general position with probability one. By a union bound, the probability of
 event $\E_3$ is also one. Finally, the probability of event $\E$ is at least $1
-- 1/6 - 1/6 - 0 = 2/3$.
+- 1/5 - 1/5 - 0 = 3/5$.
 
 For the rest of the proof, let $R_1, R_2, \dots$ be a particular non-random
 sequence of requests that belongs to the probability event $\E$. Such a sequence
