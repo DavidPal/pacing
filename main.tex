@@ -71,7 +71,6 @@ of the optimization problem
 \subjectto \qquad & \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N R_{t,i,j} \cdot \pi(R_t)_i \le B_j & \text{for all $j=1,2,\dots,M$}
 \end{aligned}
 \end{equation}
-
 The value $R_{t,i,0}$ is the reward collected for the $t$-th request if we choose
 action $i$ for it. The value $R_{t,i,j}$ for $j = 1, 2, \dots, M$ is the
 $j$-th business metric for the $t$-th request if we choose action $i$ for it.
@@ -117,7 +116,6 @@ solving the following optimization problem:
 \subjectto \qquad & \Exp_{R \sim D} \left[ \sum_{i=1}^N \pi(R)_i \cdot R_{i,j} \right] \le B_j & \text{for all $j=1,2,\dots,M$}
 \end{aligned}
 \end{equation}
-
 The optimization problem~\eqref{equation:distribution-policy-optimization}
 cannot be solved directly either, since the distribution $D$ is unknown.
 However, we assume that we have a historical sample of requests available that
@@ -895,7 +893,7 @@ We have
 & = \left| \Exp_{R \sim D} \left[ \sum_{i=1}^N (\pi_{\lambda}(R)_i - \pi_{\lambda^{(t)}}(R)_i) \cdot R_{i,j} \right] \right| \\
 & \le \Exp_{R \sim D} \left[ \sum_{i=1}^N |\pi_{\lambda}(R)_i - \pi_{\lambda^{(t)}}(R)_i| \cdot |R_{i,j}| \right] \\
 & \le \Exp_{R \sim D} \left[ \sum_{i=1}^N |\pi_{\lambda}(R)_i - \pi_{\lambda^{(t)}}(R)_i| \right] \\
-& = \Pr_{R \sim D} \left[ \pi_{\lambda}(R) \neq \pi_{\lambda^{(t)}}(R) \right] \: .
+& = 2 \Pr_{R \sim D} \left[ \pi_{\lambda}(R) \neq \pi_{\lambda^{(t)}}(R) \right] \: .
 \end{align*}
 Let $R_1, R_2, \dots, R_N$ be the rows of $R$. The last probability can be upper bounded as
 \begin{align*}
@@ -914,29 +912,35 @@ has a joint probability density, so does $X_{i,i'}$. Let $f_{i,i'}:\R^{M+1}
 Thus,
 \begin{equation}
 \label{equation:continuity}
-|h_j(\lambda) - h_j(\lambda^{(t)})| \le \sum_{1 \le i < i' \le N} \int \left| \mathbf{1} \left[ \lambda^T x \ge 0 \right]  -  \mathbf{1} \left[ (\lambda^{(t)})^T x \ge 0 \right] \right| f_{i,i'}(x) dx \: .
+|h_j(\lambda) - h_j(\lambda^{(t)})| \le 2 \sum_{1 \le i < i' \le N} \int \left| \mathbf{1} \left[ \lambda^T x \ge 0 \right]  -  \mathbf{1} \left[ (\lambda^{(t)})^T x \ge 0 \right] \right| f_{i,i'}(x) \, dx \: .
 \end{equation}
 We take the limit of both sides as $t \to \infty$. We apply the dominated
-convergence theorem to the sequence of functions
+convergence theorem to the integrals on the right-hand side. For any $i,i'$ such
+that $1 \le i < i' \le N$, we define the function
 $$
-g_{i,i',t}(x) = \left| \mathbf{1} \left[ \lambda^T x \ge 0 \right]  -  \mathbf{1} \left[ (\lambda^{(t)})^T x \ge 0 \right] \right| f_{i,i'}(x) \: .
+g_{i,i',t}(x) =
+\begin{cases}
+\left| \mathbf{1} \left[ \lambda^T x \ge 0 \right]  -  \mathbf{1} \left[ (\lambda^{(t)})^T x \ge 0 \right] \right| f_{i,i'}(x) & \text{if $\lambda^T x \neq 0$,} \\
+f_{i,i'}(x) & \text{if $\lambda^T x = 0$.} \\
+\end{cases}
 $$
-that appear in the integral on the right-hand side. Since $\lim_{t \to \infty}
-\lambda^{(t)} = \lambda$, $\lim_{t \to \infty} g_{i,i',t}(x) = 0$ for any $x \in
-\R^{M+1}$ such that $\lambda^T x \neq 0$. The functions $g_{i,i',t}(x)$ are
-non-negative and dominated by the integrable function $f_{i,i'}(x)$. Therefore,
-by the dominated convergence theorem, the limit of the right-hand side of
-equation~\eqref{equation:continuity} is
+The functions $g_{i,i',t}(x)$ are non-negative. The sequence of functions
+$g_{i,i',1}(x), g_{i,i',2}(x), \dots$ is dominated by the integrable function
+$f_{i,i'}(x)$. Since $\lim_{t \to \infty} \lambda^{(t)} = \lambda$, $\lim_{t \to
+\infty} g_{i,i',t}(x) = 0$ for any $x \in \R^{M+1}$ such that $\lambda^T x \neq
+0$. If $\lambda^T x = 0$ then $\lim_{t \to \infty} g_{i,i',t}(x) = f_{i,i'}(x)$.
+Therefore, by the dominated convergence theorem, the limit of the right-hand
+side of equation~\eqref{equation:continuity} is upper bounded by
 \begin{align*}
-& \lim_{t \to \infty} \sum_{1 \le i < i' \le N} \int \left| \mathbf{1} \left[ \lambda^T x \ge 0 \right]  -  \mathbf{1} \left[ (\lambda^{(t)})^T x \ge 0 \right] \right| f_{i,i'}(x) dx \\
-& \qquad = \lim_{t \to \infty} \sum_{1 \le i < i' \le N} \int g_{i,i',t}(x) \, dx \\
-& \qquad = \sum_{1 \le i < i' \le N} \lim_{t \to \infty} \int g_{i,i',t}(x) \, dx \\
-& \qquad = \sum_{1 \le i < i' \le N} \int \lim_{t \to \infty} g_{i,i',t}(x) \, dx \\
-& \qquad \le \sum_{1 \le i < i' \le N} \int \mathbf{1} \left[ \lambda^T x = 0 \right] f_{i,i'}(x) \, dx \\
+& \lim_{t \to \infty} \int \left| \mathbf{1} \left[ \lambda^T x \ge 0 \right]  -  \mathbf{1} \left[ (\lambda^{(t)})^T x \ge 0 \right] \right| f_{i,i'}(x) \, dx \\
+& \qquad \le \lim_{t \to \infty} \int g_{i,i',t}(x) \, dx \\
+& \qquad = \int \lim_{t \to \infty} g_{i,i',t}(x) \, dx \\
+& \qquad = \int \mathbf{1}[\lambda^T x = 0] f_{i,i'}(x) \, dx \\
 & \qquad = 0 \: .
 \end{align*}
-The last equality follows the fact that if $\lambda \neq 0$, the set $\{x \in
-\R^{M+1} ~:~ \lambda^T x = 0\}$ has Lebesgue measure zero. Therefore,
+In the last step, we used that the set $\{x \in \R^{M+1} ~:~ \lambda^T x = 0\}$
+has Lebesgue measure zero. Since $|h_j(\lambda) - h_j(\lambda^{(t)})|$ is
+non-negative, it means that
 $$
 \lim_{t \to \infty} |h_j(\lambda) - h_j(\lambda^{(t)})| = 0 \: .
 $$
@@ -1046,7 +1050,7 @@ all $j=0,1,2,\dots,M$, and all $\lambda \in \R^{M+1}$,
 \label{inequality:uniform-convergence}
 \left| \Exp_{R \sim D} \left[ \sum_{i=1}^N \pi_\lambda(R)_i \cdot R_{i,j}  \right]  -  \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N R_{t,i,j} \cdot \pi_\lambda(R_t)_i  \right|
 \\
-\le \sqrt{\frac{8(M+1) (\ln(4T) + 2 \ln N)}{T}} + \sqrt{ \frac{2\ln(1/\delta'_T)}{T} }
+\le \sqrt{\frac{8(M+1) (\ln(4T) + 2 \ln N)}{T}} + \sqrt{ \frac{2\ln(1/\delta_T')}{T} }
 \end{multline}
 where
 $$
@@ -1126,12 +1130,12 @@ The feasibility of the $x^{(T)}_{t,i}$, $t=1,2,\dots,T$, $i=1,2,\dots,N$ implies
 Since the modified primal
 program~\eqref{equation:primal-linear-program-modified} is feasible and it has a
 bounded feasible set, its dual~\eqref{equation:dual-linear-program-modified} is
-feasible and has an optimal solution. Let $\lambda_1^{(T)}, \dots,
-\lambda_M^{(T)}$, $\mu_1^{(T)}, \dots, \mu_T^{(T)}$ be an optimal solution of
-the dual linear program~\eqref{equation:dual-linear-program-modified}. Let
-$\lambda^{(T)} = (1, -\lambda_1^{(T)}, -\lambda_2^{(T)}, \dots,
--\lambda_M^{(T)})$ and let $\pi_{\lambda^{(T)}}$ be the corresponding Lagrangian
-policy. Since the requests $R_1, R_2, \dots, R_T$ are in general position,
+feasible and has an optimal solution. Let $\mu_1^{(T)}, \dots, \mu_T^{(T)}$,
+$\lambda_1^{(T)}, \dots, \lambda_M^{(T)}$ be an optimal solution of the dual
+linear program~\eqref{equation:dual-linear-program-modified}. Let $\lambda^{(T)}
+= (1, -\lambda_1^{(T)}, -\lambda_2^{(T)}, \dots, -\lambda_M^{(T)})$ and let
+$\pi_{\lambda^{(T)}}$ be the corresponding Lagrangian policy. Since the requests
+$R_1, R_2, \dots, R_T$ are in general position,
 Theorem~\ref{theorem:lagrangian-policies-are-close-to-optimal} implies that
 \begin{equation}
 \label{inequality:lagrangian-policy-rounding-error}
@@ -1143,7 +1147,7 @@ and \eqref{inequality:uniform-convergence}. We get that
 \begin{multline}
 \label{inequality:lagrangian-policy-optimality}
 \Exp_{R \sim D} \left[ \sum_{i=1}^N \pi_{\lambda^{(T)}}(R)_i \cdot R_{i,0}  \right] \ge V_D - \epsilon - \sqrt{ \frac{2\ln(2/\delta_T)}{T}} - \sqrt{\frac{8(M+1) (\ln(4T) + 2 \ln N)}{T}} \\
-- \sqrt{ \frac{2\ln(1/\delta'_T)}{T} } - \frac{2M}{T}  \: .
+- \sqrt{ \frac{2\ln(1/\delta_T')}{T} } - \frac{2M}{T}  \: .
 \end{multline}
 Similarly, we combine the
 inequality~\eqref{inequality:lagrangian-policy-rounding-error} with
@@ -1155,7 +1159,7 @@ that for all $j=1,2,\dots,M$,
 \Exp_{R \sim D} \left[ \sum_{i=1}^N \pi_{\lambda^{(T)}}(R)_i \cdot R_{i,j}  \right]
 \le B_j + \sqrt{ \frac{2\ln(2/\delta_T)}{T}} + \frac{2M}{T}
 + \sqrt{\frac{8(M+1) (\ln(4T) + 2 \ln N)}{T}} \\
-+ \sqrt{ \frac{2\ln(1/\delta'_T)}{T} }
++ \sqrt{ \frac{2\ln(1/\delta_T')}{T} }
 \: .
 \end{multline}
 
