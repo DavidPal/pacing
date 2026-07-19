@@ -16,6 +16,7 @@
 \DeclareMathOperator*{\argmin}{argmin}
 \DeclareMathOperator*{\Exp}{\mathbf{E}}
 
+\DeclareMathOperator*{\sign}{sign}
 \DeclareMathOperator*{\maximize}{maximize}
 \DeclareMathOperator*{\minimize}{minimize}
 \DeclareMathOperator*{\subjectto}{subject\ to}
@@ -876,13 +877,68 @@ there exists an optimal solution that is a deterministic Lagrangian policy.
 Let $D$ be a probability distribution over $\Requests$ with a probability
 density. For any $j=0,1,2,\dots,M$, the function $f_j:\R^{M+1} \to \R$,
 $$
-f_j(\lambda) = \Exp_{R \sim D} \left[ \sum_{i=1}^N \pi_{\lambda}(R)_i \cdot R_{i,j} \right]
+h_j(\lambda) = \Exp_{R \sim D} \left[ \sum_{i=1}^N \pi_{\lambda}(R)_i \cdot R_{i,j} \right]
 $$
 is continuous on $\R^{M+1} \setminus \{(0,0,\dots,0)\}$.
 \end{lemma}
 
 \begin{proof}
-TODO
+Let $\lambda \in \R^{M+1} \setminus \{(0,0,\dots,0)\}$. Let $\lambda_1,
+\lambda_2, \dots \in \R^{M+1} \setminus \{(0,0,\dots,0)\}$ be an infinite
+sequence sequence such that $\lim_{t \to \infty} \lambda_t = \lambda$. We need
+to show that $\lim_{t \to \infty} h_j(\lambda_t) = h_j(\lambda)$.
+
+We have
+\begin{align*}
+|h_j(\lambda) - h_j(\lambda_t)|
+& = \left|\Exp_{R \sim D} \left[ \sum_{i=1}^N \pi_{\lambda}(R)_i \cdot R_{i,j} \right] -  \Exp_{R \sim D} \left[ \sum_{i=1}^N \pi_{\lambda_t}(R)_i \cdot R_{i,j} \right] \right| \\
+& = \left| \Exp_{R \sim D} \left[ \sum_{i=1}^N (\pi_{\lambda}(R)_i - \pi_{\lambda_t}(R)_i) \cdot R_{i,j} \right] \right| \\
+& \le \Exp_{R \sim D} \left[ \sum_{i=1}^N |\pi_{\lambda}(R)_i - \pi_{\lambda_t}(R)_i| \cdot |R_{i,j}| \right] \\
+& \le \Exp_{R \sim D} \left[ \sum_{i=1}^N |\pi_{\lambda}(R)_i - \pi_{\lambda_t}(R)_i| \right] \\
+& = \Pr_{R \sim D} \left[ \pi_{\lambda}(R) \neq \pi_{\lambda_t}(R) \right] \: .
+\end{align*}
+Let $R_1, R_2, \dots, R_N$ the rows of $R$. The last probability can be upper bounded as
+\begin{align*}
+\Pr_{R \sim D} \left[ \pi_{\lambda}(R) \neq \pi_{\lambda'}(R) \right]
+& \le \sum_{1 \le i < i' \le N} \Pr_{R \sim D} \left[ \mathbf{1} \left[ \lambda^T (R_i - R_{i'}) \ge 0 \right] \neq \mathbf{1} \left[ \lambda_t^T (R_i - R_{i'}) \ge 0 \right]  \right]
+\end{align*}
+Consider the random vector $X_{i,i'} = R_i - R_{i'}$. Since $R_i$ and $R_{i'}$
+have a probability density function, so does $X_{i,i'}$. Let $f_{i,i'}:\R^{M+1}
+\to \R$ be the probability density function of $X_{i,i'}$. We have
+\begin{align*}
+& \Pr_{R \sim D} \left[ \mathbf{1} \left[ \lambda^T (R_i - R_{i'}) \ge 0 \right] \neq \mathbf{1} \left[ \lambda_t^T (R_i - R_{i'}) \ge 0 \right]  \right] \\
+& \qquad = \Pr \left[ \mathbf{1} \left[ \lambda^T X_{i,i'} \ge 0 \right] \neq \mathbf{1} \left[ \lambda_t^T X_{i,i'} \ge 0 \right]  \right] \\
+& \qquad = \int \left| \mathbf{1} \left[ \lambda^T x \ge 0 \right]  -  \mathbf{1} \left[ \lambda_t^T x \ge 0 \right] \right| f_{i,i'}(x) dx \: .
+\end{align*}
+Thus,
+\begin{equation}
+\label{equation:continuity}
+|h_j(\lambda) - h_j(\lambda_t)| \le \sum_{1 \le i < i' \le N} \int \left| \mathbf{1} \left[ \lambda^T x \ge 0 \right]  -  \mathbf{1} \left[ \lambda_t^T x \ge 0 \right] \right| f_{i,i'}(x) dx \: .
+\end{equation}
+We take the limit of both sides as $t \to \infty$. We apply the dominated
+converge theorem to the sequence of functions
+$$
+g_{i,i',t}(x) = \left| \mathbf{1} \left[ \lambda^T x \ge 0 \right]  -  \mathbf{1} \left[ \lambda_t^T x \ge 0 \right] \right| f_{i,i'}(x) \: .
+$$
+Since $\lim_{t \to \infty} \lambda_t = \lambda$, $\lim_{t \to \infty}
+g_{i,i',t}(x) = 0$ for any $x \in \R^{M+1}$ such that $\lambda^T x \neq 0$. The
+functions $g_{i,i',t}(x)$ are non-negative and dominated by the integrable function
+$f_{i,i'}(x)$. Therefore, by the dominated convergence theorem, the limit of the
+right hand of equation~\eqref{equation:continuity} is
+\begin{align*}
+& \lim_{t \to \infty} \sum_{1 \le i < i' \le N} \int \mathbf{1} \left[ \sign(\lambda^T x) \neq \sign(\lambda_t^T x) \right] f_{i,i'}(x) dx \\
+& \qquad = \lim_{t \to \infty} \sum_{1 \le i < i' \le N} \int g_{i,i',t}(x) \, dx \\
+& \qquad = \sum_{1 \le i < i' \le N} \lim_{t \to \infty} \int g_{i,i',t}(x) \, dx \\
+& \qquad = \sum_{1 \le i < i' \le N} \int \lim_{t \to \infty} g_{i,i',t}(x) \, dx \\
+& \qquad \le \sum_{1 \le i < i' \le N} \int \mathbf{1} \left[ \lambda^T x = 0 \right] f_{i,i'}(x) \, dx \\
+& \qquad = 0 \: .
+\end{align*}
+Last equality follows the fact that if $\lambda \neq 0$, the set $\{x \in
+\R^{M+1} ~:~ \lambda^T x = 0\}$ has Lebesgue measure zero. Therefore,
+$$
+\lim_{t \to \infty} |h_j(\lambda) - h_j(\lambda_t)| = 0 \: .
+$$
+Thus, $\lim_{t \to \infty} h_j(\lambda_t) = h_j(\lambda)$, as required.
 \end{proof}
 
 \begin{lemma}[Concentration inequality]
