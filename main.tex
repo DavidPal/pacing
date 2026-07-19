@@ -908,25 +908,27 @@ has a joint probability density, so does $X_{i,i'}$. Let $f_{i,i'}:\R^{M+1}
 \begin{align*}
 & \Pr_{R \sim D} \left[ \mathbf{1} \left[ \lambda^T (R_i - R_{i'}) \ge 0 \right] \neq \mathbf{1} \left[ (\lambda^{(t)})^T (R_i - R_{i'}) \ge 0 \right]  \right] \\
 & \qquad = \Pr \left[ \mathbf{1} \left[ \lambda^T X_{i,i'} \ge 0 \right] \neq \mathbf{1} \left[ (\lambda^{(t)})^T X_{i,i'} \ge 0 \right]  \right] \\
+& \qquad = \Exp \left[ \left| \mathbf{1} \left[ \lambda^T X_{i,i'} \ge 0 \right]  -  \mathbf{1} \left[ (\lambda^{(t)})^T X_{i,i'} \ge 0 \right] \right| \right] \\
 & \qquad = \int \left| \mathbf{1} \left[ \lambda^T x \ge 0 \right]  -  \mathbf{1} \left[ (\lambda^{(t)})^T x \ge 0 \right] \right| f_{i,i'}(x) dx \: .
 \end{align*}
 Thus,
 \begin{equation}
 \label{equation:continuity}
-|h_j(\lambda) - h_j(\lambda_t)| \le \sum_{1 \le i < i' \le N} \int \left| \mathbf{1} \left[ \lambda^T x \ge 0 \right]  -  \mathbf{1} \left[ (\lambda^{(t)})^T x \ge 0 \right] \right| f_{i,i'}(x) dx \: .
+|h_j(\lambda) - h_j(\lambda^{(t)})| \le \sum_{1 \le i < i' \le N} \int \left| \mathbf{1} \left[ \lambda^T x \ge 0 \right]  -  \mathbf{1} \left[ (\lambda^{(t)})^T x \ge 0 \right] \right| f_{i,i'}(x) dx \: .
 \end{equation}
 We take the limit of both sides as $t \to \infty$. We apply the dominated
 convergence theorem to the sequence of functions
 $$
 g_{i,i',t}(x) = \left| \mathbf{1} \left[ \lambda^T x \ge 0 \right]  -  \mathbf{1} \left[ (\lambda^{(t)})^T x \ge 0 \right] \right| f_{i,i'}(x) \: .
 $$
-Since $\lim_{t \to \infty} \lambda^{(t)} = \lambda$, $\lim_{t \to \infty}
-g_{i,i',t}(x) = 0$ for any $x \in \R^{M+1}$ such that $\lambda^T x \neq 0$. The
-functions $g_{i,i',t}(x)$ are non-negative and dominated by the integrable function
-$f_{i,i'}(x)$. Therefore, by the dominated convergence theorem, the limit of the
-right-hand side of equation~\eqref{equation:continuity} is
+that appear in the integral on the right-hand side. Since $\lim_{t \to \infty}
+\lambda^{(t)} = \lambda$, $\lim_{t \to \infty} g_{i,i',t}(x) = 0$ for any $x \in
+\R^{M+1}$ such that $\lambda^T x \neq 0$. The functions $g_{i,i',t}(x)$ are
+non-negative and dominated by the integrable function $f_{i,i'}(x)$. Therefore,
+by the dominated convergence theorem, the limit of the right-hand side of
+equation~\eqref{equation:continuity} is
 \begin{align*}
-& \lim_{t \to \infty} \sum_{1 \le i < i' \le N} \int \mathbf{1} \left[ \sign(\lambda^T x) \neq \sign((\lambda^{(t)})^T x) \right] f_{i,i'}(x) dx \\
+& \lim_{t \to \infty} \sum_{1 \le i < i' \le N} \int \left| \mathbf{1} \left[ \lambda^T x \ge 0 \right]  -  \mathbf{1} \left[ (\lambda^{(t)})^T x \ge 0 \right] \right| f_{i,i'}(x) dx \\
 & \qquad = \lim_{t \to \infty} \sum_{1 \le i < i' \le N} \int g_{i,i',t}(x) \, dx \\
 & \qquad = \sum_{1 \le i < i' \le N} \lim_{t \to \infty} \int g_{i,i',t}(x) \, dx \\
 & \qquad = \sum_{1 \le i < i' \le N} \int \lim_{t \to \infty} g_{i,i',t}(x) \, dx \\
