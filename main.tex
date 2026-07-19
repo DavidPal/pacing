@@ -108,7 +108,7 @@ upfront. Instead, the requests arrive one at a time, and for each request we
 need to choose a probability vector in the probability simplex $\Delta_N$. The
 probability vector for each request is computed by applying a pre-computed
 policy $\pi$ to the request. A good pre-computed policy $\pi$ can be found by
-finding the optimal solution to the following optimization problem:
+solving the following optimization problem:
 \begin{equation}
 \label{equation:distribution-policy-optimization}
 \begin{aligned}
@@ -185,7 +185,7 @@ problems are infeasible, they can have an $\epsilon$-optimal solution for some
 positive $\epsilon$.
 
 If $R_1, R_2, \dots, R_T$ is a sequence of requests, we define the vector
-$R_{t,i} = (R_{t,i,0}, R_{t,i,1}, \dots, R_{t,i,j}) \in \R^{M+1}$ for all
+$R_{t,i} = (R_{t,i,0}, R_{t,i,1}, \dots, R_{t,i,M}) \in \R^{M+1}$ for all
 $t=1,2,\dots,T$ and $i=1,2,\dots,N$.
 
 \section{Lagrangian policies}
@@ -298,7 +298,8 @@ R' = (1-\alpha)R + \alpha Z
 where $\alpha \in (0,1)$ is a ``small'' positive number. Since sampling error is
 of the order\footnote{The notation $\widetilde{O}(\cdot)$ hides logarithmic
 factors in $N,M,T$.} $\widetilde{O}(\sqrt{M/T})$ and rounding error is of the
-order $O(M/T)$, a suitable value of $\alpha$ should of similar or smaller order.
+order $O(M/T)$, a suitable value for $\alpha$ should be of similar or smaller
+order.
 
 Equation~\eqref{equation:modified-sample} defines the joint probability
 distribution for $(R,R')$. The marginal distribution of $R$ is $D$, and the
@@ -920,21 +921,18 @@ $$
 \begin{theorem}[Lagrangian policies are optimal]
 \label{theorem:lagrangian-policies-are-optimal}
 Let $D$ be a probability distribution over $\Requests$ with a probability
-density. Suppose that the optimization problem has a feasible solution, i.e.,
-there exists a measurable policy $\pi: \Requests \to \Delta_N$ that satisfies
-all the constraints in~\eqref{equation:distribution-policy-optimization}.
-Then, there exists $\lambda \in \R^{M+1}$ such that $\|\lambda\|_2 = 1$ and the
-Lagrangian policy $\pi_\lambda$ is an optimal solution of the optimization
-problem~\eqref{equation:distribution-policy-optimization}.
+density. Suppose that the optimization
+problem~\eqref{equation:distribution-policy-optimization} has a feasible
+solution. Then, there exists $\lambda \in \R^{M+1}$ such that $\|\lambda\|_2 =
+1$ and the Lagrangian policy $\pi_\lambda$ is an optimal solution of the
+optimization problem~\eqref{equation:distribution-policy-optimization}.
 \end{theorem}
 
 \begin{proof}
-Let $V$ be the optimal value of the optimization
-problem~\eqref{equation:distribution-policy-optimization}. That is,
-$$
-V = \sup \left\{ \Exp_{R \sim D} \left[ \sum_{i=1}^N \pi(R)_i \cdot R_{i,0} \right] ~:~ \pi \in \Pi, \Exp_{R \sim D} \left[ \sum_{i=1}^N \pi(R)_i \cdot R_{i,j} \right] \le B_j \text{ for all $j=1,2,\dots,M$} \right\} \: .
-$$
-Since the optimization problem is feasible, $V > -\infty$ and, in particular, $V \in [-1,1]$.
+Let $V_D$ be the optimal value of the optimization
+problem~\eqref{equation:distribution-policy-optimization}. Since the
+optimization problem is feasible, $V_D > -\infty$ and, in particular, $V_D \in
+[-1,1]$.
 
 Fix $\epsilon > 0$. Since the optimization problem is feasible, there exists a
 measurable policy $\pi^*: \Requests \to \Delta_N$ that is feasible and
@@ -946,7 +944,7 @@ $\epsilon$-optimal. That is,
 and
 \begin{equation}
 \label{inequality:optimal-policy-optimality}
-\Exp_{R \sim D} \left[ \sum_{i=1}^N \pi^*(R)_i \cdot R_{i,0} \right] \ge V - \epsilon \: .
+\Exp_{R \sim D} \left[ \sum_{i=1}^N \pi^*(R)_i \cdot R_{i,0} \right] \ge V_D - \epsilon \: .
 \end{equation}
 
 Let $R_1, R_2, \dots$ be an infinite sequence of requests sampled i.i.d. from
@@ -1034,7 +1032,7 @@ Similarly, we combine inequalities~\eqref{inequality:optimal-policy-concentratio
 and \eqref{inequality:optimal-policy-optimality}. We get
 \begin{equation}
 \label{inequality:optimal-policy-optimality-on-sample}
-\frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N R_{t,i,0} \cdot \pi^*(R_t)_i \ge V - \epsilon - \sqrt{ \frac{2\ln(2/\delta_T)}{T}}
+\frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N R_{t,i,0} \cdot \pi^*(R_t)_i \ge V_D - \epsilon - \sqrt{ \frac{2\ln(2/\delta_T)}{T}}
 \qquad \text{for all $T=1,2,\dots$.}
 \end{equation}
 
@@ -1060,7 +1058,7 @@ and get that
 \begin{equation}
 \label{inequality:sample-optimal-policy-is-close-optimal}
 \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N R_{t,i,0} \cdot x^{(T)}_{t,i}
-\ge V - \epsilon - \sqrt{\frac{2\ln(2/\delta_T)}{T}}
+\ge V_D - \epsilon - \sqrt{\frac{2\ln(2/\delta_T)}{T}}
 \qquad \text{for all $T=1,2,\dots$.}
 \end{equation}
 The feasibility of the $x^{(T)}_{t,i}$, $t=1,2,\dots,T$, $i=1,2,\dots,N$ implies that
@@ -1089,7 +1087,7 @@ inequalities~\eqref{inequality:sample-optimal-policy-is-close-optimal}
 and \eqref{inequality:uniform-convergence}. We get that
 \begin{multline}
 \label{inequality:lagrangian-policy-optimality}
-\Exp_{R \sim D} \left[ \sum_{i=1}^N \pi_{\lambda^{(T)}}(R)_i \cdot R_{i,0}  \right] \ge V - \epsilon - \sqrt{ \frac{2\ln(2/\delta_T)}{T}} - \sqrt{\frac{8(M+1) (\ln(4T) + 2 \ln N)}{T}} \\
+\Exp_{R \sim D} \left[ \sum_{i=1}^N \pi_{\lambda^{(T)}}(R)_i \cdot R_{i,0}  \right] \ge V_D - \epsilon - \sqrt{ \frac{2\ln(2/\delta_T)}{T}} - \sqrt{\frac{8(M+1) (\ln(4T) + 2 \ln N)}{T}} \\
 - \sqrt{ \frac{2\ln(1/\delta'_T)}{T} } - \frac{2M}{T}  \: .
 \end{multline}
 Similarly, we combine the inequality~\eqref{inequality:lagrangian-policy-rounding-error}
@@ -1129,7 +1127,7 @@ right hand sides of the inequalities approach zero as $T$ goes to infinity. We
 get that
 \begin{align}
 \label{inequality:lagrangian-policy-optimality-limit-1}
-\Exp_{R \sim D} \left[ \sum_{i=1}^N \pi_{\lambda^{(\epsilon)}}(R)_i \cdot R_{i,0}  \right] & \ge V - \epsilon \: , \\
+\Exp_{R \sim D} \left[ \sum_{i=1}^N \pi_{\lambda^{(\epsilon)}}(R)_i \cdot R_{i,0}  \right] & \ge V_D - \epsilon \: , \\
 \label{inequality:lagrangian-policy-feasibility-limit-1}
 \Exp_{R \sim D} \left[ \sum_{i=1}^N \pi_{\lambda^{(\epsilon)}}(R)_i \cdot R_{i,j}  \right] & \le B_j
 && \text{for all $j=1,2,\dots,M$.}
@@ -1147,7 +1145,7 @@ implies that the limits of the left hand sides of the inequalities exist. We get
 that
 \begin{align}
 \label{inequality:lagrangian-policy-optimality-limit-2}
-\Exp_{R \sim D} \left[ \sum_{i=1}^N \pi_\lambda(R)_i \cdot R_{i,0}  \right] & \ge V \: , \\
+\Exp_{R \sim D} \left[ \sum_{i=1}^N \pi_\lambda(R)_i \cdot R_{i,0}  \right] & \ge V_D \: , \\
 \label{inequality:lagrangian-policy-feasibility-limit-2}
 \Exp_{R \sim D} \left[ \sum_{i=1}^N \pi_\lambda(R)_i \cdot R_{i,j}  \right] & \le B_j
 && \text{for all $j=1,2,\dots,M$.}
@@ -1155,7 +1153,7 @@ that
 The last two inequalities mean that $\pi_\lambda$ is a Lagrangian policy that is
 a feasible solution of the optimization
 problem~\eqref{equation:distribution-policy-optimization} and the objective
-value of $\pi_\lambda$ is at least $V$. This means that $\pi_\lambda$ is an
+value of $\pi_\lambda$ is at least $V_D$. This means that $\pi_\lambda$ is an
 optimal solution of the optimization problem.
 \end{proof}
 
