@@ -190,12 +190,13 @@ $t=1,2,\dots,T$ and $i=1,2,\dots,N$.
 \section{Lagrangian policies}
 
 We consider policies parameterized by $M+1$ real numbers $\lambda_0, \lambda_1,
-\dots, \lambda_M$. As will become clear later, the $\lambda_1, \dots, \lambda_M$
-can be interpreted as the dual variables associated with the constraints of the
-optimization problems. However, for now, they are arbitrary real numbers. For
-any $(M+1)$-dimensional vector $\lambda = (\lambda_0, \lambda_1, \dots,
-\lambda_M) \in \R^{M+1}$ we define a policy $\pi_\lambda:\Requests \to \Delta_N$
-as follows. For any request $R \in \Requests$, we define
+\dots, \lambda_M$. As will become clear later, the numbers $\lambda_1, \dots,
+\lambda_M$ can be interpreted as the dual variables associated with the
+constraints of the optimization problems. However, for now, they are arbitrary
+real numbers. For any $(M+1)$-dimensional vector $\lambda = (\lambda_0,
+\lambda_1, \dots, \lambda_M) \in \R^{M+1}$ we define a policy
+$\pi_\lambda:\Requests \to \Delta_N$ as follows. For any request $R \in
+\Requests$, we define
 \begin{equation}
 \label{equation:lagrangian-policy}
 \pi_\lambda(R) = e_{i^*}
@@ -249,7 +250,7 @@ problem~\eqref{equation:sample-policy-optimization} satisfy
 \pi^*(\left[\begin{smallmatrix} 1 & 1 \\ 0 & 0 \end{smallmatrix}\right]) = \left( \frac{1}{2}, \frac{1}{2} \right) \: .
 \end{equation}
 The output of $\pi^*$ for requests other than $\left[\begin{smallmatrix} 1 & 1
-\\ 0 & 0 \end{smallmatrix}\right]$ does not play any role and it can be
+\\ 0 & 0 \end{smallmatrix}\right]$ does not play any role and can be
 arbitrary. In particular, all optimal solutions are randomized. Any
 deterministic policy is either not a feasible solution or not an optimal
 solution.
@@ -285,20 +286,20 @@ defining Lagrangian policies. The ties cause problems, as explained in
 Proposition~\ref{proposition:computing-primal-from-dual}.
 
 If the distribution $D$ does not have a probability density, we can always
-create a ``nearby'' distribution $D'$ that does. One way of doing it is by
-adding small independent noise to each entry of the request matrix. Namely,
-suppose $R \sim D$. Let $Z$ be an independent random $N \times (M+1)$ matrix
-with entries drawn i.i.d. from the uniform distribution over $[-1,1]$. We
-construct a random sample $R'$ from $D'$ as
+create a ``nearby'' distribution $D'$ that does. One way to do it is to add
+small independent noise to each entry of the request matrix. Namely, suppose $R
+\sim D$. Let $Z$ be an independent random $N \times (M+1)$ matrix with entries
+drawn i.i.d. from the uniform distribution over $[-1,1]$. We construct a random
+sample $R'$ from $D'$ as
 \begin{equation}
 \label{equation:modified-sample}
 R' = (1-\alpha)R + \alpha Z
 \end{equation}
-where $\alpha \in (0,1)$ is a ``small'' positive number. Since sampling error is
-of the order\footnote{The notation $\widetilde{O}(\cdot)$ hides logarithmic
-factors in $N,M,T$.} $\widetilde{O}(\sqrt{M/T})$ and rounding error is of the
-order $O(M/T)$, a suitable value for $\alpha$ should be of similar or smaller
-order.
+where $\alpha \in (0,1)$ is a ``small'' positive number. Since the sampling
+error is of the order\footnote{The notation $\widetilde{O}(\cdot)$ hides
+logarithmic factors in $N,M,T$.} $\widetilde{O}(\sqrt{M/T})$ and the rounding
+error is of the order $O(M/T)$, a suitable value for $\alpha$ should be of
+similar or smaller order.
 
 Equation~\eqref{equation:modified-sample} defines the joint probability
 distribution for $(R,R')$. The marginal distribution of $R$ is $D$, and the
@@ -324,7 +325,7 @@ B_j' = B_j(1 - \alpha) \: .
 $$
 
 First, we show that if the optimization
-problem~\eqref{equation:distribution-policy-optimization} is feasible then the
+problem~\eqref{equation:distribution-policy-optimization} is feasible, then the
 optimization problem~\eqref{equation:distribution-policy-optimization-modified}
 is feasible as well. Second, we show that the optimal values of the two
 optimization problems are related. These two claims are proved in
@@ -358,7 +359,7 @@ distribution of $R'$. Let $V_D$ and $V_{D'}$ be the optimal values of the optimi
 problems~\eqref{equation:distribution-policy-optimization} and
 \eqref{equation:distribution-policy-optimization-modified}, respectively. If the
 optimization problem~\eqref{equation:distribution-policy-optimization} is
-feasible then the optimization
+feasible, then the optimization
 problem~\eqref{equation:distribution-policy-optimization-modified} is feasible
 as well. Furthermore,
 $$
@@ -517,18 +518,18 @@ $$
 Z \le \Exp[Z] + \sqrt{ \frac{2\ln(1/\delta)}{T} } \: .
 $$
 It remains to upper bound $\Exp[Z]$. We use the symmetrization trick. Let $R'_1,
-R'_2, \dots, R'_T$ be an i.i.d. sample from $D$ of size $T$. Let $\sigma_1,
-\sigma_2, \dots, \sigma_T$ be i.i.d. Rademacher random variables, i.e.,
-$\Pr[\sigma_t = 1] = \Pr[\sigma_t = -1] = 1/2$ for all $t=1,2,\dots,T$. We
-assume that $\sigma_1, \sigma_2, \dots, \sigma_T$, $R$, $R_1, R_2, \dots, R_T$,
+R'_2, \dots, R'_T$ be an i.i.d. sample from $D$ of size $T$. Let $\xi_1,
+\xi_2, \dots, \xi_T$ be i.i.d. Rademacher random variables, i.e.,
+$\Pr[\xi_t = 1] = \Pr[\xi_t = -1] = 1/2$ for all $t=1,2,\dots,T$. We
+assume that $\xi_1, \xi_2, \dots, \xi_T$, $R$, $R_1, R_2, \dots, R_T$,
 $R'_1, R'_2, \dots, R'_T$ are mutually independent. We have
 \begin{align*}
 \Exp[Z] & = \Exp\left[\sup_{\substack{\lambda \in \R^{M+1} \\ j=0,1,2,\dots,M}} \left| \Exp \left[ \sum_{i=1}^N \pi_\lambda(R)_i \cdot R_{i,j}  \right] - \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N R_{t,i,j} \cdot \pi_\lambda(R_t)_i \right| \right] \\
 & = \Exp\left[\sup_{\substack{\lambda \in \R^{M+1} \\ j=0,1,2,\dots,M}} \left| \Exp \left[ \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N \pi_\lambda(R'_t)_i \cdot R'_{t,i,j}  \right] - \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N R_{t,i,j} \cdot \pi_\lambda(R_t)_i \right| \right] \\
 & \le \Exp\left[\sup_{\substack{\lambda \in \R^{M+1} \\ j=0,1,2,\dots,M}} \left| \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N \pi_\lambda(R'_t)_i \cdot R'_{t,i,j} - \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N R_{t,i,j} \cdot \pi_\lambda(R_t)_i \right| \right] \\
-& = \frac{1}{T} \Exp\left[\sup_{\substack{\lambda \in \R^{M+1} \\ j=0,1,2,\dots,M}} \left| \sum_{t=1}^T \sum_{i=1}^N \sigma_t \left(\pi_\lambda(R'_t)_i \cdot R'_{t,i,j} - R_{t,i,j} \cdot \pi_\lambda(R_t)_i \right) \right| \right] \\
-& \le \frac{1}{T} \Exp\left[\sup_{\substack{\lambda \in \R^{M+1} \\ j=0,1,2,\dots,M}} \left| \sum_{t=1}^T \sum_{i=1}^N \sigma_t \cdot \pi_\lambda(R'_t)_i \cdot R'_{t,i,j} \right| + \left| \sum_{t=1}^T \sum_{i=1}^N \sigma_t \cdot \pi_\lambda(R_t)_i \cdot R_{t,i,j} \right|  \right] \\
-& \le \frac{2}{T} \Exp\left[\sup_{\substack{\lambda \in \R^{M+1} \\ j=0,1,2,\dots,M}} \left| \sum_{t=1}^T \sum_{i=1}^N \sigma_t \cdot \pi_\lambda(R_t)_i \cdot R_{t,i,j}  \right| \right]
+& = \frac{1}{T} \Exp\left[\sup_{\substack{\lambda \in \R^{M+1} \\ j=0,1,2,\dots,M}} \left| \sum_{t=1}^T \sum_{i=1}^N \xi_t \left(\pi_\lambda(R'_t)_i \cdot R'_{t,i,j} - R_{t,i,j} \cdot \pi_\lambda(R_t)_i \right) \right| \right] \\
+& \le \frac{1}{T} \Exp\left[\sup_{\substack{\lambda \in \R^{M+1} \\ j=0,1,2,\dots,M}} \left| \sum_{t=1}^T \sum_{i=1}^N \xi_t \cdot \pi_\lambda(R'_t)_i \cdot R'_{t,i,j} \right| + \left| \sum_{t=1}^T \sum_{i=1}^N \xi_t \cdot \pi_\lambda(R_t)_i \cdot R_{t,i,j} \right|  \right] \\
+& \le \frac{2}{T} \Exp\left[\sup_{\substack{\lambda \in \R^{M+1} \\ j=0,1,2,\dots,M}} \left| \sum_{t=1}^T \sum_{i=1}^N \xi_t \cdot \pi_\lambda(R_t)_i \cdot R_{t,i,j}  \right| \right]
 \end{align*}
 
 Condition on the event $R_1=r_1, R_2=r_2, \dots, R_T=r_T$ and consider the set of $T$-dimensional vectors
@@ -537,14 +538,14 @@ S = \left\{ \left(\sum_{i=1}^N \pi_\lambda(r_1)_i \cdot r_{1,i,j}, \dots, \sum_{
 $$
 The set $S$ is finite. We reduce the supremum over an uncountably infinite set to a maximum over the finite set $S$,
 $$
-\Exp\left[\sup_{\substack{\lambda \in \R^{M+1} \\ j=0,1,2,\dots,M}} \left| \sum_{t=1}^T \sum_{i=1}^N \sigma_t \cdot \pi_\lambda(R_t)_i \cdot R_{t,i,j}  \right| ~\middle|~ R_1=r_1, R_2=r_2, \dots, R_T=r_T \right]
-= \Exp\left[\max_{v \in S} \left| \sum_{t=1}^T \sigma_t v_t \right| \right]  \: .
+\Exp\left[\sup_{\substack{\lambda \in \R^{M+1} \\ j=0,1,2,\dots,M}} \left| \sum_{t=1}^T \sum_{i=1}^N \xi_t \cdot \pi_\lambda(R_t)_i \cdot R_{t,i,j}  \right| ~\middle|~ R_1=r_1, R_2=r_2, \dots, R_T=r_T \right]
+= \Exp\left[\max_{v \in S} \left| \sum_{t=1}^T \xi_t v_t \right| \right]  \: .
 $$
 Consider any vector $v = (v_1, v_2, \dots, v_T)$ in $S$. Any entry $v_t$ of $v$ satisfies
 $$
 |v_t| = \left|\sum_{i=1}^N \pi_\lambda(r_t)_i \cdot r_{t,i,j}\right| \le \left(\sum_{i=1}^N \pi_\lambda(r_t)_i\right) \cdot  \max_{i=1,2,\dots,N} |r_{t,i,j}| \le 1 \: .
 $$
-This implies that the random variable $Y_v = \sum_{t=1}^T \sigma_t v_t$ is a
+This implies that the random variable $Y_v = \sum_{t=1}^T \xi_t v_t$ is a
 $\sigma$-sub-Gaussian random variable with $\sigma=\sqrt{T}$. That is, $Y_v$
 satisfies
 $$
@@ -553,11 +554,11 @@ $$
 Let $K$ be such that $|S| \le K$ for any choice of $r_1, r_2, \dots, r_T \in
 \Requests$. Lemma~\ref{lemma:maximum-of-sub-gaussian-variables} implies that
 $$
-\Exp\left[\max_{v \in S} \left| \sum_{t=1}^T \sigma_t v_t \right| \right] \le \sqrt{2T \ln(2K)} \: .
+\Exp\left[\max_{v \in S} \left| \sum_{t=1}^T \xi_t v_t \right| \right] \le \sqrt{2T \ln(2K)} \: .
 $$
 Thus, taking expectations over $R_1, R_2, \dots, R_T$, we get that
 $$
-\Exp\left[\sup_{\substack{\lambda \in \R^{M+1} \\ j=0,1,2,\dots,M}}  \left| \sum_{t=1}^T \sum_{i=1}^N \sigma_t \cdot \pi_\lambda(R_t)_i \cdot R_{t,i,j}  \right|  \right] \le \sqrt{2T \ln(2K)} \: .
+\Exp\left[\sup_{\substack{\lambda \in \R^{M+1} \\ j=0,1,2,\dots,M}}  \left| \sum_{t=1}^T \sum_{i=1}^N \xi_t \cdot \pi_\lambda(R_t)_i \cdot R_{t,i,j}  \right|  \right] \le \sqrt{2T \ln(2K)} \: .
 $$
 Therefore,
 $$
@@ -646,7 +647,7 @@ The dual of the primal linear program \eqref{equation:primal-linear-program} is
 We refer to this linear program as \emph{the dual linear program}.
 
 We prove several results about these linear programs. We start with easy
-observations first. The feasible region of the primal linear program is bounded.
+observations. The feasible region of the primal linear program is bounded.
 Indeed, the feasible region is a subset of $\left(\Delta_N\right)^T \subset
 \R^{N \times T}$. The primal program is either feasible and has an optimal
 solution, or it is infeasible; it cannot be unbounded. By the strong duality
@@ -663,7 +664,7 @@ primal variables $x_{1,1}, \dots, x_{T,N}$ can be recovered from the optimal
 values of $\lambda_1, \dots, \lambda_M$ provided that the requests are in
 ``general position'', a term that we define precisely later. We show that if the
 requests are sampled i.i.d. from a probability distribution with a probability
-density then they are in general position with probability one. In summary,
+density, then they are in general position with probability one. In summary,
 the optimal solutions of both linear programs can be essentially encoded using
 only $M$ parameters $\lambda_1, \dots, \lambda_M$. Finally, we show that the
 resulting Lagrangian policy $\pi_\lambda$ is close to the optimal solution of
@@ -759,9 +760,10 @@ R_{t_2,i_{t_2},0} - R_{t_2,i_{t_2}',0} &  \dots & R_{t_2,i_{t_2},M} - R_{t_2,i_{
 R_{t_{M+1},i_{t_{M+1}},0} - R_{t_{M+1},i_{t_{M+1}}',0} & \dots & R_{t_{M+1},i_{t_{M+1}},M} - R_{t_{M+1},i_{t_{M+1}}',M}
 \end{bmatrix}
 $$
-The matrix $A_{\I,\T}$ is sampled from a distribution that has a density with respect to
-the Lebesgue measure on $\R^{(M+1) \times (M+1)}$. Since the Lebesgue measure of
-singular matrices is zero, the probability that $A_{\I,\T}$ is singular is zero as well.
+The matrix $A_{\I,\T}$ is sampled from a distribution that has a density with
+respect to the Lebesgue measure on $\R^{(M+1) \times (M+1)}$. Since the Lebesgue
+measure of the set of all singular matrices is zero, the probability that
+$A_{\I,\T}$ is singular is zero as well.
 
 The event that the requests are \emph{not} in general position is the union of
 the events that the matrix $A_{\I,\T}$ is singular over all possible choices of
@@ -859,7 +861,6 @@ Thus,
 & \qquad \le \frac{2|\T|}{T} \\
 & \qquad \le \frac{2M}{T} \: .
 \end{align*}
-
 \end{proof}
 
 \section{Optimization problem for the expected values}
@@ -1169,22 +1170,22 @@ inequalities~\eqref{inequality:lagrangian-policy-optimality}
 and~\eqref{inequality:lagrangian-policy-feasibility} continue to hold after
 normalization. After normalization, $\lambda^{(1)}, \lambda^{(2)}, \dots$ is an
 infinite sequence of unit length vectors in $\R^{M+1}$. Since the unit sphere in
-$\R^{M+1}$ is a compact set, the Bolzano-Weierstrass theorem implies that it has
-a convergent subsequence $\lambda^{(T_1)}, \lambda^{(T_2)}, \dots$. We denote
-its limit $\lambda^{(\epsilon)}$.\footnote{The notation $\lambda^{(\epsilon)}$
-is used to emphasize the dependence on $\epsilon$. The dependence on $\epsilon$
-might not be obvious. The probability event $\E_1$ depends on policy $\pi^*$ which
-depends on $\epsilon$. Thus, the sequence of requests $R_1, R_2, \dots$ depends
-on $\epsilon$. Consequently, the modified linear
-programs~\eqref{equation:primal-linear-program-modified}
+$\R^{M+1}$ is a compact set, the Bolzano-Weierstrass theorem implies that the
+sequence has a convergent subsequence $\lambda^{(T_1)}, \lambda^{(T_2)}, \dots$.
+We denote its limit by $\lambda^{(\epsilon)}$.\footnote{The notation
+$\lambda^{(\epsilon)}$ is used to emphasize the dependence on $\epsilon$. The
+dependence on $\epsilon$ might not be obvious. The probability event $\E_1$
+depends on policy $\pi^*$ which depends on $\epsilon$. Thus, the sequence of
+requests $R_1, R_2, \dots$ depends on $\epsilon$. Consequently, the modified
+linear programs~\eqref{equation:primal-linear-program-modified}
 and~\eqref{equation:dual-linear-program-modified} depend on $\epsilon$. Their
 solutions $x^{(T)}$ and $\lambda^{(T)}$ depend on $\epsilon$ as well.} We take
 the limit of inequalities~\eqref{inequality:lagrangian-policy-optimality}
 and~\eqref{inequality:lagrangian-policy-feasibility} along the convergent
 subsequence. Lemma~\ref{lemma:continuity-for-lagrangian-policies} implies that
 the limits of the left hand sides of the inequalities exist. The error terms on
-the right-hand sides of the inequalities approach zero as $T$ goes to infinity. We
-get that
+the right-hand sides of the inequalities approach zero as $T$ goes to infinity.
+We get that
 \begin{align}
 \label{inequality:lagrangian-policy-optimality-limit-1}
 \Exp_{R \sim D} \left[ \sum_{i=1}^N \pi_{\lambda^{(\epsilon)}}(R)_i \cdot R_{i,0}  \right] & \ge V_D - \epsilon \: , \\
@@ -1249,7 +1250,7 @@ For any $s \in \R$,
 The first equality follows from the fact that $|Y_k| = \max \left\{Y_k,
 -Y_k\right\}$. The first inequality follows from Jensen's inequality for the
 convex function $x \mapsto e^{sx}$. The second inequality follows from the fact
-that maximum of non-negative numbers is upper bounded by their sum. The last
+that the maximum of non-negative numbers is upper bounded by their sum. The last
 inequality follows from the sub-Gaussian property for $Y_k$.
 
 Thus, for any $s \in \R$,
