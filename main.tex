@@ -937,24 +937,21 @@ optimization problem is feasible, $V_D > -\infty$ and, in particular, $V_D \in
 Fix $\epsilon > 0$. Since the optimization problem is feasible, there exists a
 measurable policy $\pi^*: \Requests \to \Delta_N$ that is feasible and
 $\epsilon$-optimal. That is,
-\begin{equation}
+\begin{align}
 \label{inequality:optimal-policy-feasibility}
-\Exp_{R \sim D} \left[ \sum_{i=1}^N \pi^*(R)_i \cdot R_{i,j} \right] \le B_j \qquad \text{for all $j=1,2,\dots,M$}
-\end{equation}
-and
-\begin{equation}
+\Exp_{R \sim D} \left[ \sum_{i=1}^N \pi^*(R)_i \cdot R_{i,j} \right] & \le B_j \qquad \text{for all $j=1,2,\dots,M$} \\
 \label{inequality:optimal-policy-optimality}
-\Exp_{R \sim D} \left[ \sum_{i=1}^N \pi^*(R)_i \cdot R_{i,0} \right] \ge V_D - \epsilon \: .
-\end{equation}
+\Exp_{R \sim D} \left[ \sum_{i=1}^N \pi^*(R)_i \cdot R_{i,0} \right] & \ge V_D - \epsilon \: .
+\end{align}
 
 Let $R_1, R_2, \dots$ be an infinite sequence of requests sampled i.i.d. from
-$D$. Let $T$ be a positive integer. Let
+$D$. For any positive integer $T$, let
 \begin{align*}
-\delta_T & = \frac{1}{5(M+1)T(T+1)} \\
+\delta_T & = \frac{1}{5(M+1)T(T+1)} \: , \\
 B_{T,j}' & = B_j + \sqrt{ \frac{2\ln(2/\delta_T)}{T}} \qquad \text{for all $j=1,2,\dots,M$.}
 \end{align*}
-We consider the modified versions of the primal and dual linear
-programs~\eqref{equation:primal-linear-program}
+For any positive integer $T$, we define the modified versions of the primal and
+dual linear programs~\eqref{equation:primal-linear-program}
 and~\eqref{equation:dual-linear-program} with $B_{T,j}'$ instead of $B_j$,
 \begin{equation}
 \label{equation:primal-linear-program-modified}
