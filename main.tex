@@ -77,12 +77,11 @@ $j$-th business metric for the $t$-th request if we choose action $i$ for it.
 The right-hand sides of the constraints $B_1, B_2, \dots, B_M$ are given to us
 ahead of time.
 
-For example, at Uber, a request can be a request by a customer to get a ride and
-Uber needs to choose one of $N$ possible prices for the request. $R_{t,i,0}$
-could be the probability of the trip happening, $R_{t,i,1}$ could be the price
-paid by the rider, $R_{t,i,2}$ could be the price paid to the driver, etc. The
-right-hand sides of the constraints are the business objectives Uber wishes to
-achieve over the period of, say, one day or one week.
+For example, at Uber, a request can be a customer's request for a ride and Uber
+needs to choose one of $N$ possible prices for the request. $R_{t,i,0}$ could be
+the probability of the trip happening, $R_{t,i,1}$ could be the expected profit,
+etc. The right-hand sides of the constraints are the business objectives Uber
+wishes to achieve over a period of, say, one day or one week.
 
 In practical applications, the number of requests, $T$, is not known ahead of time.
 Instead, it is forecasted by a statistical or a machine learning model. We
@@ -122,7 +121,7 @@ However, we assume that we have a historical sample of requests available that
 we can use. We assume that the historical sample is generated i.i.d. from $D$ as
 well. Using the historical sample, we formulate an optimization problem. The
 problem is identical to \eqref{equation:sample-policy-optimization} with the
-only difference being that $R_1, R_2, \dots, R_T$ refers to the historical
+only difference being that $R_1, R_2, \dots, R_T$ refer to the historical
 sample and the sample size $T$ refers to the size of the historical sample.
 
 We study the relationship between the optimization problems
@@ -142,7 +141,7 @@ on the total (or average) business metrics.
 
 \section{Notation and definitions}
 
-We use the following notation for the rest of the paper. For $i=1,2,\dots,N$, we
+We use the following notation in the rest of the paper. For $i=1,2,\dots,N$, we
 define $e_i$ to be the vector in $\R^N$ with $i$-th entry equal to $1$ and all
 other entries equal to zero, that is,
 $$
@@ -203,8 +202,8 @@ $\pi_\lambda:\Requests \to \Delta_N$ as follows. For any request $R \in
 \qquad \text{where} \qquad
 i^* = \argmax_{i=1,2,\dots,N} \lambda_0 R_{i,0} + \lambda_1 R_{i,1} + \lambda_2 R_{i,2} + \dots + \lambda_M R_{i,M} \: .
 \end{equation}
-The ties in the $\argmax$ are broken towards the smaller index $i$. We call a
-policy of this form a \emph{Lagrangian policy}. The reason for this name will
+The ties in the $\argmax$ are broken in favor of the smaller index $i$. We call
+a policy of this form a \emph{Lagrangian policy}. The reason for this name will
 become clear once we formulate the optimization problem as a linear program and
 consider its dual.
 
@@ -282,11 +281,11 @@ technical reasons, it is convenient to assume that $D$ has a probability density
 with respect to the Lebesgue measure on $\Requests = [-1,1]^{N \times (M+1)}$.
 The fundamental reason for assuming the existence of a probability density is to
 avoid having ties in the argmax in equation~\eqref{equation:lagrangian-policy}
-defining Lagrangian policies. The ties cause problems, as explained in
+defining Lagrangian policies. The ties cause problems, as can be seen from
 Proposition~\ref{proposition:computing-primal-from-dual}.
 
 If the distribution $D$ does not have a probability density, we can always
-create a ``nearby'' distribution $D'$ that does. One way to do it is to add
+create a ``nearby'' distribution $D'$ that does. One way to do so is to add
 small independent noise to each entry of the request matrix. Namely, suppose $R
 \sim D$. Let $Z$ be an independent random $N \times (M+1)$ matrix with entries
 drawn i.i.d. from the uniform distribution over $[-1,1]$. We construct a random
@@ -478,13 +477,13 @@ problem~\eqref{equation:distribution-policy-optimization}.
 \section{Uniform convergence for Lagrangian policies}
 
 The first major result that we prove is that for all Lagrangian policies the
-objective functions and the corresponding constraints of the two optimization
-problems \eqref{equation:sample-policy-optimization} and
+objective functions and the left-hand sides of the corresponding constraints of
+the two optimization problems \eqref{equation:sample-policy-optimization} and
 \eqref{equation:distribution-policy-optimization} converge to one another as the
 sample size $T$ increases. This result holds for any distribution $D$ with or
-without a probability density. The strength of the result is that the convergence
-is uniform over all Lagrangian policies. The proof is a standard application
-of statistical learning theory; see~\cite{Devroye-Lugosi-2001}.
+without a probability density. The strength of the result is that the
+convergence is uniform over all Lagrangian policies. The proof is a standard
+application of statistical learning theory; see~\cite{Devroye-Lugosi-2001}.
 
 \begin{theorem}[Uniform convergence]
 \label{theorem:uniform-convergence}
@@ -595,8 +594,8 @@ hyperplanes in $\R^{M+1}$ on $\binom{N}{2} T$ points. The Vapnik-Chervonenkis
 dimension of homogeneous hyperplanes in $\R^{M+1}$ is $M+1$.\footnote{The
 Vapnik-Chervonenkis dimension is not affected by the inclusion of the constant
 $1$ predictor that corresponds to $\lambda = 0$.} Thus, the number of behaviors
-of homogeneous hyperplanes in $\R^{M+1}$ on $\binom{N}{2} T$ points and thus the
-cardinality of $W$ is at most
+of homogeneous hyperplanes in $\R^{M+1}$ on $\binom{N}{2} T$ points and, thus,
+the cardinality of $W$ is at most
 $$
 |W| \le \sum_{k=0}^{M+1} \binom{T \binom{N}{2}}{k} \le \left(T \binom{N}{2} + 1 \right)^{M+1} \le (N^2T)^{M+1} \: .
 $$
@@ -646,7 +645,7 @@ The dual of the primal linear program \eqref{equation:primal-linear-program} is
 \end{equation}
 We refer to this linear program as \emph{the dual linear program}.
 
-We prove several results about these linear programs. We start with easy
+We prove several results about these linear programs. We start with some easy
 observations. The feasible region of the primal linear program is bounded.
 Indeed, the feasible region is a subset of $\left(\Delta_N\right)^T \subset
 \R^{N \times T}$. The primal program is either feasible and has an optimal
@@ -657,18 +656,18 @@ the dual program can have an unbounded feasible set, and even an unbounded set
 of optimal solutions.
 
 Next, we prove that the optimal values of the dual variables $\mu_1, \dots,
-\mu_T$ and the optimal values of ``some'' primal variables, $x_{1,1}, \dots,
-x_{T,N}$, can be computed from the optimal values of only $\lambda_1, \dots,
-\lambda_M$. We then prove that, in fact, the optimal values of ``almost all''
-primal variables $x_{1,1}, \dots, x_{T,N}$ can be recovered from the optimal
-values of $\lambda_1, \dots, \lambda_M$ provided that the requests are in
-``general position'', a term that we define precisely later. We show that if the
-requests are sampled i.i.d. from a probability distribution with a probability
-density, then they are in general position with probability one. In summary,
-the optimal solutions of both linear programs can be essentially encoded using
-only $M$ parameters $\lambda_1, \dots, \lambda_M$. Finally, we show that the
-resulting Lagrangian policy $\pi_\lambda$ is close to the optimal solution of
-the primal program.
+\mu_T$ and the optimal values of ``some'' of the primal variables can be
+computed from the optimal values of only $\lambda_1, \dots, \lambda_M$. We then
+prove that, in fact, the optimal values of ``almost all'' primal variables
+$x_{1,1}, \dots, x_{T,N}$ can be recovered from the optimal values of
+$\lambda_1, \dots, \lambda_M$ provided that the requests are in ``general
+position'', a term that we define precisely later. We show that if the requests
+are sampled i.i.d. from a probability distribution with a probability density,
+then they are in general position with probability one. In summary, the optimal
+solutions of both linear programs can be essentially encoded using only $M$
+parameters $\lambda_1, \dots, \lambda_M$. Finally, we show that the resulting
+Lagrangian policy $\pi_\lambda$ is close to the optimal solution of the primal
+program.
 
 \begin{proposition}[Computing $\mu$]
 \label{proposition:computing-mu}
@@ -684,7 +683,7 @@ The dual constraints imply that
 $$
 \mu_t \ge \frac{1}{T} \left( R_{t,i,0} - \sum_{j=1}^M R_{t,i,j} \lambda_j \right) \: .
 $$
-Taking maximum over $i$, we get
+Taking the maximum over $i$, we get
 $$
 \mu_t \ge \frac{1}{T} \max_{i=1,2,\dots,N} \left( R_{t,i,0} - \sum_{j=1}^M R_{t,i,j} \lambda_j \right) \: .
 $$
@@ -1097,7 +1096,7 @@ and \eqref{inequality:optimal-policy-optimality}. We get
 \end{equation}
 
 The inequality~\eqref{inequality:optimal-policy-feasibility-on-sample} implies
-that $x_{t,i} = \pi^*(R_t)_i$, $i=1,2,\dots,N$, $t=1,2,\dots$ is a feasible
+that $x_{t,i} = \pi^*(R_t)_i$, $i=1,2,\dots,N$, $t=1,2,\dots,T$ is a feasible
 solution of the modified primal linear
 program~\eqref{equation:primal-linear-program-modified}. In particular, this
 means that the modified primal linear
@@ -1121,7 +1120,7 @@ and get that
 \ge V_D - \epsilon - \sqrt{\frac{2\ln(2/\delta_T)}{T}}
 \qquad \text{for all $T=1,2,\dots$.}
 \end{equation}
-The feasibility of the $x^{(T)}_{t,i}$, $t=1,2,\dots,T$, $i=1,2,\dots,N$ implies that
+The feasibility of $x^{(T)}_{t,i}$, $t=1,2,\dots,T$, $i=1,2,\dots,N$ implies that
 \begin{equation}
 \label{inequality:sample-optimal-policy-feasibility}
 \frac{1}{T} \sum_{t=1}^T \sum_{i=1}^N R_{t,i,j} \cdot x^{(T)}_{t,i} \le B_{T,j}'
@@ -1164,12 +1163,12 @@ that for all $j=1,2,\dots,M$,
 \: .
 \end{multline}
 
-Since $\lambda^{(T)}$ is a non-zero vector, we can normalize it to unit length
+Since $\lambda^{(T)}$ is a non-zero vector, we can normalize it to unit-length
 and the policy $\pi_{\lambda^{(T)}}$ remains the same. In particular, the
 inequalities~\eqref{inequality:lagrangian-policy-optimality}
 and~\eqref{inequality:lagrangian-policy-feasibility} continue to hold after
 normalization. After normalization, $\lambda^{(1)}, \lambda^{(2)}, \dots$ is an
-infinite sequence of unit length vectors in $\R^{M+1}$. Since the unit sphere in
+infinite sequence of unit-length vectors in $\R^{M+1}$. Since the unit sphere in
 $\R^{M+1}$ is a compact set, the Bolzano-Weierstrass theorem implies that the
 sequence has a convergent subsequence $\lambda^{(T_1)}, \lambda^{(T_2)}, \dots$.
 We denote its limit by $\lambda^{(\epsilon)}$.\footnote{The notation
@@ -1183,7 +1182,7 @@ solutions $x^{(T)}$ and $\lambda^{(T)}$ depend on $\epsilon$ as well.} We take
 the limit of inequalities~\eqref{inequality:lagrangian-policy-optimality}
 and~\eqref{inequality:lagrangian-policy-feasibility} along the convergent
 subsequence. Lemma~\ref{lemma:continuity-for-lagrangian-policies} implies that
-the limits of the left hand sides of the inequalities exist. The error terms on
+the limits of the left-hand sides of the inequalities exist. The error terms on
 the right-hand sides of the inequalities approach zero as $T$ goes to infinity.
 We get that
 \begin{align}
@@ -1202,7 +1201,7 @@ its limit. We take the limit of
 inequalities~\eqref{inequality:lagrangian-policy-optimality-limit-1}
 and~\eqref{inequality:lagrangian-policy-feasibility-limit-1} along the
 convergent subsequence. Lemma~\ref{lemma:continuity-for-lagrangian-policies}
-implies that the limits of the left hand sides of the inequalities exist. We get
+implies that the limits of the left-hand sides of the inequalities exist. We get
 that
 \begin{align}
 \label{inequality:lagrangian-policy-optimality-limit-2}
@@ -1236,7 +1235,7 @@ $$
 \end{lemma}
 
 \begin{proof}
-For any $s \in \R$,
+For any $s > 0$,
 \begin{align*}
 \exp\left(s \Exp\left[ \max_{k=1,2,\dots,K} |Y_k| \right] \right)
 & = \exp\left(s \Exp\left[ \max_{k=1,2,\dots,K} \max \left\{Y_k, -Y_k\right\} \right] \right) \\
@@ -1253,15 +1252,15 @@ convex function $x \mapsto e^{sx}$. The second inequality follows from the fact
 that the maximum of non-negative numbers is upper bounded by their sum. The last
 inequality follows from the sub-Gaussian property for $Y_k$.
 
-Thus, for any $s \in \R$,
+Thus, for any $s > 0$,
 $$
 \exp\left(s \Exp\left[ \max_{k=1,2,\dots,K} |Y_k| \right] \right) \le 2K e^{s^2\sigma^2/2} \: .
 $$
-Taking logarithms, we get that for any $s \in \R$,
+Taking logarithms, we get that for any $s > 0$,
 $$
 s \Exp\left[ \max_{k=1,2,\dots,K} |Y_k| \right] \le \frac{s^2 \sigma^2}{2} + \ln(2K) \: .
 $$
-We restrict ourselves to $s > 0$ and divide both sides by $s$. We get that for any $s > 0$,
+We divide both sides by $s$. We get that for any $s > 0$,
 $$
 \Exp\left[ \max_{k=1,2,\dots,K} |Y_k| \right] \le \frac{s \sigma^2}{2} + \frac{\ln(2K)}{s} \: .
 $$
