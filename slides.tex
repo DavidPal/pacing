@@ -150,27 +150,12 @@ Tie breaking in argmax is towards the smaller index $i$.
 \end{theorem}
 \end{frame}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{frame}
-\frametitle{Lagrangian Policies}
-
-\begin{itemize}
-\item Proof of the theorem is too technical.
-\item Two basic ingredients:
-\begin{itemize}
-\item Uniform convergence for Lagrangian policies.
-\item Linear programming duality.
-\end{itemize}
-\item Lagrangian policies are the same as multiclass linear classifiers, or, in other words, multiclass Perceptrons.
-\end{itemize}
-
-\end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
 \frametitle{How do we find the multipliers $\lambda$?}
 
-We solve the dual program on an historical sample of requests.
+We solve the dual program on a historical sample of requests.
 
 \begin{align*}
 \minimize_{\substack{\mu_1, \dots, \mu_T \in \R \\ \lambda_1, \dots, \lambda_M \in \R}} \quad & \sum_{t=1}^T \mu_t + \sum_{j=1}^M B_j \lambda_j \\
@@ -178,15 +163,31 @@ We solve the dual program on an historical sample of requests.
 & \lambda_j \ge 0 && \quad 1 \le j \le M
 \end{align*}
 
-How do we know that $\pi_\lambda$ is a good policy?
+\end{frame}
 
-We use again
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Lagrangian Policies}
+
+\begin{itemize}
+\item Lagrangian policies are the same as multiclass linear classifiers, or, in other words, multiclass Perceptrons.
+
+\item Proof of theorem relies on
 \begin{itemize}
 \item Uniform convergence for Lagrangian policies.
 \item Linear programming duality.
 \end{itemize}
-\end{frame}
 
+\item $\lambda$ from historical data yields a near optimal policy.
+\item This follows from the same two arguments:
+\begin{itemize}
+\item Uniform convergence for Lagrangian policies.
+\item Linear programming duality.
+\end{itemize}
+
+\end{itemize}
+
+\end{frame}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{frame}
@@ -237,7 +238,7 @@ holds, then $x_{t,i} = 0$.
 
 \item In particular, if
 $$
-i^* = \argmax_{i=1,2,\dots,N} R_{t,i,0} - \sum_{j=1}^M R_{t,i,j} \lambda_j
+i^* = \argmax_{i=1,2,\dots,N} R_{t,i,0} - R_{t,i,1} \lambda_1 - R_{t,i,2} \lambda_2 - \dots - R_{t,i,M} \lambda_M
 $$
 is unique (i.e. no ties) then $x_{t,i^*} = 1$ and $x_{t,i} = 0$ for all $i \neq i^*$.
 \end{itemize}
@@ -250,12 +251,10 @@ is unique (i.e. no ties) then $x_{t,i^*} = 1$ and $x_{t,i} = 0$ for all $i \neq 
 \frametitle{How many ties are there?}
 
 \begin{itemize}
-\item For how requests can there be ties in the argmax
+\item If the requests are in ``general position'', then there at most $M$ requests with a tie in
 $$
 i^* = \argmax_{i=1,2,\dots,N} R_{t,i,0} - \sum_{j=1}^M R_{t,i,j} \lambda_j \ ?
 $$
-
-\item If the requests are in ``general position'' then there at most $M$ ties.
 
 \item Every tie corresponds to a linear equation for $(\lambda_1, \lambda_2, \dots, \lambda_M)$,
 $$
@@ -269,5 +268,49 @@ they are in general position with probability one.
 \end{itemize}
 
 \end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Errors}
+
+\begin{itemize}
+\item We solve the problem on a historical sample of requests.
+\item Two sources of error:
+\begin{itemize}
+\item Sampling error of past data.
+\item Sampling error of future data.
+\item Lagrangian policy can disagree on $M$ requests with the optimal solution. (Ties)
+\end{itemize}
+
+\item Assume that all entries of $R_t$ lie in a bounded interval
+\item Sampling errors are $\widetilde{O}(\sqrt{M/T})$.
+\item The ties cause error of order $O(M/T)$.
+\end{itemize}
+
+\end{frame}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{frame}
+\frametitle{Distributions without probability density}
+
+\begin{itemize}
+\item If the requests are not in general position, there can be ties.
+
+\item If the distribution does not have a probability density, the optimal
+solution might not be a Lagrangian policy.
+
+\item Simple solution: Add a little bit of noise to each request $R_t$:
+$$
+R'_t = R_t + \epsilon Z_t
+$$
+where $Z_t$ is a matrix with entries sampled i.i.d. from the uniform distribution on $[-1,1]$
+and $\epsilon$ is a small positive constant.
+
+\item Noise is added both to historical and future requests.
+
+\item This causes error of order $O(\epsilon)$.
+\end{itemize}
+\end{frame}
+
 
 \end{document}
