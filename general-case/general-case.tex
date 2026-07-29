@@ -45,19 +45,19 @@ We show convergence results for the pacing problem.
 
 We consider an online optimization problem where an algorithm processes a
 sequence of \emph{requests} $R_1, R_2, \dots, R_T$ one by one. Each request is a
-subset of $\R^{D+1}$. In round $t$, the algorithm needs to choose an
+subset of $\R^{M+1}$. In round $t$, the algorithm needs to choose an
 \emph{action} $x_t \in R_t$. We index the coordinates of the action starting
-from $0$. The goal of the algorithm is to solve approximately the following
-optimization problem:
+from $0$, that is, $x_t = (x_{t,0}, x_{t,1}, \dots, x_{t,M})$. The goal of the
+algorithm is to solve approximately the optimization problem
 \begin{equation}
 \label{equation:optimization-problem}
 \begin{aligned}
-\maximize \qquad & \frac{1}{T} \sum_{t=1}^T x_{t,0} \\
-\subjectto \qquad & \frac{1}{T} \sum_{t=1}^T x_{t,i} \le B_i && \quad 1 \le i \le D \\
-& x_t \in R_t \\
+\maximize_{x_1, x_2, \dots, x_T} \qquad & \frac{1}{T} \sum_{t=1}^T x_{t,0} \\
+\subjectto \qquad & \frac{1}{T} \sum_{t=1}^T x_{t,i} \le B_i && \qquad \text{for all $i=1,2,\dots,M$} \\
+& x_t \in R_t && \qquad \text{for all $t=1,2,\dots,T$} \\
 \end{aligned}
 \end{equation}
-where $B_1, B_2, \dots, B_D$ are real numbers known ahead of time.
+where $B_1, B_2, \dots, B_M$ are real numbers known ahead of time.
 
 Problems of the form \eqref{equation:optimization-problem} arise in revenue
 management. For example, in online marketing, the request corresponds to an
@@ -76,6 +76,55 @@ the action $x_t$ correspond to the business metrics the ride hailing platform
 wishes to optimize, such as the probability trip happening (i.e. both rider and
 driver accept the ride), the expected revenue collected from the rider, and
 expected profit for the ride hailing platform.
+
+Without any assumptions on the sequence of requests, solving the optimization
+problem, even approximately, is information-theoretically impossible; see
+Appendix~\ref{section:impossibility-result} for a proof. We therefore make
+several assumptions on the sequence of requests. First, we assume the requests
+are drawn i.i.d. from some distribution $D$. The distribution $D$ is unknown to
+the algorithm and can be arbitrary. Second, we assume the requests are uniformly
+bounded. For concreteness, we assume $R_1, R_2, \dots, R_T \subseteq [-1,
+1]^{M+1}$. The uniform boundedness assumption ensures that an influence of any
+single requests on the optimization objective and the left-hand sides of the
+inequality constraints is not too large. We are interested in a regime where $T$
+is much larger than $M$.
+
+Under these assumptions, we design an algorithm that solves the online
+optimization problem approximately. The idea behind the algorithm is to phrase
+the problem as a policy optimization problem
+\begin{equation}
+\label{equation:policy-optimization-problem}
+\begin{aligned}
+\maximize_{P} \qquad & \Exp_{\substack{R \sim D \\ \pi \sim P}} \left[ \pi(R)_0 \right] \\
+\subjectto \qquad & \Exp_{\substack{R \sim D \\ \pi \sim P}} \left[ \pi(R)_i \right] \le B_i && \qquad \text{for all $i=1,2,\dots,M$} \\
+\end{aligned}
+\end{equation}
+where the request $R$ is drawn randomly from the distribution $D$ and,
+independently, the policy is drawn randomly from a distribution $P$. The
+expectations above are taken with respect to both of these random draws. A
+\emph{policy} $\pi$ is a function $\pi:2^{\R^{M+1}} \to \R^{M+1}$ such that
+$\pi(R) \in R$ for all $R \subseteq \R^{M+1}$. We refer to the distribution $P$
+as a \emph{randomized policy}.
+
+Since the distribution $D$ is unknown, we cannot solve the policy optimization
+problem directly. Instead, in round $t$, we use the sample $R_1, R_2, \dots,
+R_t$ as a proxy for the distribution $D$. We find a randomized policy $P_t$ that
+approximately solves the policy optimization problem
+\begin{equation}
+\label{equation:policy-optimization-problem}
+\begin{aligned}
+\maximize_{P_t} \qquad & \frac{1}{t} \sum_{\tau=1}^t \Exp_{\pi \sim P_t} \left[ \pi(R_\tau)_0 \right] \\
+\subjectto \qquad & \frac{1}{t} \sum_{\tau=1}^t \Exp_{\pi \sim P_t} \left[ \pi(R_\tau)_i \right] \le B_i && \qquad \text{for all $i=1,2,\dots,M$} \\
+\end{aligned}
+\end{equation}
+We then use the randomized policy $P_t$ to choose the action $x_t$.
+
+\appendix
+
+\section{Impossibility result for adversarial requests}
+\label{section:impossibility-result}
+
+TODO
 
 \nocite{*}
 \bibliographystyle{plain}
