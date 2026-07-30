@@ -45,10 +45,10 @@ We show convergence results for the pacing problem.
 
 We consider an online optimization problem where an algorithm processes a
 sequence of \emph{requests} $R_1, R_2, \dots, R_T$ one by one. Each request is a
-subset of $\R^{M+1}$. In round $t$, the algorithm needs to choose an
-\emph{action} $x_t \in R_t$. We index the coordinates of the action starting
-from $0$, that is, $x_t = (x_{t,0}, x_{t,1}, \dots, x_{t,M})$. The goal of the
-algorithm is to solve approximately the optimization problem
+non-empty subset of $\R^{M+1}$, finite or infinite. In round $t$, the algorithm
+needs to choose an \emph{action} $x_t \in R_t$. We index the coordinates of the
+action starting from $0$, that is, $x_t = (x_{t,0}, x_{t,1}, \dots, x_{t,M})$.
+The goal of the algorithm is to solve approximately the optimization problem
 \begin{equation}
 \label{equation:optimization-problem}
 \begin{aligned}
@@ -63,19 +63,26 @@ Problems of the form \eqref{equation:optimization-problem} arise in revenue
 management. For example, in online marketing, the request corresponds to an
 opportunity for an advertiser to show an advertisement to a user. The elements
 of $R_t$ correspond to the bids the advertiser can submit in an advertisment
-auction. The coordinates of the action $x_t$ correspond to the business metrics
-the advertiser wishes to optimize, such as the probability that the user clicks
-on the advertisement, the expected amount the advertiser pays to the publisher,
-and the revenue the advertiser collects from the user.
+auction. The coordinates of the action $x_t$ are the business metrics the
+advertiser wishes to optimize, such as the probability that the user clicks on
+the advertisement, the expected amount the advertiser pays to the publisher, and
+the revenue the advertiser collects from the user.
 
 Another example of a problem of the form \eqref{equation:optimization-problem}
 arises in ride hailing. The request $R_t$ corresponds to a user request for a
 ride. The elements of $R_t$ correspond to pairs of prices the ride hailing
 platform can offers to the rider and the driver for the ride. The coordinates of
-the action $x_t$ correspond to the business metrics the ride hailing platform
-wishes to optimize, such as the probability trip happening (i.e. both rider and
-driver accept the ride), the expected revenue collected from the rider, and
-expected profit for the ride hailing platform.
+the action $x_t$ are the business metrics the ride hailing platform wishes to
+optimize, such as the probability trip happening (i.e. both rider and driver
+accept the ride), the expected revenue collected from the rider, and expected
+profit for the ride hailing platform.
+
+In applications, the elements of $R_t$ are often predicted by machine learning
+models just before the action $x_t$ needs to be chosen. These predictions are
+only proxies for the business metrics. The actual business metrics are revealed
+only after the action has been chosen, sometimes with a significant delay.
+However, in order to keep our model simple, we ignore the difference between the
+predicted and the actual business metrics.
 
 Without any assumptions on the sequence of requests, solving the optimization
 problem, even approximately, is information-theoretically impossible; see
@@ -89,48 +96,122 @@ single requests on the optimization objective and the left-hand sides of the
 inequality constraints is not too large. We are interested in a regime where $T$
 is much larger than $M$.
 
-Under these assumptions, we design an algorithm that solves the online
-optimization problem approximately. The idea behind the algorithm is to phrase
-the problem as a policy optimization problem
+In practice, the requests change over time; the sequence of requests has
+seasonal patterns, often at multiple time scales. Nevertheless, the i.i.d.
+assumption is a good approximation for short enough time periods (e.g., one
+hour, one day, or one week).
+
+Under the i.i.d. and uniformly bounded assumptions, we design an algorithm that
+solves the online optimization problem approximately. The idea behind the
+algorithm is find an approximately optimal policy. A \emph{policy} $\pi$ is a
+function $\pi:2^{\R^{M+1}} \to \R^{M+1}$ such that $\pi(R) \in R$ for all $R
+\subseteq \R^{M+1}$. A policy chooses an action $\pi(R)$ for any request $R$. A
+randomized policy is a distribution over policies. The algorithm's goal is to
+find a randomized policy $P$ that is an approximate solution of the
+optimization problem
 \begin{equation}
 \label{equation:distribution-policy-optimization}
 \begin{aligned}
-\maximize_{P \in \mathcal{P}} \qquad & \Exp_{\substack{R \sim D \\ \pi \sim P}} \left[ \pi(R)_0 \right] \\
+\maximize_{P} \qquad & \Exp_{\substack{R \sim D \\ \pi \sim P}} \left[ \pi(R)_0 \right] \\
 \subjectto \qquad & \Exp_{\substack{R \sim D \\ \pi \sim P}} \left[ \pi(R)_i \right] \le B_i && \qquad \text{for all $i=1,2,\dots,M$} \\
 \end{aligned}
 \end{equation}
 where the request $R$ is drawn randomly from the distribution $D$ and,
-independently, the policy is drawn randomly from a distribution $P$. The
-expectations above are taken with respect to both of these random draws. A
-\emph{policy} $\pi$ is a function $\pi:2^{\R^{M+1}} \to \R^{M+1}$ such that
-$\pi(R) \in R$ for all $R \subseteq \R^{M+1}$. We refer to the distribution $P$
-as a \emph{randomized policy}. The optimization is taken over all randomized
-policies.
+independently, the policy $\pi$ is drawn randomly from a distribution $P$. The
+expectations above are taken with respect to both of these random draws.
 
 Since the distribution $D$ is unknown, we cannot solve the policy optimization
-problem \eqref{equation:policy-optimization-problem-distribution} directly.
+problem \eqref{equation:distribution-policy-optimization} directly.
 Instead, in round $t$, we use the sample $R_1, R_2, \dots, R_t$ as a proxy for
 the distribution $D$. We find a randomized policy $P_t$ that approximately
 solves the policy optimization problem on the sample
 \begin{equation}
 \label{equation:sample-policy-optimization}
 \begin{aligned}
-\maximize_{P_t \in \mathcal{P}} \qquad & \frac{1}{t} \sum_{\tau=1}^t \Exp_{\pi \sim P_t} \left[ \pi(R_\tau)_0 \right] \\
+\maximize_{P_t} \qquad & \frac{1}{t} \sum_{\tau=1}^t \Exp_{\pi \sim P_t} \left[ \pi(R_\tau)_0 \right] \\
 \subjectto \qquad & \frac{1}{t} \sum_{\tau=1}^t \Exp_{\pi \sim P_t} \left[ \pi(R_\tau)_i \right] \le B_i && \qquad \text{for all $i=1,2,\dots,M$} \\
 \end{aligned}
 \end{equation}
 We then use the randomized policy $P_t$ to choose the action $x_t$.
 
-We study the relationship between the optimization problems
-\eqref{equation:sample-policy-optimization} and
-\eqref{equation:distribution-policy-optimization}. We show that approximate
-solutions to both problems lie in a much smaller class of policies, which we
-call Lagrangian policies. We show that a Lagrangian policy that is an
-approximate solution for one of the optimization problems is an approximate
-solution for the other. Lagrangian policies naturally arise from the formulation
-of the optimization problem~\eqref{equation:sample-policy-optimization} as a
-linear program. The dual of the linear program plays a central role in our
-analysis.
+It is not a priori clear what space of policies one should use in optimization
+problem \eqref{equation:distribution-policy-optimization} and
+\eqref{equation:sample-policy-optimization}. However, as it turns out,
+approximate solutions to both optimization problems lie in a fairly small class
+of policies, which we call Lagrangian policies. We show that a Lagrangian policy
+that is an approximate solution for one of the optimization problems is an
+approximate solution for the other. Lagrangian policies naturally arise from the
+formulation of the optimization
+problem~\eqref{equation:sample-policy-optimization} as a linear program. The
+dual of the linear program plays a central role in our analysis.
+
+\subsection{Approximate solutions}
+
+The optimization problems \eqref{equation:optimization-problem},
+\eqref{equation:distribution-policy-optimization}, and
+\eqref{equation:sample-policy-optimization} cannot be solved exactly. We thus
+need to define appropriate notions of approximate solutions for these problems.
+
+We say that a sequence of actions $x_1, x_2, \dots, x_T$ is an
+\emph{$\epsilon$-feasible} for the optimization problem
+\eqref{equation:optimization-problem} if
+\begin{align*}
+\frac{1}{T} \sum_{t=1}^T x_{t,i} & \le B_i + \epsilon & \qquad \text{for all $i=1,2,\dots,M$,} \\
+x_t \in R_t && \qquad \text{for all $t=1,2,\dots,T$.}
+\end{align*}
+We say that a randomized policy $P$ is \emph{$\epsilon$-feasible}
+for the optimization problem \eqref{equation:distribution-policy-optimization} if
+$$
+\Exp_{\substack{R \sim D \\ \pi \sim P}} \left[ \pi(R)_i \right] \le B_i + \epsilon \qquad \text{for all $i=1,2,\dots,M$.}
+$$
+We say that a randomized policy $P_t$ is \emph{$\epsilon$-feasible}
+for the optimization problem \eqref{equation:sample-policy-optimization} if
+$$
+\frac{1}{t} \sum_{\tau=1}^t \Exp_{\pi \sim P_t} \left[ \pi(R_\tau)_i \right] \le B_i + \epsilon \qquad \text{for all $i=1,2,\dots,M$.}
+$$
+
+We say that a sequence of actions $x_1, x_2, \dots, x_T$ is
+\emph{$\epsilon$-optimal} for the optimization problem
+\eqref{equation:optimization-problem} if
+$$
+\frac{1}{T} \sum_{t=1}^T x_{t,0} \ge V - \epsilon \: ,
+$$
+where $V$ is the optimal value of the optimization problem
+\eqref{equation:optimization-problem}. We say that a randomized policy $P$ is
+\emph{$\epsilon$-optimal} for the optimization problem
+\eqref{equation:distribution-policy-optimization} if
+$$
+\Exp_{\substack{R \sim D \\ \pi \sim P}} \left[ \pi(R)_0 \right] \ge V_D - \epsilon
+$$
+where $V_D$ is the optimal value of the optimization problem
+\eqref{equation:distribution-policy-optimization}. We say that a randomized
+policy $P_t$ is \emph{$\epsilon$-optimal} for the optimization problem
+\eqref{equation:sample-policy-optimization} if
+$$
+\frac{1}{t} \sum_{\tau=1}^t \Exp_{\pi \sim P_t} \left[ \pi(R_\tau)_0 \right] \ge V_t - \epsilon
+$$
+where $V_t$ is the optimal value of the optimization problem
+\eqref{equation:sample-policy-optimization}.
+
+We are interested in solutions that are both $\epsilon$-feasible and
+$\epsilon$-optimal. We remark that such solution might exist even if the
+optimization problem is infeasible.
+
+\subsection{Notation and definitions}
+
+We use the following notation in the rest of the paper. For $i=1,2,\dots,N$, we
+define $e_i$ to be the vector in $\R^N$ with $i$-th entry equal to $1$ and all
+other entries equal to zero, that is,
+$$
+e_i = \underbrace{(0,\dots,0,1,0,\dots,0)}_{\text{$1$ is at position $i$}} \: .
+$$
+We denote by $\|\cdot\|_2$ the Euclidean norm on $\R^{M+1}$. That is, if $\lambda = (\lambda_0, \lambda_1, \dots, \lambda_M) \in \R^{M+1}$, then
+$$
+\|\lambda\|_2 = \sqrt{\lambda_0^2 + \lambda_1^2 + \lambda_2^2 + \dots + \lambda_M^2} \: .
+$$
+
+A solution to an optimization problem
+
 
 \appendix
 
