@@ -93,7 +93,7 @@ Under these assumptions, we design an algorithm that solves the online
 optimization problem approximately. The idea behind the algorithm is to phrase
 the problem as a policy optimization problem
 \begin{equation}
-\label{equation:policy-optimization-problem}
+\label{equation:policy-optimization-problem-distribution}
 \begin{aligned}
 \maximize_{P} \qquad & \Exp_{\substack{R \sim D \\ \pi \sim P}} \left[ \pi(R)_0 \right] \\
 \subjectto \qquad & \Exp_{\substack{R \sim D \\ \pi \sim P}} \left[ \pi(R)_i \right] \le B_i && \qquad \text{for all $i=1,2,\dots,M$} \\
@@ -107,11 +107,12 @@ $\pi(R) \in R$ for all $R \subseteq \R^{M+1}$. We refer to the distribution $P$
 as a \emph{randomized policy}.
 
 Since the distribution $D$ is unknown, we cannot solve the policy optimization
-problem directly. Instead, in round $t$, we use the sample $R_1, R_2, \dots,
-R_t$ as a proxy for the distribution $D$. We find a randomized policy $P_t$ that
-approximately solves the policy optimization problem
+problem \eqref{equation:policy-optimization-problem-distribution} directly.
+Instead, in round $t$, we use the sample $R_1, R_2, \dots, R_t$ as a proxy for
+the distribution $D$. We find a randomized policy $P_t$ that approximately
+solves the policy optimization problem on the sample
 \begin{equation}
-\label{equation:policy-optimization-problem}
+\label{equation:policy-optimization-problem-sample}
 \begin{aligned}
 \maximize_{P_t} \qquad & \frac{1}{t} \sum_{\tau=1}^t \Exp_{\pi \sim P_t} \left[ \pi(R_\tau)_0 \right] \\
 \subjectto \qquad & \frac{1}{t} \sum_{\tau=1}^t \Exp_{\pi \sim P_t} \left[ \pi(R_\tau)_i \right] \le B_i && \qquad \text{for all $i=1,2,\dots,M$} \\
