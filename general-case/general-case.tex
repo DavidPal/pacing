@@ -93,9 +93,9 @@ Under these assumptions, we design an algorithm that solves the online
 optimization problem approximately. The idea behind the algorithm is to phrase
 the problem as a policy optimization problem
 \begin{equation}
-\label{equation:policy-optimization-problem-distribution}
+\label{equation:distribution-policy-optimization}
 \begin{aligned}
-\maximize_{P} \qquad & \Exp_{\substack{R \sim D \\ \pi \sim P}} \left[ \pi(R)_0 \right] \\
+\maximize_{P \in \mathcal{P}} \qquad & \Exp_{\substack{R \sim D \\ \pi \sim P}} \left[ \pi(R)_0 \right] \\
 \subjectto \qquad & \Exp_{\substack{R \sim D \\ \pi \sim P}} \left[ \pi(R)_i \right] \le B_i && \qquad \text{for all $i=1,2,\dots,M$} \\
 \end{aligned}
 \end{equation}
@@ -104,7 +104,8 @@ independently, the policy is drawn randomly from a distribution $P$. The
 expectations above are taken with respect to both of these random draws. A
 \emph{policy} $\pi$ is a function $\pi:2^{\R^{M+1}} \to \R^{M+1}$ such that
 $\pi(R) \in R$ for all $R \subseteq \R^{M+1}$. We refer to the distribution $P$
-as a \emph{randomized policy}.
+as a \emph{randomized policy}. The optimization is taken over all randomized
+policies.
 
 Since the distribution $D$ is unknown, we cannot solve the policy optimization
 problem \eqref{equation:policy-optimization-problem-distribution} directly.
@@ -112,13 +113,24 @@ Instead, in round $t$, we use the sample $R_1, R_2, \dots, R_t$ as a proxy for
 the distribution $D$. We find a randomized policy $P_t$ that approximately
 solves the policy optimization problem on the sample
 \begin{equation}
-\label{equation:policy-optimization-problem-sample}
+\label{equation:sample-policy-optimization}
 \begin{aligned}
-\maximize_{P_t} \qquad & \frac{1}{t} \sum_{\tau=1}^t \Exp_{\pi \sim P_t} \left[ \pi(R_\tau)_0 \right] \\
+\maximize_{P_t \in \mathcal{P}} \qquad & \frac{1}{t} \sum_{\tau=1}^t \Exp_{\pi \sim P_t} \left[ \pi(R_\tau)_0 \right] \\
 \subjectto \qquad & \frac{1}{t} \sum_{\tau=1}^t \Exp_{\pi \sim P_t} \left[ \pi(R_\tau)_i \right] \le B_i && \qquad \text{for all $i=1,2,\dots,M$} \\
 \end{aligned}
 \end{equation}
 We then use the randomized policy $P_t$ to choose the action $x_t$.
+
+We study the relationship between the optimization problems
+\eqref{equation:sample-policy-optimization} and
+\eqref{equation:distribution-policy-optimization}. We show that approximate
+solutions to both problems lie in a much smaller class of policies, which we
+call Lagrangian policies. We show that a Lagrangian policy that is an
+approximate solution for one of the optimization problems is an approximate
+solution for the other. Lagrangian policies naturally arise from the formulation
+of the optimization problem~\eqref{equation:sample-policy-optimization} as a
+linear program. The dual of the linear program plays a central role in our
+analysis.
 
 \appendix
 
