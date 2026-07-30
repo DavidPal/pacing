@@ -11,6 +11,7 @@
 \newcommand{\T}{\mathcal{T}}
 \newcommand{\I}{\mathcal{I}}
 \newcommand{\E}{\mathcal{E}}
+\renewcommand{\P}{\mathcal{P}}
 
 \DeclareMathOperator*{\argmax}{argmax}
 \DeclareMathOperator*{\argmin}{argmin}
@@ -106,13 +107,13 @@ solves the online optimization problem approximately. The idea behind the
 algorithm is find an approximately optimal policy. A \emph{policy} $\pi$ is a
 function $\pi:2^{\R^{M+1}} \to \R^{M+1}$ such that $\pi(R) \in R$ for all $R
 \subseteq \R^{M+1}$. A policy chooses an action $\pi(R)$ for any request $R$. A
-randomized policy is a distribution over policies. The algorithm's goal is to
-find a randomized policy $P$ that is an approximate solution of the
-optimization problem
+randomized policy is a distribution over policies. We denote by $\P$ the set of
+all randomized policies. The algorithm's goal is to find a randomized policy $P
+\in \P$ that is an approximate solution of the optimization problem
 \begin{equation}
 \label{equation:distribution-policy-optimization}
 \begin{aligned}
-\maximize_{P} \qquad & \Exp_{\substack{R \sim D \\ \pi \sim P}} \left[ \pi(R)_0 \right] \\
+\maximize_{P \in \P} \qquad & \Exp_{\substack{R \sim D \\ \pi \sim P}} \left[ \pi(R)_0 \right] \\
 \subjectto \qquad & \Exp_{\substack{R \sim D \\ \pi \sim P}} \left[ \pi(R)_i \right] \le B_i && \qquad \text{for all $i=1,2,\dots,M$} \\
 \end{aligned}
 \end{equation}
@@ -128,20 +129,19 @@ solves the policy optimization problem on the sample
 \begin{equation}
 \label{equation:sample-policy-optimization}
 \begin{aligned}
-\maximize_{P_t} \qquad & \frac{1}{t} \sum_{\tau=1}^t \Exp_{\pi \sim P_t} \left[ \pi(R_\tau)_0 \right] \\
+\maximize_{P_t \in \P} \qquad & \frac{1}{t} \sum_{\tau=1}^t \Exp_{\pi \sim P_t} \left[ \pi(R_\tau)_0 \right] \\
 \subjectto \qquad & \frac{1}{t} \sum_{\tau=1}^t \Exp_{\pi \sim P_t} \left[ \pi(R_\tau)_i \right] \le B_i && \qquad \text{for all $i=1,2,\dots,M$} \\
 \end{aligned}
 \end{equation}
 We then use the randomized policy $P_t$ to choose the action $x_t$.
 
-It is not a priori clear what space of policies one should use in optimization
-problem \eqref{equation:distribution-policy-optimization} and
-\eqref{equation:sample-policy-optimization}. However, as it turns out,
-approximate solutions to both optimization problems lie in a fairly small class
-of policies, which we call Lagrangian policies. We show that a Lagrangian policy
-that is an approximate solution for one of the optimization problems is an
-approximate solution for the other. Lagrangian policies naturally arise from the
-formulation of the optimization
+We study the relationship between the optimization problems
+\eqref{equation:distribution-policy-optimization} and
+\eqref{equation:sample-policy-optimization}. We show that good solutions to both
+problems lie in a much smaller class of policies, which we call Lagrangian
+policies. We show that a Lagrangian policy that is a good solution for one of
+the optimization problems is a good solution for the other. Lagrangian policies
+naturally arise from the formulation of the optimization
 problem~\eqref{equation:sample-policy-optimization} as a linear program. The
 dual of the linear program plays a central role in our analysis.
 
@@ -152,15 +152,17 @@ The optimization problems \eqref{equation:optimization-problem},
 \eqref{equation:sample-policy-optimization} cannot be solved exactly. We thus
 need to define appropriate notions of approximate solutions for these problems.
 
-We say that a sequence of actions $x_1, x_2, \dots, x_T$ is an
+We say that a sequence of actions $x_1, x_2, \dots, x_T$ is
 \emph{$\epsilon$-feasible} for the optimization problem
 \eqref{equation:optimization-problem} if
 \begin{align*}
 \frac{1}{T} \sum_{t=1}^T x_{t,i} & \le B_i + \epsilon & \qquad \text{for all $i=1,2,\dots,M$,} \\
 x_t \in R_t && \qquad \text{for all $t=1,2,\dots,T$.}
 \end{align*}
-We say that a randomized policy $P$ is \emph{$\epsilon$-feasible}
-for the optimization problem \eqref{equation:distribution-policy-optimization} if
+Note that while the inequality constraints are relaxed, the constraint $x_t \in
+R_t$ remains unchanged. We say that a randomized policy $P$ is
+\emph{$\epsilon$-feasible} for the optimization problem
+\eqref{equation:distribution-policy-optimization} if
 $$
 \Exp_{\substack{R \sim D \\ \pi \sim P}} \left[ \pi(R)_i \right] \le B_i + \epsilon \qquad \text{for all $i=1,2,\dots,M$.}
 $$
@@ -194,8 +196,8 @@ where $V_t$ is the optimal value of the optimization problem
 \eqref{equation:sample-policy-optimization}.
 
 We are interested in solutions that are both $\epsilon$-feasible and
-$\epsilon$-optimal. We remark that such solution might exist even if the
-optimization problem is infeasible.
+$\epsilon$-optimal. We remark that such solutions might exist even if the
+optimization problems are infeasible.
 
 \subsection{Notation and definitions}
 
@@ -205,13 +207,95 @@ other entries equal to zero, that is,
 $$
 e_i = \underbrace{(0,\dots,0,1,0,\dots,0)}_{\text{$1$ is at position $i$}} \: .
 $$
-We denote by $\|\cdot\|_2$ the Euclidean norm on $\R^{M+1}$. That is, if $\lambda = (\lambda_0, \lambda_1, \dots, \lambda_M) \in \R^{M+1}$, then
+We denote by $\|\cdot\|_2$ the Euclidean norm on $\R^{M+1}$. That is, if $x = (x_0, x_1, \dots, x_M) \in \R^{M+1}$, then
 $$
-\|\lambda\|_2 = \sqrt{\lambda_0^2 + \lambda_1^2 + \lambda_2^2 + \dots + \lambda_M^2} \: .
+\|x\|_2 = \sqrt{x_0^2 + x_1^2 + x_2^2 + \dots + x_M^2} \: .
+$$
+We denote by $\|\cdot\|_\infty$, the maximum norm on $\R^{M+1}$. That is, if $x = (x_0, x_1, \dots, x_M) \in \R^{M+1}$, then
+$$
+\|x\|_\infty = \max_{i=0,1,2,\dots,M} |x_i| \: .
 $$
 
-A solution to an optimization problem
+\section{Discretization}
 
+We allow requests to be arbitrary subsets of $[-1,1]^{M+1}$. However, infinite
+subsets are difficult to work with. We therefore discretize them using
+$\epsilon$-nets with respect to the maximum norm. Formally, if $R \subseteq
+[-1,1]^{M+1}$, an \emph{$\epsilon$-net} of $R$ is a subset $R' \subseteq R$ such
+that for every $x \in R$, there exists $x' \in R'$ such that $\|x - x'\|_\infty
+\le \epsilon$.
+
+\begin{proposition}[$\epsilon$-net]
+Let $R \subseteq [-1,1]^{M+1}$. Let $\epsilon > 0$.
+Then $R$ has a finite $\epsilon$-net of size at most
+$$
+\left\lceil 2/\epsilon \right\rceil^{M+1} \: .
+$$
+\end{proposition}
+
+\begin{proof}
+Let $N = \left\lceil 2/\epsilon \right\rceil$. We can cover the interval $[-1,1]$ with $N$ intervals
+$$
+[a_1 - \epsilon/2, a_1 + \epsilon/2], [a_2 - \epsilon/2, a_2 + \epsilon/2], \dots, [a_N - \epsilon/2, a_N + \epsilon/2]
+$$
+such that $a_1, a_2, \dots, a_N \in [-1,1]$. For example, we can choose $a_k = \min\{-1 + (2k-1)\epsilon/2, 1\}$ for $k = 1, 2, \dots, N$.
+
+Let $A = \{a_k ~:~ k = 1, 2, \dots, N\}$. Let $B = A^{M+1}$.
+
+Let
+$$
+C = \{ x \in B ~:~ \exists x' \in R \text{ such that } \|x - x'\|_\infty \le \epsilon/2 \} \: .
+$$
+For every point $x \in C$, let $\phi(x)$ be a point in $R$ such that $\|x -
+\phi(x)\|_\infty \le \epsilon/2$. We define $R' = \{ \phi(x) ~:~ x \in C \}$.
+Clearly,
+$$
+|R'| \le |C| \le |B| = N^{M+1} = \left\lfloor \frac{2}{\epsilon} \right\rfloor^{M+1} \: .
+$$
+\end{proof}
+
+\section{Lagrangian policies}
+
+We consider policies parameterized by $M+1$ real numbers $\lambda_0, \lambda_1,
+\dots, \lambda_M$. As will become clear later, the numbers $\lambda_1, \dots,
+\lambda_M$ can be interpreted as the dual variables associated with the
+constraints of the optimization problems. However, for now, they are arbitrary
+real numbers. For any $(M+1)$-dimensional vector $\lambda = (\lambda_0,
+\lambda_1, \dots, \lambda_M) \in \R^{M+1}$ we define a policy
+$\pi_\lambda:\Requests \to \Delta_N$ as follows. For any request $R \in
+\Requests$, we define
+\begin{equation}
+\label{equation:lagrangian-policy}
+\pi_\lambda(R) = \argmax_{x \in R_t} \lambda_0 R_{i,0} + \lambda_1 R_{i,1} + \lambda_2 R_{i,2} + \dots + \lambda_M R_{i,M} \: .
+\end{equation}
+The ties in the $\argmax$ can be broken according to any consistent deterministic rule.
+For concreteness, we break the ties using the lexicographic order on $\R^{M+1}$.
+
+We call
+a policy of this form a \emph{Lagrangian policy}. The reason for this name will
+become clear once we formulate the optimization problem as a linear program and
+consider its dual.
+
+We make three remarks about the Lagrangian policies. First, observe that
+Lagrangian policies are both deterministic and measurable.
+
+Second, note that the policy corresponding to the all-zero vector $\lambda = (0,
+0, \dots, 0)$ chooses the first action for any request. This policy is
+uninteresting. For technical reasons and notational convenience, we include it
+in certain theorems and exclude it in others. However, as it will turn out,
+there exists a Lagrangian policy $\pi_\lambda$ with $\lambda \neq (0, 0, \dots,
+0)$ that is close to an optimal policy of the optimization problems
+\eqref{equation:sample-policy-optimization} and
+\eqref{equation:distribution-policy-optimization}.
+
+Third, note that for any positive real number $c$ and any vector $\lambda \in
+\R^{M+1}$, the policies $\pi_{c \lambda}$ and $\pi_\lambda$ are identical. Thus,
+without loss of generality, we can assume that $\|\lambda\|_2 \le 1$. If
+$\lambda = 0$ is excluded, we can assume that $\|\lambda\|_2 = 1$. Depending on
+the context, the Lagrangian policies are parameterized by $\lambda$ that lies in
+either $\R^{M+1}$, $\R^{M+1} \setminus \{0\}$, the unit ball, or the unit
+sphere. The advantage of the unit ball and the unit sphere is that they are
+compact sets.
 
 \appendix
 
