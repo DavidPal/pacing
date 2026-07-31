@@ -207,50 +207,89 @@ other entries equal to zero, that is,
 $$
 e_i = \underbrace{(0,\dots,0,1,0,\dots,0)}_{\text{$1$ is at position $i$}} \: .
 $$
-We denote by $\|\cdot\|_2$ the Euclidean norm on $\R^{M+1}$. That is, if $x = (x_0, x_1, \dots, x_M) \in \R^{M+1}$, then
+For any $p \in [1, \infty]$, we denote by $\|\cdot\|_p$ the $p$-norm on $\R^{M+1}$.
+That is, if $x = (x_0, x_1, \dots, x_M) \in \R^{M+1}$, then
 $$
-\|x\|_2 = \sqrt{x_0^2 + x_1^2 + x_2^2 + \dots + x_M^2} \: .
+\|x\|_p =
+\begin{cases}
+\left(|x_0|^p + |x_1|^p + \dots + |x_M|^p\right)^{1/p} & \text{if $p \in [1, \infty)$,}  \\
+\max \{|x_0|, |x_1|, \dots, |x|_\infty\} & \text{if $p = \infty$.}
+\end{cases}
 $$
-We denote by $\|\cdot\|_\infty$, the maximum norm on $\R^{M+1}$. That is, if $x = (x_0, x_1, \dots, x_M) \in \R^{M+1}$, then
+For any $c \in \R^{M+1}$, any $r \ge 0$ and any $p \in [1, \infty]$,
+we define the ball of radius $r$ centered at $c$ in $p$-norm,
 $$
-\|x\|_\infty = \max_{i=0,1,2,\dots,M} |x_i| \: .
+B_p(c,r) = \{x \in \R^{M+1} ~:~ \|x - c\|_p \le r \}
 $$
 
 \section{Discretization}
 
 We allow requests to be arbitrary subsets of $[-1,1]^{M+1}$. However, infinite
 subsets are difficult to work with. We therefore discretize them using
-$\epsilon$-nets with respect to the maximum norm. Formally, if $R \subseteq
-[-1,1]^{M+1}$, an \emph{$\epsilon$-net} of $R$ is a subset $R' \subseteq R$ such
-that for every $x \in R$, there exists $x' \in R'$ such that $\|x - x'\|_\infty
-\le \epsilon$.
+$\epsilon$-nets with respect to $\|\cdot\|_\infty$ norm. Formally, if $R
+\subseteq [-1,1]^{M+1}$, an \emph{$\epsilon$-net} of $R$ is a subset $R'
+\subseteq R$ such that for every $x \in R$, there exists $x' \in R'$ such that
+$\|x - x'\|_\infty \le \epsilon$. The size of $\epsilon$-net of $R$ can be upper
+bounded by $\left\lceil \frac{2}{\epsilon} \right\rceil^{M+1}$; see
+Proposition~\ref{proposition:size-of-epsilon-net}. That size of the
+$\epsilon$-net will become important later. We assume that we have an oracle
+that given a subset $R \subseteq [-1,1]^{M+1}$ and $\epsilon > 0$ finds an
+$\epsilon$-net of $R$ of size at most $\left\lceil \frac{2}{\epsilon}
+\right\rceil^{M+1}$. We denote by $\Psi(R,\epsilon)$ the $\epsilon$-net that the
+oracle outputs for input $R$ and $\epsilon$.
 
-\begin{proposition}[$\epsilon$-net]
+\begin{proposition}[Size of $\epsilon$-net]
+\label{proposition:size-of-epsilon-net}
 Let $R \subseteq [-1,1]^{M+1}$. Let $\epsilon > 0$.
 Then $R$ has a finite $\epsilon$-net of size at most
 $$
-\left\lceil 2/\epsilon \right\rceil^{M+1} \: .
+\left\lceil \frac{2}{\epsilon} \right\rceil^{M+1} \: .
 $$
 \end{proposition}
 
 \begin{proof}
-Let $N = \left\lceil 2/\epsilon \right\rceil$. We can cover the interval $[-1,1]$ with $N$ intervals
+We can cover the interval $[-1,1]$ with $N = \left\lceil 2/\epsilon \right\rceil$ intervals
 $$
 [a_1 - \epsilon/2, a_1 + \epsilon/2], [a_2 - \epsilon/2, a_2 + \epsilon/2], \dots, [a_N - \epsilon/2, a_N + \epsilon/2]
 $$
-such that $a_1, a_2, \dots, a_N \in [-1,1]$. For example, we can choose $a_k = \min\{-1 + (2k-1)\epsilon/2, 1\}$ for $k = 1, 2, \dots, N$.
+with centers at $a_k = \frac{(2k-1)\epsilon}{2}  - 1$ for $k = 1, 2, \dots, N$
+and lengths $\epsilon$. Let $A = \{a_k ~:~ k = 1, 2, \dots, N\}$ be their
+centers.
 
-Let $A = \{a_k ~:~ k = 1, 2, \dots, N\}$. Let $B = A^{M+1}$.
+We can cover the set $[-1,1]^{M+1}$ with balls $B_\infty(c, \epsilon/2)$ with
+centers ranging over $c \in A^{M+1}$. Formally,
+$$
+[-1,1]^{M+1} \subseteq \bigcup_{c \in A^{M+1}} B_\infty(c,\epsilon/2) \: .
+$$
+Let $C$ be set of the centers of those balls that intersect with $R$.
+Formally,
+$$
+C = \{ c \in A^{M+1} ~:~ R \cap B_\infty(c,\epsilon/2) \neq \emptyset \}
+$$
+Clearly, the balls $B_\infty(c, \epsilon/2)$ with centers ranging over $c \in C$ cover the set $R$. Formally,
+\begin{equation}
+\label{equation:coverage-1}
+R \subseteq \bigcup_{c \in C} B_\infty(c,\epsilon/2) \: .
+\end{equation}
 
-Let
+For every center $c \in C$, let $\phi(c)$ be a point in the intersection $R \cap
+B_\infty(c,\epsilon/2)$. Let
 $$
-C = \{ x \in B ~:~ \exists x' \in R \text{ such that } \|x - x'\|_\infty \le \epsilon/2 \} \: .
+R' = \{\phi(c) ~:~ c \in C\} \: .
 $$
-For every point $x \in C$, let $\phi(x)$ be a point in $R$ such that $\|x -
-\phi(x)\|_\infty \le \epsilon/2$. We define $R' = \{ \phi(x) ~:~ x \in C \}$.
-Clearly,
+We claim that $R'$ is an $\epsilon$-net of $R$. Since $\phi(c) \in R$, $R'
+\subseteq R$. It remains to verify that for any $x \in R$ there exists a point a
+point in $R'$ within distance $\epsilon$ of $x$. Let $x \in R$ be arbitrary.
+The condition \eqref{equation:coverage-1} implies that there exists $c \in C$
+such that $x \in B_\infty(c,\epsilon/2)$. Then, the point $\phi(c) \in R'$
+satisfies
 $$
-|R'| \le |C| \le |B| = N^{M+1} = \left\lfloor \frac{2}{\epsilon} \right\rfloor^{M+1} \: .
+\|\phi(c) - x\|_\infty \le \|\phi(c) - c\|_\infty + \|\phi(c) - c\|_\infty \le \epsilon/2 + \epsilon/2 = \epsilon \: .
+$$
+
+Finally, $R'$ is finite and has size at most
+$$
+|R'| \le |C| \le |A|^{M+1} = N^{M+1} = \left\lceil \frac{2}{\epsilon} \right\rceil^{M+1} \: .
 $$
 \end{proof}
 
