@@ -47,13 +47,12 @@ We show convergence results for the pacing problem.
 We consider an online optimization problem where an algorithm processes a
 sequence of \emph{requests} $R_1, R_2, \dots, R_T$ one by one. Each request is a
 non-empty subset of $\R^{M+1}$, finite or infinite. In round $t$, the algorithm
-needs to choose an \emph{action} $x_t \in R_t$. We index the coordinates of the
-action starting from $0$, that is, $x_t = (x_{t,0}, x_{t,1}, \dots, x_{t,M})$.
-The goal of the algorithm is to solve approximately the optimization problem
+needs to choose an \emph{action} $x_t \in R_t$. The goal of the algorithm is to
+solve approximately the optimization problem
 \begin{equation}
 \label{equation:optimization-problem}
 \begin{aligned}
-\maximize_{x_1, x_2, \dots, x_T} \qquad & \frac{1}{T} \sum_{t=1}^T x_{t,0} \\
+\maximize_{x_1, x_2, \dots, x_T} \qquad & \frac{1}{T} \sum_{t=1}^T x_{t,M+1} \\
 \subjectto \qquad & \frac{1}{T} \sum_{t=1}^T x_{t,i} \le B_i && \qquad \text{for all $i=1,2,\dots,M$} \\
 & x_t \in R_t && \qquad \text{for all $t=1,2,\dots,T$} \\
 \end{aligned}
@@ -92,28 +91,37 @@ several assumptions on the sequence of requests. First, we assume the requests
 are drawn i.i.d. from some distribution $D$. The distribution $D$ is unknown to
 the algorithm and can be arbitrary. Second, we assume the requests are uniformly
 bounded. For concreteness, we assume $R_1, R_2, \dots, R_T \subseteq [-1,
-1]^{M+1}$. The uniform boundedness assumption ensures that an influence of any
-single requests on the optimization objective and the left-hand sides of the
-inequality constraints is not too large. We are interested in a regime where $T$
-is much larger than $M$.
+1]^{M+1}$. Third, we assume that there exists an oracle that given a request $R
+\subseteq [-1,1]^{M+1}$ and any $\epsilon > 0$ finds an $\epsilon$-net of $R$ of
+size at most $\left\lceil \frac{2}{\epsilon} \right\rceil^{M+1}$.
 
-In practice, the requests change over time; the sequence of requests has
-seasonal patterns, often at multiple time scales. Nevertheless, the i.i.d.
-assumption is a good approximation for short enough time periods (e.g., one
-hour, one day, or one week).
+The uniform boundedness assumption ensures that an influence of any single
+requests on the optimization objective and the left-hand sides of the inequality
+constraints is not too large. At a technical level, the uniform boundedness
+assumption allows us to standard probabilistic concentration inequalities and
+uniform convergence results. In the online marketing and ride hailing
+applications, this assumption is satisfied.
 
-Under the i.i.d. and uniformly bounded assumptions, we design an algorithm that
-solves the online optimization problem approximately. The idea behind the
-algorithm is find an approximately optimal policy. A \emph{policy} $\pi$ is a
-function $\pi:2^{\R^{M+1}} \to \R^{M+1}$ such that $\pi(R) \in R$ for all $R
-\subseteq \R^{M+1}$. A policy chooses an action $\pi(R)$ for any request $R$. A
-randomized policy is a distribution over policies. We denote by $\P$ the set of
-all randomized policies. The algorithm's goal is to find a randomized policy $P
-\in \P$ that is an approximate solution of the optimization problem
+In the online marketing and ride hailing applications, the requests change over
+time; the sequence of requests has seasonal patterns, often at multiple time
+scales. Nevertheless, the i.i.d. assumption is a good approximation for short
+enough time periods (e.g., one hour, one day, or one week).
+
+The $\epsilon$-net oracle is necessary to apply uniform convergence results and
+to design an algorithm with efficient running time.
+
+Under three assumptions, we design an algorithm that solves the online
+optimization problem approximately. The idea behind the algorithm is find an
+approximately optimal policy. A \emph{policy} $\pi$ is a function
+$\pi:2^{\R^{M+1}} \to \R^{M+1}$ such that $\pi(R) \in R$ for all $R \subseteq
+\R^{M+1}$. A policy chooses an action $\pi(R)$ for any request $R$. A randomized
+policy is a distribution over policies. We denote by $\P$ the set of all
+randomized policies. The algorithm's goal is to find a randomized policy $P \in
+\P$ that is an approximate solution of the optimization problem
 \begin{equation}
 \label{equation:distribution-policy-optimization}
 \begin{aligned}
-\maximize_{P \in \P} \qquad & \Exp_{\substack{R \sim D \\ \pi \sim P}} \left[ \pi(R)_0 \right] \\
+\maximize_{P \in \P} \qquad & \Exp_{\substack{R \sim D \\ \pi \sim P}} \left[ \pi(R)_{M+1} \right] \\
 \subjectto \qquad & \Exp_{\substack{R \sim D \\ \pi \sim P}} \left[ \pi(R)_i \right] \le B_i && \qquad \text{for all $i=1,2,\dots,M$} \\
 \end{aligned}
 \end{equation}
@@ -129,7 +137,7 @@ solves the policy optimization problem on the sample
 \begin{equation}
 \label{equation:sample-policy-optimization}
 \begin{aligned}
-\maximize_{P_t \in \P} \qquad & \frac{1}{t} \sum_{\tau=1}^t \Exp_{\pi \sim P_t} \left[ \pi(R_\tau)_0 \right] \\
+\maximize_{P_t \in \P} \qquad & \frac{1}{t} \sum_{\tau=1}^t \Exp_{\pi \sim P_t} \left[ \pi(R_\tau)_{M+1} \right] \\
 \subjectto \qquad & \frac{1}{t} \sum_{\tau=1}^t \Exp_{\pi \sim P_t} \left[ \pi(R_\tau)_i \right] \le B_i && \qquad \text{for all $i=1,2,\dots,M$} \\
 \end{aligned}
 \end{equation}
@@ -176,21 +184,21 @@ We say that a sequence of actions $x_1, x_2, \dots, x_T$ is
 \emph{$\epsilon$-optimal} for the optimization problem
 \eqref{equation:optimization-problem} if
 $$
-\frac{1}{T} \sum_{t=1}^T x_{t,0} \ge V - \epsilon \: ,
+\frac{1}{T} \sum_{t=1}^T x_{t,M+1} \ge V - \epsilon \: ,
 $$
 where $V$ is the optimal value of the optimization problem
 \eqref{equation:optimization-problem}. We say that a randomized policy $P$ is
 \emph{$\epsilon$-optimal} for the optimization problem
 \eqref{equation:distribution-policy-optimization} if
 $$
-\Exp_{\substack{R \sim D \\ \pi \sim P}} \left[ \pi(R)_0 \right] \ge V_D - \epsilon
+\Exp_{\substack{R \sim D \\ \pi \sim P}} \left[ \pi(R)_{M+1} \right] \ge V_D - \epsilon
 $$
 where $V_D$ is the optimal value of the optimization problem
 \eqref{equation:distribution-policy-optimization}. We say that a randomized
 policy $P_t$ is \emph{$\epsilon$-optimal} for the optimization problem
 \eqref{equation:sample-policy-optimization} if
 $$
-\frac{1}{t} \sum_{\tau=1}^t \Exp_{\pi \sim P_t} \left[ \pi(R_\tau)_0 \right] \ge V_t - \epsilon
+\frac{1}{t} \sum_{\tau=1}^t \Exp_{\pi \sim P_t} \left[ \pi(R_\tau)_{M+1} \right] \ge V_t - \epsilon
 $$
 where $V_t$ is the optimal value of the optimization problem
 \eqref{equation:sample-policy-optimization}.
@@ -208,12 +216,12 @@ $$
 e_i = \underbrace{(0,\dots,0,1,0,\dots,0)}_{\text{$1$ is at position $i$}} \: .
 $$
 For any $p \in [1, \infty]$, we denote by $\|\cdot\|_p$ the $p$-norm on $\R^{M+1}$.
-That is, if $x = (x_0, x_1, \dots, x_M) \in \R^{M+1}$, then
+That is, if $x = (x_1, \dots, x_{M+1}) \in \R^{M+1}$, then
 $$
 \|x\|_p =
 \begin{cases}
-\left(|x_0|^p + |x_1|^p + \dots + |x_M|^p\right)^{1/p} & \text{if $p \in [1, \infty)$,}  \\
-\max \{|x_0|, |x_1|, \dots, |x|_\infty\} & \text{if $p = \infty$.}
+\left(|x_1|^p + \dots + |x_{M+1}|^p\right)^{1/p} & \text{if $p \in [1, \infty)$,}  \\
+\max \{|x_1|, \dots, |x_{M+1}|\} & \text{if $p = \infty$.}
 \end{cases}
 $$
 For any $c \in \R^{M+1}$, any $r \ge 0$ and any $p \in [1, \infty]$,
@@ -295,17 +303,17 @@ $$
 
 \section{Lagrangian policies}
 
-We consider policies parameterized by $M+1$ real numbers $\lambda_0, \lambda_1,
-\dots, \lambda_M$. As will become clear later, the numbers $\lambda_1, \dots,
-\lambda_M$ can be interpreted as the dual variables associated with the
+We consider policies parameterized by $M+1$ real numbers $\lambda_1, \dots,
+\lambda_M, \lambda_{M+1}$. As will become clear later, the numbers $\lambda_1,
+\dots, \lambda_M$ can be interpreted as the dual variables associated with the
 constraints of the optimization problems. However, for now, they are arbitrary
-real numbers. For any $(M+1)$-dimensional vector $\lambda = (\lambda_0,
-\lambda_1, \dots, \lambda_M) \in \R^{M+1}$ we define a policy
+real numbers. For any $(M+1)$-dimensional vector $\lambda = (\lambda_1, \dots,
+\lambda_M, \lambda_{M+1}) \in \R^{M+1}$ we define a policy
 $\pi_\lambda:\Requests \to \Delta_N$ as follows. For any request $R \in
 \Requests$, we define
 \begin{equation}
 \label{equation:lagrangian-policy}
-\pi_\lambda(R) = \argmax_{x \in R_t} \lambda_0 R_{i,0} + \lambda_1 R_{i,1} + \lambda_2 R_{i,2} + \dots + \lambda_M R_{i,M} \: .
+\pi_\lambda(R) = \argmax_{x \in R_t} \lambda_1 R_{i,1} + \lambda_2 R_{i,2} + \dots + \lambda_M R_{i,M} + \lambda_{M+1} R_{i,M+1} \: .
 \end{equation}
 The ties in the $\argmax$ can be broken according to any consistent deterministic rule.
 For concreteness, we break the ties using the lexicographic order on $\R^{M+1}$.
@@ -329,10 +337,10 @@ there exists a Lagrangian policy $\pi_\lambda$ with $\lambda \neq (0, 0, \dots,
 
 Third, note that for any positive real number $c$ and any vector $\lambda \in
 \R^{M+1}$, the policies $\pi_{c \lambda}$ and $\pi_\lambda$ are identical. Thus,
-without loss of generality, we can assume that $\|\lambda\|_2 \le 1$. If
-$\lambda = 0$ is excluded, we can assume that $\|\lambda\|_2 = 1$. Depending on
-the context, the Lagrangian policies are parameterized by $\lambda$ that lies in
-either $\R^{M+1}$, $\R^{M+1} \setminus \{0\}$, the unit ball, or the unit
+without loss of generality, we can assume that $\|\lambda\|_2 \le 1$. If the
+all-zero vector is excluded, we can assume that $\|\lambda\|_2 = 1$. Depending
+on the context, the Lagrangian policies are parameterized by $\lambda$ that lies
+in either $\R^{M+1}$, $\R^{M+1} \setminus \{0\}$, the unit ball, or the unit
 sphere. The advantage of the unit ball and the unit sphere is that they are
 compact sets.
 
