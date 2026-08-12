@@ -60,18 +60,18 @@ solve approximately the optimization problem
 where $B_1, B_2, \dots, B_M$ are real numbers known ahead of time.
 
 Problems of the form \eqref{equation:optimization-problem} arise in revenue
-management. For example, in online marketing, the request corresponds to an
-opportunity for an advertiser to show an advertisement to a user. The elements
-of $R_t$ correspond to the bids the advertiser can submit in an advertisment
-auction. The coordinates of the action $x_t$ are the business metrics the
-advertiser wishes to optimize, such as the probability that the user clicks on
-the advertisement, the expected amount the advertiser pays to the publisher, and
-the revenue the advertiser collects from the user.
+management. For example, in online marketing, the request $R_t$ corresponds to
+an opportunity for an advertiser to show an advertisement to a user. The
+elements of $R_t$ correspond to the bids the advertiser can submit in an
+advertisment auction. The coordinates of the action $x_t$ are the business
+metrics the advertiser wishes to optimize, such as the probability that the user
+clicks on the advertisement, the expected amount the advertiser pays to the
+publisher, and the revenue the advertiser collects from the user.
 
 Another example of a problem of the form \eqref{equation:optimization-problem}
 arises in ride hailing. The request $R_t$ corresponds to a user request for a
 ride. The elements of $R_t$ correspond to pairs of prices the ride hailing
-platform can offers to the rider and the driver for the ride. The coordinates of
+platform can offer to the rider and the driver for the ride. The coordinates of
 the action $x_t$ are the business metrics the ride hailing platform wishes to
 optimize, such as the probability trip happening (i.e. both rider and driver
 accept the ride), the expected revenue collected from the rider, and expected
@@ -97,16 +97,17 @@ size at most $\left\lceil \frac{2}{\epsilon} \right\rceil^{M+1}$.
 
 The uniform boundedness assumption ensures that an influence of any single
 requests on the optimization objective and the left-hand sides of the inequality
-constraints is not too large. At a technical level, the uniform boundedness
-assumption allows us to standard probabilistic concentration inequalities and
-uniform convergence results. In the online marketing and ride hailing
-applications, this assumption is satisfied.
+constraints is not too large. The choice of interval $[-1,1]$ is arbitrary and
+can be replaced by any other fixed interval. At a technical level, the uniform
+boundedness assumption allows us to standard probabilistic concentration
+inequalities and uniform convergence results. In the online marketing and ride
+hailing applications, this assumption is satisfied.
 
 The i.i.d. assumption is not satisfied in applications mentioned above. Both in
 online marketing and ride hailing, the sequence of requests has seasonal
-patterns at at multiple time scales (daily, weekly, etc.). Nevertheless, the
-i.i.d. assumption is a good approximation if the planning period spans long
-enough time period (e.g. one week or one month).
+patterns at multiple time scales (daily, weekly, etc.). Nevertheless, the
+i.i.d. assumption is a good approximation if the $T$ requests span long
+enough time period.
 
 The $\epsilon$-net oracle is necessary to apply uniform convergence results and
 to design an algorithm with efficient running time.
@@ -130,13 +131,17 @@ optimization problem
 where the request $R$ is drawn randomly from the distribution $D$ and,
 independently, the policy $\pi$ is drawn randomly from the distribution $P$. The
 expectations above are taken with respect to both of these random draws, which
-we make explicit using the subscript notation $R \sim D$, $\pi \sim P$.
+we make explicit using the subscript notation $R \sim D$, $\pi \sim P$. Using
+Hoeffding's inequality, it is easy to show that an optimal (or approximately
+optimal) solution $\pi$ of the optimization
+problem~\eqref{equation:distribution-policy-optimization} solves the original
+online optimization problem approximately.
 
 Since the distribution $D$ is unknown, we cannot solve the policy optimization
-problem \eqref{equation:distribution-policy-optimization} directly.
-Instead, in round $t$, we use the sample $R_1, R_2, \dots, R_t$ as a proxy for
-the distribution $D$. We find a randomized policy $P_t$ that approximately
-solves the policy optimization problem on the sample
+problem \eqref{equation:distribution-policy-optimization} directly. Instead, in
+round $t$, we use the sample $R_1, R_2, \dots, R_t$ as a proxy for the
+distribution $D$. We find a randomized policy $P_t$ that approximately solves
+the policy optimization problem on the sample
 \begin{equation}
 \label{equation:sample-policy-optimization}
 \begin{aligned}
