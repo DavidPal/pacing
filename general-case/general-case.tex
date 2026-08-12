@@ -116,7 +116,7 @@ Under these assumptions, we design an algorithm that solves the online
 optimization problem approximately. The idea behind the algorithm is to find an
 approximately optimal policy. Let $\Requests$ be the set of all non-empty
 subsets of $[-1,1]^{M+1}$. A \emph{policy} $\pi$ is a function $\pi:\Requests
-\to \R^{M+1}$ that maps a subset $R \in \Requests$ to an action $\pi(R)$
+\to [-1,1]^{M+1}$ that maps a subset $R \in \Requests$ to an action $\pi(R)$
 such that $\pi(R) \in R$. A \emph{randomized policy} is a distribution over policies.
 We denote by $\P$ the set of all randomized policies. The algorithm's goal is to
 find a randomized policy $P \in \P$ that is an approximate solution of the
@@ -167,6 +167,8 @@ The optimization problems \eqref{equation:optimization-problem},
 \eqref{equation:distribution-policy-optimization}, and
 \eqref{equation:sample-policy-optimization} cannot be solved exactly. We thus
 need to define appropriate notions of approximate solutions for these problems.
+For any $\epsilon \ge 0$, we define the notion of $\epsilon$-feasible and
+$\epsilon$-optimal solutions for these problems.
 
 We say that a sequence of actions $x_1, x_2, \dots, x_T$ is
 \emph{$\epsilon$-feasible} for the optimization problem
@@ -202,8 +204,7 @@ $$
 \Exp_{\substack{R \sim D \\ \pi \sim P}} \left[ \pi(R)_{M+1} \right] \ge V_D - \epsilon
 $$
 where $V_D$ is the optimal value of the optimization problem
-\eqref{equation:distribution-policy-optimization}. We adopt the convention that $V_D =
--\infty$ if the optimization problem~\eqref{equation:sample-policy-optimization} is infeasible.
+\eqref{equation:distribution-policy-optimization}.
 We say that a randomized
 policy $P_t$ is \emph{$\epsilon$-optimal} for the optimization problem
 \eqref{equation:sample-policy-optimization} if
@@ -211,8 +212,11 @@ $$
 \frac{1}{t} \sum_{\tau=1}^t \Exp_{\pi \sim P_t} \left[ \pi(R_\tau)_{M+1} \right] \ge V_t - \epsilon
 $$
 where $V_t$ is the optimal value of the optimization problem
-\eqref{equation:sample-policy-optimization}. We adopt the convention that $V_t =
--\infty$ if the optimization problem~\eqref{equation:sample-policy-optimization} is infeasible.
+\eqref{equation:sample-policy-optimization}. We adopt the convention that $V$,
+$V_D$, $V_t$ equals $-\infty$ if the optimization
+problem~\eqref{equation:optimization-problem},
+\eqref{equation:distribution-policy-optimization},
+\eqref{equation:sample-policy-optimization} is infeasible, respectively.
 
 We are interested in solutions that are both $\epsilon$-feasible and
 $\epsilon$-optimal. We remark that such solutions might exist even if the
@@ -264,57 +268,95 @@ We assume that we have an oracle that given any subset $R \subseteq [-1,1]^{M+1}
 and $\epsilon > 0$ finds an $\epsilon$-net of $R$ of size at most $\left\lceil
 \frac{2}{\epsilon} \right\rceil^{M+1}$. We denote by $\Psi(R,\epsilon)$ the
 $\epsilon$-net that the oracle outputs for input $R$ and $\epsilon$. Using the oracle,
-we can reduce the problem of solving~\eqref{equation:distribution-policy-optimization}
-and~\eqref{equation:sample-policy-optimization} to the problem of solving
+we reduce the optimization problem~\eqref{equation:optimization-problem}
+to the optimization problem
 \begin{equation}
-\label{equation:distribution-policy-optimization-discretized}
+\label{equation:optimization-problem-discretized}
 \begin{aligned}
-\maximize_{P \in \P} \qquad & \Exp_{\substack{R \sim D \\ \pi \sim P}} \left[ \pi(\Psi(R,\epsilon))_{M+1} \right] \\
-\subjectto \qquad & \Exp_{\substack{R \sim D \\ \pi \sim P}} \left[ \pi(\Psi(R,\epsilon))_i \right] \le B_i && \qquad \text{for all $i=1,2,\dots,M$} \\
-\end{aligned}
-\end{equation}
-and
-\begin{equation}
-\label{equation:sample-policy-optimization-discretized}
-\begin{aligned}
-\maximize_{P_t \in \P} \qquad & \frac{1}{t} \sum_{\tau=1}^t \Exp_{\pi \sim P_t} \left[ \pi(\Psi(R_\tau,\epsilon))_{M+1} \right] \\
-\subjectto \qquad & \frac{1}{t} \sum_{\tau=1}^t \Exp_{\pi \sim P_t} \left[ \pi(\Psi(R_\tau,\epsilon))_i \right] \le B_i && \qquad \text{for all $i=1,2,\dots,M$} \\
+\maximize_{x_1, x_2, \dots, x_T} \qquad & \frac{1}{T} \sum_{t=1}^T x_{t,M+1} \\
+\subjectto \qquad & \frac{1}{T} \sum_{t=1}^T x_{t,i} \le B_i + \epsilon && \qquad \text{for all $i=1,2,\dots,M$} \\
+& x_t \in \Psi(R_t,\epsilon) && \qquad \text{for all $t=1,2,\dots,T$}
 \end{aligned}
 \end{equation}
 
-The problems \eqref{equation:distribution-policy-optimization-discretized} and
-\eqref{equation:sample-policy-optimization-discretized} are special cases of the
-optimization problems \eqref{equation:distribution-policy-optimization} and
-\eqref{equation:sample-policy-optimization} where $R$ and $R_\tau$ are replaced
-by $\Psi(R,\epsilon)$ and $\Psi(R_\tau,\epsilon)$, respectively. The problems
-are special in the sense that the requests $\Psi(R,\epsilon)$ and
-$\Psi(R_\tau,\epsilon)$ are finite and the cardinality of each request is
-bounded by $\left\lceil \frac{2}{\epsilon} \right\rceil^{M+1}$. A solution
-$\pi$ for problems \eqref{equation:distribution-policy-optimization-discretized} and
-\eqref{equation:sample-policy-optimization-discretized} gives rise to a solution
-$$
-\pi'(\cdot) = \pi(\Psi(\cdot,\epsilon))
-$$
-for problems \eqref{equation:distribution-policy-optimization} and
-\eqref{equation:sample-policy-optimization}. The relationship between $\pi$ and
-$\pi'$ is given by the following lemma.
+The problem \eqref{equation:optimization-problem-discretized} is a special case
+of the optimization problem \eqref{equation:optimization-problem} where $R_t$ is
+replaced by $\Psi(R_t,\epsilon)$ and $B_i$ is replaced by $B_i + \epsilon$. The
+problem is special in the sense that the requests $\Psi(R_t,\epsilon)$ have
+finite cardinality, and, in particular, the cardinality of each request is
+bounded by $\left\lceil \frac{2}{\epsilon} \right\rceil^{M+1}$.
 
-\begin{lemma}
-Let $\epsilon, \epsilon', \epsilon''$ be positive real numbers. Let $P$ be a
-randomized policy that is $\epsilon'$-feasible and $\epsilon''$-optimal for
-\eqref{equation:distribution-policy-optimization-discretized}. Let $\pi \sim P$
-and let $\pi'(\cdot) = \pi(\Psi(\cdot,\epsilon))$. Let $P'$ be the distribution
-of $\pi'$. Then $P'$ is a randomized policy that is $\epsilon$-feasible and
-$\epsilon$-optimal for the optimization problem
-\eqref{equation:distribution-policy-optimization}.
+The optimization problem \eqref{equation:optimization-problem-discretized} is
+closely related to the optimization problem
+\eqref{equation:optimization-problem}. Lemma~\ref{lemma:epsilon-net-reduction}
+below shows that a sequence of actions that is approximately feasible and
+approximately optimal for optimization
+problem~\eqref{equation:optimization-problem-discretized} is also approximately
+feasible and approximately optimal for the optimization
+problem~\eqref{equation:optimization-problem}.
+
+In the rest of the paper, we can thus assume that the requests are finite
+non-empty subsets of $[-1,1]^{M+1}$. We denote by $\Requests_{\text{finite}}$
+the set of all finite non-empty subsets of $[-1,1]^{M+1}$. We also assume that
+a policy is a function from $\Requests_{\text{finite}}$ to $[-1,1]^{M+1}$.
+
+We remark that similar reductions exists for the optimization problems
+\eqref{equation:distribution-policy-optimization} and
+\eqref{equation:sample-policy-optimization}.
+
+\begin{lemma}[$\epsilon$-net reduction]
+\label{lemma:epsilon-net-reduction}
+Let $\epsilon, \epsilon', \epsilon''$ be positive real numbers. Let
+$x_1, x_2, \dots, x_T$ be a sequence of actions that is $\epsilon'$-feasible and $\epsilon''$-optimal for
+the optimization problem~\eqref{equation:optimization-problem-discretized}. Then,
+$x_1, x_2, \dots, x_T$ is $(\epsilon + \epsilon')$-feasible and $(\epsilon + \epsilon'')$-optimal
+for the optimization problem~\eqref{equation:optimization-problem}.
 \end{lemma}
 
 \begin{proof}
-Let $\pi$ be a policy that is $\epsilon'$-feasible and $\epsilon''$-optimal for
-\eqref{equation:distribution-policy-optimization-discretized}. Then
-$\pi(\Psi(\cdot,\epsilon))$ is a policy that is $\epsilon$-feasible and
-$\epsilon$-optimal for the optimization problem
-\eqref{equation:distribution-policy-optimization}.
+Let $V$ be the optimal value of the optimization problem
+\eqref{equation:optimization-problem}. Let $\epsilon''' > 0$ be a positive real
+number. Then, there exists a sequence of actions $x'_1, x'_2, \dots, x'_T$ such that
+\begin{align*}
+\frac{1}{T} \sum_{t=1}^T x'_{t,M+1} & \ge V - \epsilon''' \: , \\
+\frac{1}{T} \sum_{t=1}^T x'_{t,i} & \le B_i & \qquad \text{for all $i=1,2,\dots,M$,} \\
+x'_t & \in R_t & \qquad \text{for all $t=1,2,\dots,T$.}
+\end{align*}
+In other words, $x'_1, x'_2, \dots, x'_T$ is feasible and $\epsilon'''$-optimal
+for the optimization problem \eqref{equation:optimization-problem}.
+
+We construct a sequence of actions $x''_1, x''_2, \dots, x''_T$. We define
+$x''_t$ be the element of $\Psi(R_t,\epsilon)$ that is closest to $x'_t$ in the
+$\|\cdot\|_\infty$-norm. Since $\Psi(R_t,\epsilon)$ is an $\epsilon$-net of
+$R_t$,
+\begin{align*}
+\|x''_t - x'_t\|_\infty \le \epsilon & \qquad \text{for all $t=1,2,\dots,T$.}
+\end{align*}
+Therefore,
+\begin{align*}
+\frac{1}{T} \sum_{t=1}^T x''_{t,M+1} & \ge V - \epsilon''' - \epsilon \: , \\
+\frac{1}{T} \sum_{t=1}^T x''_{t,i} & \le B_i + \epsilon & \qquad \text{for all $i=1,2,\dots,M$,} \\
+x_t'' & \in \Psi(R_t,\epsilon) & \qquad \text{for all $t=1,2,\dots,T$.}
+\end{align*}
+In other words, $x''_1, x''_2, \dots, x''_T$ is a feasible and $(\epsilon''' +
+\epsilon)$-optimal for the optimization
+problem~\eqref{equation:optimization-problem-discretized}. Therefore, the
+optimal value of the optimization
+problem~\eqref{equation:optimization-problem-discretized} is at least $V -
+\epsilon''' - \epsilon$. Since $\epsilon'''$ is arbitrary, the optimal value of
+the optimization problem \eqref{equation:optimization-problem-discretized} is at
+least $V - \epsilon$.
+
+By assumption $x_1, x_2, \dots, x_T$ is $\epsilon'$-feasible and $\epsilon''$-optimal for
+optimization problem \eqref{equation:optimization-problem-discretized}. This implies that
+\begin{align*}
+\frac{1}{T} \sum_{t=1}^T x'_{t,M+1} & \ge V - \epsilon - \epsilon'' \: , \\
+\frac{1}{T} \sum_{t=1}^T x'_{t,i} & \le B_i + \epsilon + \epsilon' & \qquad \text{for all $i=1,2,\dots,M$,} \\
+x_t' & \in \Psi(R_t,\epsilon) & \qquad \text{for all $t=1,2,\dots,T$.}
+\end{align*}
+Since $\Psi(R_t,\epsilon) \subseteq R_t$, this means that $x_1, x_2, \dots, x_T$
+is $(\epsilon + \epsilon')$-feasible and $(\epsilon + \epsilon'')$-optimal for
+the optimization problem \eqref{equation:optimization-problem}.
 \end{proof}
 
 \section{Lagrangian policies}
@@ -325,7 +367,7 @@ We consider policies parameterized by $M+1$ real numbers $\lambda_1, \dots,
 constraints of the optimization problems. However, for now, they are arbitrary
 real numbers. For any $(M+1)$-dimensional vector $\lambda = (\lambda_1, \dots,
 \lambda_M, \lambda_{M+1}) \in \R^{M+1}$ we define a policy
-$\pi:\Requests_{\text{finite}} \to \R^{M+1}$ as follows. For any finite
+$\pi:\Requests_{\text{finite}} \to [-1,1]^{M+1}$ as follows. For any finite
 non-empty subset $R \subseteq [-1,1]^{M+1}$, we define
 \begin{equation}
 \label{equation:lagrangian-policy}
@@ -333,9 +375,14 @@ non-empty subset $R \subseteq [-1,1]^{M+1}$, we define
 \end{equation}
 The ties in the $\argmax$ can be broken according to any consistent
 deterministic rule. For concreteness, we break the ties using the lexicographic
-order on $\R^{M+1}$. We call a policy of this form a \emph{Lagrangian policy}.
-The reason for this name will become clear once we formulate the optimization
-problem as a linear program and consider its dual.
+ordering on $\R^{M+1}$.\footnote{The lexicographic ordering on $\R^{M+1}$ is
+defined as follows. Let $x = (x_1, \dots, x_{M+1})$ and $y = (y_1, \dots,
+y_{M+1})$ be two vectors in $\R^{M+1}$. Then $x$ is less than $y$
+lexicographically if $x_1 < y_1$ or if $x_1 = y_1$ and $x_2 < y_2$ or if $x_1 =
+y_1$ and $x_2 = y_2$ and $x_3 < y_3$ or if $x_1 = y_1$ and $x_2 = y_2$ and $x_3
+= y_3$ and $x_4 < y_4$ and so on.} We call a policy of this form a
+\emph{Lagrangian policy}. The reason for this name will become clear once we
+formulate the optimization problem as a linear program and consider its dual.
 
 We make three remarks about the Lagrangian policies. First, observe that
 Lagrangian policies are deterministic.
