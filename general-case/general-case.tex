@@ -405,6 +405,31 @@ in either $\R^{M+1}$, $\R^{M+1} \setminus \{0\}$, the unit ball, or the unit
 sphere. The advantage of the unit ball and the unit sphere is that they are
 compact sets.
 
+\section{Failure of deterministic policies}
+
+In general, deterministic policies are not good solutions of the optimization
+problems~\eqref{equation:distribution-policy-optimization}~and~\eqref{equation:sample-policy-optimization}.
+In this section, we provide the simplest possible example that illustrates the
+point.
+
+Suppose $M=1$, $B_1 = \frac{1}{2}$, $T \ge 1$ is arbitrary, $D$ is such that with probability one,
+$$
+R = \{(1, 1), (0, 0)\} \qquad \text{for all $t=1,2,\dots,T$.}
+$$
+The optimal randomized policy chooses actions $(1, 1)$ and $(0, 0)$ with
+probability $1/2$ each. Any deterministic policy is either not a feasible
+solution or not an optimal solution. The same problem arises for the
+optimization problem~\eqref{equation:sample-policy-optimization}.
+
+On the other hand, as we will see later, for distributions with densities these
+problems vanish. Namely, deterministic Lagrangian policies are optimal solutions
+for the optimization problem~\eqref{equation:distribution-policy-optimization}
+when the distribution $D$ has a probability density. Furthermore, if the
+requests are sampled i.i.d. from a probability distribution with a density, a
+deterministic Lagrangian policy is close to an optimal solution for the
+optimization problem~\eqref{equation:sample-policy-optimization}.
+
+
 \appendix
 
 \section{Impossibility result for adversarial requests}
