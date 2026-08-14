@@ -321,7 +321,7 @@ for the optimization problem~\eqref{equation:optimization-problem}.
 \begin{proof}
 Let $V$ be the optimal value of the optimization problem
 \eqref{equation:optimization-problem}. Let $\epsilon''' > 0$ be a positive real
-number. Then, there exists a sequence of actions $x'_1, x'_2, \dots, x'_T$ such that
+number. Then, there exists a sequence of actions $a_1', a_2', \dots, a_T'$ such that
 \begin{align*}
 \frac{1}{T} \sum_{t=1}^T a'_{t,M+1} & \ge V - \epsilon''' \: , \\
 \frac{1}{T} \sum_{t=1}^T a'_{t,i} & \le B_i & \qquad \text{for all $i=1,2,\dots,M$,} \\
@@ -330,12 +330,12 @@ a'_t & \in R_t & \qquad \text{for all $t=1,2,\dots,T$.}
 In other words, $a'_1, a'_2, \dots, a'_T$ is feasible and $\epsilon'''$-optimal
 for the optimization problem \eqref{equation:optimization-problem}.
 
-We construct a sequence of actions $a''_1, a''_2, \dots, a''_T$. We define
-$x''_t$ be the element of $\Psi(R_t,\epsilon)$ that is closest to $x'_t$ in the
+We construct a sequence of actions $a_1'', a_2'', \dots, a_T''$. We define
+$a_t''$ be the element of $\Psi(R_t,\epsilon)$ that is closest to $a_t'$ in the
 $\|\cdot\|_\infty$-norm. Since $\Psi(R_t,\epsilon)$ is an $\epsilon$-net of
 $R_t$,
 \begin{align*}
-\|a''_t - a'_t\|_\infty \le \epsilon & \qquad \text{for all $t=1,2,\dots,T$.}
+\|a_t'' - a_t'\|_\infty \le \epsilon & \qquad \text{for all $t=1,2,\dots,T$.}
 \end{align*}
 Therefore,
 \begin{align*}
@@ -456,8 +456,12 @@ Proposition~\ref{proposition:computing-primal-from-dual}.
 If the distribution $D$ does not have a probability density, we can always
 create a ``nearby'' distribution $D'$ that does. One way to do so is to add
 small independent noise to each entry of each action in the request. Namely,
-suppose $R \sim D$. Let $Z$ be an $N$-tuple of vectors in $\R^{M+1}$ where each
-entry is an i.i.d. random variable drawn from the uniform distribution over
+suppose $R \sim D$. Let
+$$
+Z = ((Z_{1,1}, Z_{1,2}, \dots, Z_{1,M+1}), \dots, (Z_{N,1}, Z_{N,2}, \dots, Z_{N,M+1}))
+$$
+be an $N$-tuple of vectors in $\R^{M+1}$ where the entrie $Z_{1,1}, \dots,
+Z_{N,M+1}$ are i.i.d. random variables drawn from the uniform distribution over
 $[-1,1]$. We construct a random sample $R'$ from $D'$ as
 \begin{equation}
 \label{equation:modified-sample}
