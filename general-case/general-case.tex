@@ -39,10 +39,65 @@
 \maketitle
 
 \begin{abstract}
-We show convergence results for the pacing problem.
+Many revenue management and resource allocation problems can be formulated as
+an oline decision problem where an algorithm processes requests one by one. Each
+request comes with a set of possible actions, and the algorithm needs to choose
+irrevocably a single action for each request. Each action is associated with a
+numerical vector consisting of the reward and one or more other metrics. The
+goal of the algorithm is to maximize the average reward subject to constraints
+on average of the other metrics. We study this problem under the assumption that
+requests (and their action sets) are drawn i.i.d. from an unknown and arbitrary
+probability distribution.
+
+Previous works considered only packing problems where the metrics are
+non-negative and the constraints cannot be violated. We allow the metrics to
+have an arbitrary sign and we design an algorithm that finds a solution that is
+approximately feasible and approximately optimal. More importantly, we do not
+assume any structure on the set of actions, rewards or metrics.
 \end{abstract}
 
 \section{Introduction}
+
+Revenue management problems can be often formulated as optimization problems
+where the variables encode the actions that need to be taken. However, often the
+actions need to be taken one by one, before the whole optimization problem
+is revealed.
+
+An example of such problem is online advertising where requests to show an
+advertisement arrive as users visit a website. For each request an advertiser
+needs to choose a bid in an auction. Depending on the contract with the website,
+the advertiser pays the website either for each ad shown, each time the user
+clicks on the ad, each time the user makes a purchase of the advertised product,
+or some other action taken by the user. The price paid for the request is
+computed by the auction from the bids submitted by the advertisers. The goal of
+the advertiser is to maximize a certain business metric (e.g. the total number
+clicks) subject to a constraints on different business metrics (e.g. total
+advertisement cost or revenue attributed to the advertisements) over a certain
+time period (e.g. a month). For each possible choice of the bid, the business
+metrics, such as probability of a click and expected cost for the ad, are
+predicted based on user's features at the time when request is made. Based on
+these predictions the advertiser needs to chose the bid for the request.
+
+Another example is ride hailing where the ride hailing platform
+processes ride request from the users. For each ride request, the platform needs
+to choose the price to show to the rider and a separate price to show to the
+driver(s). The rider and the driver might choose or not to accept the ride for
+the prices given. The goal of the ride hailing platform is to maximize certain
+business metric (e.g. total number of rides taken) subject to constraints on
+other business metrics (e.g. revenue, profit) over a certain time period. The
+business metrics, such as probability of rider and driver accepting the ride and
+expected revenue and profit, are predicted at the time when the request is made
+based on the location of the rider and the locations of nearby drivers, length
+of the ride and time of the day. Based on all this information the ride hailing
+platform chooses the price of the ride request.
+
+Without any assumptions on the sequence of requests solving the optimization
+problem is information-theoretically impossible. We study the problem in the
+i.i.d. model;~\cite{Balseiro-Lu-Mirrokni-2023}. We disregard any assumptions on
+the action sets and their associated rewards. In particular, we allow to the
+action sets to be infinite and non-convex.
+
+\section{Problem formulation}
 
 We consider an online optimization problem where an algorithm processes a
 sequence of \emph{requests} $R_1, R_2, \dots, R_T$ one by one. Each request is a
