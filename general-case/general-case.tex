@@ -65,79 +65,91 @@ is revealed.
 
 An example of such problem is online advertising where requests to show an
 advertisement arrive as users visit a website. For each request an advertiser
-needs to choose a bid in an auction. Depending on the contract with the website,
-the advertiser pays the website either for each ad shown, each time the user
-clicks on the ad, each time the user makes a purchase of the advertised product,
-or some other action taken by the user. The price paid for the request is
-computed by the auction from the bids submitted by the advertisers. The goal of
-the advertiser is to maximize a certain business metric (e.g. the total number
-clicks) subject to a constraints on different business metrics (e.g. total
-advertisement cost or revenue attributed to the advertisements) over a certain
-time period (e.g. a month). For each possible choice of the bid, the business
-metrics, such as probability of a click and expected cost for the ad, are
-predicted based on user's features at the time when request is made. Based on
-these predictions the advertiser needs to chose the bid for the request.
+needs to choose a bid in an auction. Depending on the contract the advertiser
+has with the website, the advertiser pays the website either for each ad shown,
+each time the user clicks on the ad, each time the user makes a purchase of the
+advertised product, or some other action taken by the user. The price paid is
+computed by the auction from the bid submitted by the advertiser and the bids
+submitted by other competing advertisers. The goal of the advertiser is to
+maximize a certain business metric (e.g. the total number clicks) subject to a
+constraints on different business metrics (e.g. total advertisement cost, or
+revenue attributed to the advertisements) over a certain time period (e.g. a
+month). For each possible choice of the bid, the business metrics, such as
+probability of a click and expected cost for the ad, are predicted based on
+user's features at the time when request is made. Based on these predictions the
+advertiser needs to chose the bid for the request.
 
-Another example is ride hailing where the ride hailing platform
-processes ride request from the users. For each ride request, the platform needs
-to choose the price to show to the rider and a separate price to show to the
-driver(s). The rider and the driver might choose or not to accept the ride for
-the prices given. The goal of the ride hailing platform is to maximize certain
-business metric (e.g. total number of rides taken) subject to constraints on
-other business metrics (e.g. revenue, profit) over a certain time period. The
-business metrics, such as probability of rider and driver accepting the ride and
-expected revenue and profit, are predicted at the time when the request is made
-based on the location of the rider and the locations of nearby drivers, length
-of the ride and time of the day. Based on all this information the ride hailing
-platform chooses the price of the ride request.
+Another example of the same type of problem is ride hailing where the ride
+hailing platform processes ride request from the users. For each ride request,
+the platform needs to choose the price to show to the rider and a separate price
+to show to the driver(s). The rider and the driver might choose or not to accept
+the ride for the prices given. The goal of the ride hailing platform is to
+maximize certain business metric (e.g. total number of rides taken) subject to
+constraints on other business metrics (e.g. revenue, profit) over a certain time
+period. The business metrics, such as probability of rider and driver accepting
+the ride and expected revenue and profit, are predicted at the time when the
+request is made based on the location of the rider and the locations of nearby
+drivers, desired destination, length of the ride and time of the day. Based on
+all this information the ride hailing platform chooses the price of the ride
+request.
 
-Without any assumptions on the sequence of requests solving the optimization
-problem is information-theoretically impossible. We study the problem in the
-i.i.d. model;~\cite{Balseiro-Lu-Mirrokni-2023}. We disregard any assumptions on
-the action sets and their associated rewards. In particular, we allow to the
-action sets to be infinite and non-convex.
+These problems can be formalized by the following online optimization problem.
+An algorithm processes a sequence of \emph{requests} $R_1, R_2, \dots, R_T$ one
+by one. Each request is a non-empty subset of $\R^{M+1}$, finite or infinite.
+The elements of a request are called \emph{actions}. In round $t$, the algorithm
+needs to choose an \emph{action} $a_t \in R_t$. The goal of the algorithm is to
+solve approximately the optimization problem
+\begin{subequations}
+\label{equation:optimization-problem}
+\begin{align}
+\maximize_{a_1, a_2, \dots, a_T} \qquad & \frac{1}{T} \sum_{t=1}^T a_{t,M+1} \label{equation:optimization-problem-objective} \\
+\subjectto \qquad & \frac{1}{T} \sum_{t=1}^T a_{t,i} \le b_i && \qquad \text{for all $i=1,2,\dots,M$} \label{equation:optimization-problem-constraints} \\
+& a_t \in R_t && \qquad \text{for all $t=1,2,\dots,T$} \label{equation:optimization-problem-hard-constraints}
+\end{align}
+\end{subequations}
+where $b_1, b_2, \dots, b_M$ are real numbers known ahead of time. A sequence of
+actions taken by the algorithm is an approximate solution of this problem if
+constraints \eqref{equation:optimization-problem-hard-constraints} are
+satisfied, constraints \eqref{equation:optimization-problem-constraints} are
+violated by at most a small value $\epsilon$, and the objective
+\eqref{equation:optimization-problem-objective} is within tolerance $\epsilon$
+of the optimal value.
+
+The formalization does not fully capture the applications mentioned above.
+First, in the applications mentioned above, the elements of $R_t$ are predicted
+by machine learning models just before the action $a_t$ needs to be chosen.
+These predictions are only proxies for the business metrics. The actual business
+metrics are revealed only after the action has been chosen, sometimes with a
+significant delay. However, in order to keep our problem formulation simple, we
+ignore the difference between the predicted and the actual business metrics.
+Second, in the applications mentioned, the constraints are usually expressed as
+upper bounds on the total sum,
+$$
+\sum_{t=1}^T a_{t,i} \le B_i \qquad \text{for all $i=1,2,\dots,M$} \: ,
+$$
+instead of upper bounds on the average. If $T$ is known, translating between
+$B_i$ and $b_i$ is trivial. However, in practice $T$ is unknown and it is
+usually forecasted (e.g. by a time-series model). However, to keep things
+simple, we assume that $b_i$ is known ahead of time. As it will turn out knowing
+$T$ ahead of time is not neccesary in our formulation. However, for simplicity
+we do assume that $T$ is known. Generalization of the formulation to unknown $T$
+can be achieved by the doubling trick common on online learning.
+
+Without any assumptions on the sequence of requests solving the online
+optimization problem is information-theoretically impossible. In order to avoid
+this impossibility result, we assume that sequence of requests is generated
+i.i.d. from an arbitrary unknown distribution. This is similar to the probably
+approximately correct (PAC) model in learning theory~\cite{}. For packing
+problems, the i.i.d. setting has been studied by~\cite{}. On the other hand, we
+make very few assumptions on the sets $R_1, R_2, \dots, R_T$. We do allow each
+$R_t$ to be finite or infinite, convex or non-convex. The only assumption we
+make is that the requests are subsets of a bounded set. For concreteness, we
+assume the requests are subsets of $[-1,1]^{M+1}$. However, any other bounded
+set can be accomodated by scaling the requests.
 
 \section{Problem formulation}
 
-We consider an online optimization problem where an algorithm processes a
-sequence of \emph{requests} $R_1, R_2, \dots, R_T$ one by one. Each request is a
-non-empty subset of $\R^{M+1}$, finite or infinite. In round $t$, the algorithm
-needs to choose an \emph{action} $a_t \in R_t$. The goal of the algorithm is to
-solve approximately the optimization problem
-\begin{equation}
-\label{equation:optimization-problem}
-\begin{aligned}
-\maximize_{a_1, a_2, \dots, a_T} \qquad & \frac{1}{T} \sum_{t=1}^T a_{t,M+1} \\
-\subjectto \qquad & \frac{1}{T} \sum_{t=1}^T a_{t,i} \le B_i && \qquad \text{for all $i=1,2,\dots,M$} \\
-& a_t \in R_t && \qquad \text{for all $t=1,2,\dots,T$} \\
-\end{aligned}
-\end{equation}
-where $B_1, B_2, \dots, B_M$ are real numbers known ahead of time.
 
-Problems of the form \eqref{equation:optimization-problem} arise in revenue
-management. For example, in online marketing, the request $R_t$ corresponds to
-an opportunity for an advertiser to show an advertisement to a user. The
-elements of $R_t$ correspond to the bids the advertiser can submit in an
-advertisment auction. The coordinates of the action $a_t$ are the business
-metrics the advertiser wishes to optimize, such as the probability that the user
-clicks on the advertisement, the expected amount the advertiser pays to the
-publisher, and the revenue the advertiser collects from the user.
-
-Another example of a problem of the form \eqref{equation:optimization-problem}
-arises in ride hailing. The request $R_t$ corresponds to a user request for a
-ride. The elements of $R_t$ correspond to pairs of prices the ride hailing
-platform can offer to the rider and the driver for the ride. The coordinates of
-the action $a_t$ are the business metrics the ride hailing platform wishes to
-optimize, such as the probability trip happening (i.e. both rider and driver
-accept the ride), the expected revenue collected from the rider, and expected
-profit for the ride hailing platform.
-
-In applications, the elements of $R_t$ are often predicted by machine learning
-models just before the action $a_t$ needs to be chosen. These predictions are
-only proxies for the business metrics. The actual business metrics are revealed
-only after the action has been chosen, sometimes with a significant delay.
-However, in order to keep our model simple, we ignore the difference between the
-predicted and the actual business metrics.
 
 Without any assumptions on the sequence of requests, solving the optimization
 problem, even approximately, is information-theoretically impossible; see
