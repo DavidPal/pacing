@@ -71,8 +71,8 @@ each time the user clicks on the ad, each time the user makes a purchase of the
 advertised product, or some other action taken by the user. The price paid is
 computed by the auction from the bid submitted by the advertiser and the bids
 submitted by other competing advertisers. The goal of the advertiser is to
-maximize a certain business metric (e.g. the total number clicks) subject to a
-constraints on different business metrics (e.g. total advertisement cost, or
+maximize a certain business metric (e.g. the total number of clicks) subject to
+a constraints on different business metrics (e.g. total advertisement cost, or
 revenue attributed to the advertisements) over a certain time period (e.g. a
 month). For each possible choice of the bid, the business metrics, such as
 probability of a click and expected cost for the ad, are predicted based on
@@ -113,7 +113,7 @@ constraints \eqref{equation:optimization-problem-hard-constraints} are
 satisfied, constraints \eqref{equation:optimization-problem-constraints} are
 violated by at most a small value $\epsilon$, and the objective
 \eqref{equation:optimization-problem-objective} is within tolerance $\epsilon$
-of the optimal value.
+of the optimal value; see Section~\ref{subsection:approximate-solutions}.
 
 The formalization does not fully capture the applications mentioned above.
 First, in the applications mentioned above, the elements of $R_t$ are predicted
@@ -129,27 +129,76 @@ $$
 $$
 instead of upper bounds on the average. If $T$ is known, translating between
 $B_i$ and $b_i$ is trivial. However, in practice $T$ is unknown and it is
-usually forecasted (e.g. by a time-series model). However, to keep things
+usually forecasted (e.g. by a time-series model). The forecasted value can be
+used to translate between $B_i$ and $b_i$. However, to keep our formulation
 simple, we assume that $b_i$ is known ahead of time. As it will turn out knowing
 $T$ ahead of time is not neccesary in our formulation. However, for simplicity
-we do assume that $T$ is known. Generalization of the formulation to unknown $T$
-can be achieved by the doubling trick common on online learning.
+we do assume that $T$ is known. Adapting algorithms to unknown $T$ can be
+achieved by the standard doubling trick common on online learning~\cite[Section
+2.3.1]{Shalev-Shwartz-2012}. Third, in practice, the optimization problem might
+be infeasible. In order to keep our formulation simple, we focus on the case
+when the problem is feasible. However, in practice, it is equally important to
+implement an algorithm that reports if the problem is infeasible (or
+approximately infeasible) and either removes or adjusts some of the
+constraints, or stops playing.
 
 Without any assumptions on the sequence of requests solving the online
 optimization problem is information-theoretically impossible. In order to avoid
 this impossibility result, we assume that sequence of requests is generated
 i.i.d. from an arbitrary unknown distribution. This is similar to the probably
-approximately correct (PAC) model in learning theory~\cite{}. For packing
-problems, the i.i.d. setting has been studied by~\cite{}. On the other hand, we
-make very few assumptions on the sets $R_1, R_2, \dots, R_T$. We do allow each
-$R_t$ to be finite or infinite, convex or non-convex. The only assumption we
-make is that the requests are subsets of a bounded set. For concreteness, we
-assume the requests are subsets of $[-1,1]^{M+1}$. However, any other bounded
-set can be accomodated by scaling the requests.
+approximately correct (PAC) model in learning theory~\cite[Chapter
+3]{Shalev-Shwartz-Ben-David-2014}. The i.i.d. assumption is not new; packing
+problems were studied under this assumption~\cite{Balseiro-Lu-Mirrokni-2023}. On
+the other hand, we make very few assumptions on the sets $R_1, R_2, \dots, R_T$.
+We do allow each $R_t$ to be finite or infinite, convex or non-convex. The only
+assumption we make is that the requests are subsets of the same bounded set. For
+concreteness, we assume the requests are subsets of $[-1,1]^{M+1}$. However, any
+other bounded set can be accomodated by scaling and/or shifting the requests.
+This boundedness assumption has a natural interpretation that each requests has
+only negligible impact on the average reward and averages of other metrics.
+
+\subsection{Related work and our contributions}
+
+TODO
+
+\subsection{Approximate solutions}
+\label{subsection:approximate-solutions}
+
+The optimization problems \eqref{equation:optimization-problem} cannot be solved
+exactly by an online algorithm. We thus need to define appropriate notions of
+approximate solution for the problem. For any $\epsilon \ge 0$, we define the
+notion of $\epsilon$-feasible and $\epsilon$-optimal solutions.
+
+We say that a sequence of actions $a_1, a_2, \dots, a_T$ is
+\emph{$\epsilon$-feasible} for the optimization problem
+\eqref{equation:optimization-problem} if
+\begin{align*}
+\frac{1}{T} \sum_{t=1}^T a_{t,i} & \le b_i + \epsilon & \qquad \text{for all $i=1,2,\dots,M$,} \\
+a_t \in R_t && \qquad \text{for all $t=1,2,\dots,T$.}
+\end{align*}
+Note that while the inequality constraints are relaxed, the constraint $a_t \in
+R_t$ remains unchanged.
+
+We define the \emph{optimal value} of the optimization problem
+\eqref{equation:optimization-problem} as
+$$
+V = \sup \left\{\frac{1}{T} \sum_{t=1}^T a_{t,M+1} ~:~ a_1 \in R_1, \dots, a_T \in R_t, \forall i=1,2,\dots,M \quad \frac{1}{T} \sum_{t=1}^T a_{t,i} \le b_i  \right\} \: .
+$$
+Note that the optimal value might not be achieved by any feasible solution,
+since the sets $R_1, R_2, \dots, R_T$ can be infinite and not closed. We say
+that a sequence of actions $a_1, a_2, \dots, a_T$ is \emph{$\epsilon$-optimal}
+for the optimization problem \eqref{equation:optimization-problem} if
+$$
+\frac{1}{T} \sum_{t=1}^T a_{t,M+1} \ge V - \epsilon \: ,
+$$
+where $V$ is the optimal value of the optimization problem
+\eqref{equation:optimization-problem}.
+
+We are interested in solutions that are both $\epsilon$-feasible and
+$\epsilon$-optimal. We remark that such solutions might exist even if the
+optimization problems are infeasible.
 
 \section{Problem formulation}
-
-
 
 Without any assumptions on the sequence of requests, solving the optimization
 problem, even approximately, is information-theoretically impossible; see
