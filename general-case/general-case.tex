@@ -58,10 +58,10 @@ assume any structure on the set of actions, rewards or metrics.
 
 \section{Introduction}
 
-Revenue management problems can be often formulated as optimization problems
-where the variables encode the actions that need to be taken. However, often the
-actions need to be taken one by one, before the whole optimization problem
-is revealed.
+Revenue management and resource allocation problems can be often formulated as
+optimization problems where the variables encode the actions that need to be
+taken. However, often the actions need to be taken one by one, before the whole
+optimization problem is revealed.
 
 An example of such problem is online advertising where requests to show an
 advertisement arrive as users visit a website. For each request an advertiser
@@ -72,7 +72,7 @@ advertised product, or some other action taken by the user. The price paid is
 computed by the auction from the bid submitted by the advertiser and the bids
 submitted by other competing advertisers. The goal of the advertiser is to
 maximize a certain business metric (e.g. the total number of clicks) subject to
-a constraints on different business metrics (e.g. total advertisement cost, or
+a constraints on other business metrics (e.g. total advertisement cost, or
 revenue attributed to the advertisements) over a certain time period (e.g. a
 month). For each possible choice of the bid, the business metrics, such as
 probability of a click and expected cost for the ad, are predicted based on
@@ -107,23 +107,26 @@ solve approximately the optimization problem
 & a_t \in R_t && \qquad \text{for all $t=1,2,\dots,T$} \label{equation:optimization-problem-hard-constraints}
 \end{align}
 \end{subequations}
-where $b_1, b_2, \dots, b_M$ are real numbers known ahead of time. A sequence of
-actions taken by the algorithm is an approximate solution of this problem if
-constraints \eqref{equation:optimization-problem-hard-constraints} are
-satisfied, constraints \eqref{equation:optimization-problem-constraints} are
-violated by at most a small value $\epsilon$, and the objective
-\eqref{equation:optimization-problem-objective} is within tolerance $\epsilon$
-of the optimal value; see Section~\ref{subsection:approximate-solutions}.
+where $b_1, b_2, \dots, b_M$ are real numbers known ahead of time. The goal of
+the algorithm is to choose a sequence of actions such that constraints
+\eqref{equation:optimization-problem-hard-constraints} are satisfied,
+constraints \eqref{equation:optimization-problem-constraints} are either
+satisfied or violated by at most a small amount, and the objective
+\eqref{equation:optimization-problem-objective} is within close to the optimal
+value; see Section~\ref{subsection:approximate-solutions} for a formal
+definition.
 
-The formalization does not fully capture the applications mentioned above.
-First, in the applications mentioned above, the elements of $R_t$ are predicted
-by machine learning models just before the action $a_t$ needs to be chosen.
-These predictions are only proxies for the business metrics. The actual business
-metrics are revealed only after the action has been chosen, sometimes with a
-significant delay. However, in order to keep our problem formulation simple, we
-ignore the difference between the predicted and the actual business metrics.
-Second, in the applications mentioned, the constraints are usually expressed as
-upper bounds on the total sum,
+Of course, our formalization does not capture all the aspects of the
+applications mentioned above. First, in the applications mentioned above, the
+elements of $R_t$ are predicted by machine learning models just before the
+action $a_t$ needs to be chosen. These predictions are only proxies for the
+business metrics. The actual business metrics are revealed only after the action
+has been chosen, sometimes with a significant delay. For example, in
+the online advertising example, the user might click on the advertisement and
+then purchase the product an hour later. However, in order to keep our problem
+formulation simple, we ignore the difference between the predicted and the
+actual business metrics. Second, in the applications mentioned, the constraints
+are usually expressed as upper bounds on the total sum,
 $$
 \sum_{t=1}^T a_{t,i} \le B_i \qquad \text{for all $i=1,2,\dots,M$} \: ,
 $$
@@ -131,26 +134,30 @@ instead of upper bounds on the average. If $T$ is known, translating between
 $B_i$ and $b_i$ is trivial. However, in practice $T$ is unknown and it is
 usually forecasted (e.g. by a time-series model). The forecasted value can be
 used to translate between $B_i$ and $b_i$. However, to keep our formulation
-simple, we assume that $b_i$ is known ahead of time. As it will turn out knowing
-$T$ ahead of time is not neccesary in our formulation. However, for simplicity
-we do assume that $T$ is known. Adapting algorithms to unknown $T$ can be
-achieved by the standard doubling trick common on online learning~\cite[Section
-2.3.1]{Shalev-Shwartz-2012}. Third, in practice, the optimization problem might
-be infeasible. In order to keep our formulation simple, we focus on the case
-when the problem is feasible. However, in practice, it is equally important to
-implement an algorithm that reports if the problem is infeasible (or
-approximately infeasible) and either removes or adjusts some of the
-constraints, or stops playing.
+simple, we assume that the constraints are of the form
+\eqref{equation:optimization-problem-constraints} and $b_i$ is known ahead of
+time. As it will turn out knowing $T$ ahead of time is not neccesary in our
+formulation. However, for simplicity we do assume that $T$ is known. Adapting
+algorithms to unknown $T$ can be achieved by the standard doubling trick common
+on online learning~\cite[Section 2.3.1]{Shalev-Shwartz-2012}. Third, in
+practice, the optimization problem might be infeasible. In order to keep our
+formulation simple, we focus on the case when the problem is feasible. However,
+in practice, it is equally important to implement an algorithm that reports if
+the problem is infeasible (or approximately infeasible) and either removes or
+adjusts some of the constraints, or stops playing.
 
 Without any assumptions on the sequence of requests solving the online
-optimization problem is information-theoretically impossible. In order to avoid
-this impossibility result, we assume that sequence of requests is generated
-i.i.d. from an arbitrary unknown distribution. This is similar to the probably
-approximately correct (PAC) model in learning theory~\cite[Chapter
-3]{Shalev-Shwartz-Ben-David-2014}. The i.i.d. assumption is not new; packing
-problems were studied under this assumption~\cite{Balseiro-Lu-Mirrokni-2023}. On
-the other hand, we make very few assumptions on the sets $R_1, R_2, \dots, R_T$.
-We do allow each $R_t$ to be finite or infinite, convex or non-convex. The only
+optimization problem is information-theoretically impossible. We give a simple
+proof of this in Section~\ref{section:impossibility-result}. In order to avoid
+the impossibility result, we assume that sequence of requests is generated
+i.i.d. from an arbitrary unknown distribution. This assumption is commonly used
+in machine learning. For example, the i.i.d. assumption is the core assumption
+of the probably approximately correct (PAC) model in learning
+theory~\cite[Chapter 3]{Shalev-Shwartz-Ben-David-2014}. The i.i.d. assumption
+was used for packing problems~\cite{Balseiro-Lu-Mirrokni-2023}.
+
+On the other hand, we make very few assumptions on any indvidual set $R_t$. We
+do allow each $R_t$ to be finite or infinite, convex or non-convex. The only
 assumption we make is that the requests are subsets of the same bounded set. For
 concreteness, we assume the requests are subsets of $[-1,1]^{M+1}$. However, any
 other bounded set can be accomodated by scaling and/or shifting the requests.
@@ -768,7 +775,41 @@ problem~\eqref{equation:distribution-policy-optimization}.
 \section{Impossibility result for adversarial requests}
 \label{section:impossibility-result}
 
-TODO
+We consider a simple example where $M=2$ and $b_1 = b_2 = 0$. For simplicity,
+assume that $T$ is even. We construct the sequence of requests adversarially.
+The first $T/2$ requests are
+$$
+R_1 = R_2 = \dots = R_{T/2} = \{ (1,-1,0), (-1,1,0) \}
+$$
+Depending on what actions the algorithm chooses in the first $T/2$ rounds, we
+choose the remaining $T/2$ requests. We compute how many times each action
+$(1,-1,0)$ and $(-1,1,0)$ was chosen by the algorithm in the first $T/2$ rounds.
+Let $a_{\text{majority}}$ be the action with the greatest count, breaking ties
+arbitrarily. The remaining $T/2$ requests are
+$$
+R_{T/2 + 1} = R_{T/2 + 2} = \dots = R_T = \{ a_{\text{majority}} \} \: .
+$$
+
+Since the last coordinate in all requests is zero, the
+objective function of the optimization problem is zero for any sequence of
+actions that satisfy
+constraints~\eqref{equation:optimization-problem-hard-constraints}.
+The optimal solution in hindsight depends on what the adversary chooses for the
+second half of the requests. If $R_{T/2 + 1} = R_{T/2 + 2} = \dots = R_T = \{
+(1,-1,0) \}$, then the optimal sequence of actions is
+$$
+a_1 = a_2 = \dots = a_{T/2} = (-1,1,0) \qquad \text{and} \qquad a_{T/2+1} = a_{T/2+2} = \dots = a_T = (1,-1,0) \: .
+$$
+On the other hand, if $R_{T/2 + 1} = R_{T/2 + 2} = \dots = R_T = \{ (-1,1,0) \}$, then the optimal
+sequence of actions is
+$$
+a_1 = a_2 = \dots = a_{T/2} = (1,-1,0) \qquad \text{and} \qquad a_{T/2+1} = a_{T/2+2} = \dots = a_T = (-1,1,0) \: .
+$$
+The hind-sight solution satisfy constraints \eqref{equation:optimization-problem-constraints}.
+
+However, any algorithm will come up
+
+
 
 \section{Size of $\epsilon$-net}
 \label{section:size-of-epsilon-net}
