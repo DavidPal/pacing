@@ -97,24 +97,21 @@ These problems can be formalized by the following online optimization problem.
 An algorithm processes a sequence of \emph{requests} $R_1, R_2, \dots, R_T$ one
 by one. Each request is a non-empty subset of $\R^{M+1}$, finite or infinite.
 The elements of a request are called \emph{actions}. In round $t$, the algorithm
-needs to choose an \emph{action} $a_t \in R_t$. The goal of the algorithm is to
-solve approximately the optimization problem
+observes $R_t$ and it needs to choose an \emph{action} $a_t \in R_t$. The goal
+of the algorithm is to solve approximately the optimization problem
 \begin{subequations}
 \label{equation:optimization-problem}
 \begin{align}
-\maximize_{a_1, a_2, \dots, a_T} \qquad & \frac{1}{T} \sum_{t=1}^T a_{t,M+1} \label{equation:optimization-problem-objective} \\
-\subjectto \qquad & \frac{1}{T} \sum_{t=1}^T a_{t,i} \le b_i && \qquad \text{for all $i=1,2,\dots,M$} \label{equation:optimization-problem-constraints} \\
-& a_t \in R_t && \qquad \text{for all $t=1,2,\dots,T$} \label{equation:optimization-problem-hard-constraints}
+\maximize_{a_1 \in R_1, a_2 \in R_2, \dots, a_T \in R_T} \qquad & \frac{1}{T} \sum_{t=1}^T a_{t,M+1} \label{equation:optimization-problem-objective} \\
+\subjectto \qquad & \frac{1}{T} \sum_{t=1}^T a_{t,i} \le b_i && \qquad \text{for all $i=1,2,\dots,M$} \label{equation:optimization-problem-constraints}
 \end{align}
 \end{subequations}
 where $b_1, b_2, \dots, b_M$ are real numbers known ahead of time. The goal of
-the algorithm is to choose a sequence of actions such that constraints
-\eqref{equation:optimization-problem-hard-constraints} are satisfied,
-constraints \eqref{equation:optimization-problem-constraints} are either
-satisfied or violated by at most a small amount, and the objective
-\eqref{equation:optimization-problem-objective} is within close to the optimal
-value; see Section~\ref{subsection:approximate-solutions} for a formal
-definition.
+the algorithm is to choose a sequence of actions such that the constraints
+\eqref{equation:optimization-problem-constraints} are either satisfied or
+violated by at most a small amount, and the objective
+\eqref{equation:optimization-problem-objective} is close to the optimal value;
+see Section~\ref{subsection:approximate-solutions} for a formal definition.
 
 Of course, our formalization does not capture all the aspects of the
 applications mentioned above. First, in the applications mentioned above, the
@@ -135,16 +132,16 @@ $B_i$ and $b_i$ is trivial. However, in practice $T$ is unknown and it is
 usually forecasted (e.g. by a time-series model). The forecasted value can be
 used to translate between $B_i$ and $b_i$. However, to keep our formulation
 simple, we assume that the constraints are of the form
-\eqref{equation:optimization-problem-constraints} and $b_i$ is known ahead of
-time. As it will turn out knowing $T$ ahead of time is not neccesary in our
-formulation. However, for simplicity we do assume that $T$ is known. Adapting
-algorithms to unknown $T$ can be achieved by the standard doubling trick common
-on online learning~\cite[Section 2.3.1]{Shalev-Shwartz-2012}. Third, in
-practice, the optimization problem might be infeasible. In order to keep our
-formulation simple, we focus on the case when the problem is feasible. However,
-in practice, it is equally important to implement an algorithm that reports if
-the problem is infeasible (or approximately infeasible) and either removes or
-adjusts some of the constraints, or stops playing.
+\eqref{equation:optimization-problem-constraints} and both $b_i$ and $T$ are
+known ahead of time. However, knowledge of $T$ ahead of time is not neccesary.
+Our algorithms can be easily adapted if $T$ is unknown using the standard
+doubling trick common in online learning literature~\cite[Section
+2.3.1]{Shalev-Shwartz-2012}. Third, in practice, the optimization problem might
+be infeasible. In order to keep our formulation simple, we focus on the case
+when the problem is feasible. However, in practice, it is equally important to
+implement an algorithm that reports if the problem is infeasible (or
+approximately infeasible) and either removes or adjusts some of the constraints,
+or stops playing.
 
 Without any assumptions on the sequence of requests solving the online
 optimization problem is information-theoretically impossible. We give a simple
@@ -176,16 +173,12 @@ exactly by an online algorithm. We thus need to define appropriate notions of
 approximate solution for the problem. For any $\epsilon \ge 0$, we define the
 notion of $\epsilon$-feasible and $\epsilon$-optimal solutions.
 
-We say that a sequence of actions $a_1, a_2, \dots, a_T$ is
+We say that a sequence of actions $a_1 \in R_1, a_2 \in R_2, \dots, a_T \in R_T$ is
 \emph{$\epsilon$-feasible} for the optimization problem
 \eqref{equation:optimization-problem} if
-\begin{align*}
-\frac{1}{T} \sum_{t=1}^T a_{t,i} & \le b_i + \epsilon & \qquad \text{for all $i=1,2,\dots,M$,} \\
-a_t \in R_t && \qquad \text{for all $t=1,2,\dots,T$.}
-\end{align*}
-Note that while the inequality constraints are relaxed, the constraint $a_t \in
-R_t$ remains unchanged.
-
+$$
+\frac{1}{T} \sum_{t=1}^T a_{t,i} \le b_i + \epsilon \qquad \text{for all $i=1,2,\dots,M$.}
+$$
 We define the \emph{optimal value} of the optimization problem
 \eqref{equation:optimization-problem} as
 $$
@@ -193,8 +186,9 @@ V = \sup \left\{\frac{1}{T} \sum_{t=1}^T a_{t,M+1} ~:~ a_1 \in R_1, \dots, a_T \
 $$
 Note that the optimal value might not be achieved by any feasible solution,
 since the sets $R_1, R_2, \dots, R_T$ can be infinite and not closed. We say
-that a sequence of actions $a_1, a_2, \dots, a_T$ is \emph{$\epsilon$-optimal}
-for the optimization problem \eqref{equation:optimization-problem} if
+that a sequence of actions $a_1 \in R_1, a_2 \in R_2, \dots, a_T \in R_T$ is
+\emph{$\epsilon$-optimal} for the optimization problem
+\eqref{equation:optimization-problem} if
 $$
 \frac{1}{T} \sum_{t=1}^T a_{t,M+1} \ge V - \epsilon \: ,
 $$
@@ -775,39 +769,74 @@ problem~\eqref{equation:distribution-policy-optimization}.
 \section{Impossibility result for adversarial requests}
 \label{section:impossibility-result}
 
-We consider a simple example where $M=2$ and $b_1 = b_2 = 0$. For simplicity,
-assume that $T$ is even. We construct the sequence of requests adversarially.
-The first $T/2$ requests are
-$$
-R_1 = R_2 = \dots = R_{T/2} = \{ (1,-1,0), (-1,1,0) \}
-$$
-Depending on what actions the algorithm chooses in the first $T/2$ rounds, we
-choose the remaining $T/2$ requests. We compute how many times each action
-$(1,-1,0)$ and $(-1,1,0)$ was chosen by the algorithm in the first $T/2$ rounds.
-Let $a_{\text{majority}}$ be the action with the greatest count, breaking ties
-arbitrarily. The remaining $T/2$ requests are
-$$
-R_{T/2 + 1} = R_{T/2 + 2} = \dots = R_T = \{ a_{\text{majority}} \} \: .
-$$
+\begin{theorem}[Impossibility of feasibility]
+Let $A$ be any online algorithm, possibly randomized. Let $T \ge 4$ be an
+integer. Let $M=2$ and $b_1 = b_2 = 0$. There exists a sequence of requests
+$R_1, R_2, \dots, R_T \subseteq [-1,1]^{M+1}$ such that the optimization
+problem~\eqref{equation:optimization-problem} is feasible, and with probability
+at least $1/2$, the solution constructed by $A$ is not $\frac{1}{3}$-feasible.
+\end{theorem}
 
-Since the last coordinate in all requests is zero, the
-objective function of the optimization problem is zero for any sequence of
-actions that satisfy
-constraints~\eqref{equation:optimization-problem-hard-constraints}.
-The optimal solution in hindsight depends on what the adversary chooses for the
-second half of the requests. If $R_{T/2 + 1} = R_{T/2 + 2} = \dots = R_T = \{
-(1,-1,0) \}$, then the optimal sequence of actions is
+\begin{proof}
+We construct the sequence of requests by an adversarial argument. The first
+$\lfloor T/2 \rfloor$ requests are
 $$
-a_1 = a_2 = \dots = a_{T/2} = (-1,1,0) \qquad \text{and} \qquad a_{T/2+1} = a_{T/2+2} = \dots = a_T = (1,-1,0) \: .
+R_1 = R_2 = \dots = R_{\lfloor T/2 \rfloor} = \{ (1,-1,0), (-1,1,0) \} \: .
 $$
-On the other hand, if $R_{T/2 + 1} = R_{T/2 + 2} = \dots = R_T = \{ (-1,1,0) \}$, then the optimal
-sequence of actions is
+Let $a_1, a_2, \dots, a_{\lfloor T/2 \rfloor}$ be the actions chosen by the
+algorithm $A$ in the first $\lfloor T/2 \rfloor$ rounds. Let $n_1, n_2$ be
+the number of times each of the two action $(1,-1,0)$, $(-1,1,0)$ gets chosen by
+the algorithm in the first $\lfloor T/2 \rfloor$ rounds. Formally,
+\begin{align*}
+n_1 & = \{ t ~:~ 1 \le t \le \lfloor T/2 \rfloor, a_t = (1,-1,0) \} \\
+n_2 & = \{ t ~:~ 1 \le t \le \lfloor T/2 \rfloor, a_t = (-1,1,0) \}
+\end{align*}
+Since the algorithm $A$ can be randomized, $n_1$ and $n_2$ are random variables.
+Either $n_1 \ge n_2$ with probability at least $1/2$, or $n_2 \le n_1$ with
+probability at least $1/2$. Let $i^* \in \{1,2\}$ be such that $n_{i^*} \ge n_{3 - i^*}$
+with probability at least $1/2$. Accordingly, we define the majority action
+chosen by the algorithm as
 $$
-a_1 = a_2 = \dots = a_{T/2} = (1,-1,0) \qquad \text{and} \qquad a_{T/2+1} = a_{T/2+2} = \dots = a_T = (-1,1,0) \: .
+a^* =
+\begin{cases}
+(1,-1,0) & \text{if $i^*=1$,} \\
+(-1,1,0) & \text{if $i^*=2$.}
+\end{cases}
 $$
-The hind-sight solution satisfy constraints \eqref{equation:optimization-problem-constraints}.
+We define the last $\lfloor T/2 \rfloor$ requests as
+$$
+R_{\lceil T/2 \rceil + 1} = R_{\lceil T/2 \rceil + 2} = \dots = R_T = \{ a_{\text{majority}} \} \: .
+$$
+If $T$ is odd, we define $R_{\lceil T/2 \rceil} = \{ (0, 0, 0)\}$. If $T$ is even, then
+$R_{\lceil T/2 \rceil} = R_{\lfloor T/2 \rfloor}$ was already defined.
 
-However, any algorithm will come up
+The optimization problem~\eqref{equation:optimization-problem} for this sequence
+of requests has only one feasible solution $\tilde{a}_1, \tilde{a}_2, \dots,
+\tilde{a}_T$,
+\begin{align*}
+\tilde{a}_1 & = \tilde{a}_2 = \dots = \tilde{a}_{\lfloor T/2 \rfloor} = - a^* \\
+\tilde{a}_{\lceil T/2 \rceil + 1} & = \tilde{a}_{\lceil T/2 \rceil + 2} = \dots = \tilde{a}_T = a^* \\
+\tilde{a}_{\lceil T/2 \rceil} & = (0, 0, 0) & \text{if $T$ is odd}
+\end{align*}
+
+Consider the solution $a_1, a_2, \dots, a_T$ produced by the online algorithm
+$A$. Consider the $i^*$-th constraint
+\eqref{equation:optimization-problem-constraints}. The left-hand side of the
+constraint is at least
+$$
+\frac{1}{T} \sum_{t=1}^T a_{t,i^*} = \frac{1}{T} \left( n_{i^*} - n_{3 - i^*} + \lfloor T/2 \rfloor \right) \ge \frac{\lfloor T/2 \rfloor}{T} \ge \frac{1}{2} - \frac{1}{2T} \: .
+$$
+For $T > 3$, the left-hand side is strictly more than $1/3$. Since the
+right-hand side of the constraint is $b_{i^*} = 0$, the solution is not
+$\frac{1}{3}$-feasible.
+
+We remark that that the objective value of any solution, feasible or not, is $0$.
+This includes the optimal solution and the solution produced by the algorithm $A$.
+\end{proof}
+
+
+
+
 
 
 
