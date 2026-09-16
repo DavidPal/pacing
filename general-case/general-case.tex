@@ -161,17 +161,22 @@ other bounded set can be accomodated by scaling and/or shifting the requests.
 This boundedness assumption has a natural interpretation that each requests has
 only negligible impact on the average reward and averages of other metrics.
 
-\subsection{Related work and our contributions}
+Finally, we assume that we have access to an oracle that given a request $R_t
+\subseteq [-1, 1]^{M+1}$ constructs its $\epsilon$-net with respect to
+$\|\cdot\|_{\infty}$ norm of size of at most $(C/\epsilon)^{O(M)}$ where $C$ is
+some constant. In applications this assumption is easily satisfied.
+
+\subsection{Related work}
 
 TODO
 
 \subsection{Approximate solutions}
 \label{subsection:approximate-solutions}
 
-The optimization problems \eqref{equation:optimization-problem} cannot be solved
-exactly by an online algorithm. We thus need to define appropriate notions of
-approximate solution for the problem. For any $\epsilon \ge 0$, we define the
-notion of $\epsilon$-feasible and $\epsilon$-optimal solutions.
+We allow the online algorithm to solve the optimization problem
+\eqref{equation:optimization-problem} within certain margin of error. For any
+$\epsilon \ge 0$, we define the notion of $\epsilon$-feasible and
+$\epsilon$-optimal solutions.
 
 We say that a sequence of actions $a_1 \in R_1, a_2 \in R_2, \dots, a_T \in R_T$ is
 \emph{$\epsilon$-feasible} for the optimization problem
@@ -179,10 +184,12 @@ We say that a sequence of actions $a_1 \in R_1, a_2 \in R_2, \dots, a_T \in R_T$
 $$
 \frac{1}{T} \sum_{t=1}^T a_{t,i} \le b_i + \epsilon \qquad \text{for all $i=1,2,\dots,M$.}
 $$
+If $\epsilon=0$, an $\epsilon$-feasible solution is called simply feasible.
+
 We define the \emph{optimal value} of the optimization problem
 \eqref{equation:optimization-problem} as
 $$
-V = \sup \left\{\frac{1}{T} \sum_{t=1}^T a_{t,M+1} ~:~ a_1 \in R_1, \dots, a_T \in R_t, \forall i=1,2,\dots,M \quad \frac{1}{T} \sum_{t=1}^T a_{t,i} \le b_i  \right\} \: .
+V = \sup \left\{\frac{1}{T} \sum_{t=1}^T a_{t,M+1} ~:~ a_1 \in R_1, \dots, a_T \in R_T, \ \forall i=1,2,\dots,M \quad \frac{1}{T} \sum_{t=1}^T a_{t,i} \le b_i  \right\} \: .
 $$
 Note that the optimal value might not be achieved by any feasible solution,
 since the sets $R_1, R_2, \dots, R_T$ can be infinite and not closed. We say
@@ -198,6 +205,159 @@ where $V$ is the optimal value of the optimization problem
 We are interested in solutions that are both $\epsilon$-feasible and
 $\epsilon$-optimal. We remark that such solutions might exist even if the
 optimization problems are infeasible.
+
+\subsection{Our contributions}
+
+We design an algorithm that finds solution $a_1, a_2, \dots, a_N$ of the
+optimization problem \eqref{equation:optimization-problem} an approximately
+feasible and approximately optimal. With probility at least $1 - \delta$, the
+solution be $\epsilon$-feasible and $\epsilon$-optimal where $\epsilon =
+\widetilde{O}(\sqrt{M \ln(1/\delta)/T})$.
+
+We design of algorithm by a series of reductions. Each reduction introduces a
+small error. First, we reduce the original problem to a special case where the
+requests are finite and have cardinality at most $(C/\epsilon)^{O(M)}$. The
+reduction relies on the oracle that constructs an $\epsilon$-net for each
+request. Second, we reduce the problem to a special case where the probability
+distribution has a density. In order to do that we add random noise to
+coordinates of each action of each request. As long as the noise distribution
+has a density, the distribution of the noisy requests has density as well.
+Third, we reduce the optimization problem to a problem of finding an optimal
+policy that maps requests to actions. We then prove that a linear multiclass
+classifier is an optimal policy. The parameters of the linear classifier can be
+learned from past requests. We use tools from statistical learning theory to
+prove the necessary generalization bounds.
+
+\subsection{Notation and definitions}
+\label{subsection:notation-and-definitions}
+
+We use the following notation in the rest of the paper. For $i=1,2,\dots,N$, we
+define $e_i$ to be the vector in $\R^N$ with $i$-th entry equal to $1$ and all
+other entries equal to zero, that is,
+$$
+e_i = \underbrace{(0,\dots,0,1,0,\dots,0)}_{\text{$1$ is at position $i$}} \: .
+$$
+For any $p \in [1, \infty]$, we denote by $\|\cdot\|_p$ the $p$-norm on $\R^{M+1}$.
+That is, if $x = (x_1, \dots, x_{M+1}) \in \R^{M+1}$, then
+$$
+\|x\|_p =
+\begin{cases}
+\left(|x_1|^p + \dots + |x_{M+1}|^p\right)^{1/p} & \text{if $p \in [1, \infty)$,}  \\
+\max \{|x_1|, \dots, |x_{M+1}|\} & \text{if $p = \infty$.}
+\end{cases}
+$$
+For any $c \in \R^{M+1}$, any $r \ge 0$ and any $p \in [1, \infty]$,
+we define the ball of radius $r$ centered at $c$ in $p$-norm,
+$$
+B_p(c,r) = \{x \in \R^{M+1} ~:~ \|x - c\|_p \le r \}
+$$
+
+
+\section{$\epsilon$-net reduction}
+\label{section:epsilon-net-reduction}
+
+We reduce the online optimization problem to a special case where the requests
+are finite and of bounded cardinality. We replace each request by an
+$\epsilon$-net. Formally, an \emph{$\epsilon$-net} of a set $R \subseteq
+\R^{M+1}$ with respect to a norm $\|\cdot\|$ is a subset $R' \subseteq R$ such
+that for every $x \in R$, there exists $x' \in R'$ such that $\|x - x'\| \le
+\epsilon$. For the rest of paper, all $\epsilon$-nets are with respect
+$\|\cdot\|_\infty$-norm.
+
+The cardinality of the $\epsilon$-net is important. Any set $R \subseteq
+[-1,1]^{M+1}$ has an $\epsilon$-net of size at most $\left\lceil
+\frac{2}{\epsilon} \right\rceil^{M+1}$. Formal statement and proof can be found
+in Appendix~\ref{section:size-of-epsilon-net} as
+Proposition~\ref{proposition:size-of-epsilon-net}. We will use this bound in
+later sections.
+
+We assume that we have an oracle that given any subset $R \subseteq
+[-1,1]^{M+1}$ and $\epsilon > 0$ finds an $\epsilon$-net of $R$ of size at most
+$\left\lceil \frac{2}{\epsilon} \right\rceil^{M+1}$. Let $R_1, R_2, \dots, R_T
+\subseteq [-1,1]^{M+1}$ be a sequence of requests. For $t=1,2,\dots,T$, let
+$R_t'$ be an $\epsilon$-net. We reduce the online optimization problem
+\eqref{equation:optimization-problem} to the online optimization problem
+\begin{equation}
+\label{equation:optimization-problem-discretized}
+\begin{aligned}
+\maximize_{a_1 \in R_1', a_2 \in R_2', \dots, a_T \in R_T'} \qquad & \frac{1}{T} \sum_{t=1}^T a_{t,M+1} \\
+\subjectto \qquad & \frac{1}{T} \sum_{t=1}^T a_{t,i} \le b_i + \epsilon && \qquad \text{for all $i=1,2,\dots,M$}
+\end{aligned}
+\end{equation}
+
+The problem \eqref{equation:optimization-problem-discretized} is a special case
+of the optimization problem \eqref{equation:optimization-problem} where $R_t$ is
+replaced by $R_t'$ and $b_i$ is replaced by $b_i + \epsilon$. The problem is
+special in the sense that the requests $R_t'$ have finite cardinality, and, in
+particular, the cardinality of each request is bounded by $\left\lceil
+\frac{2}{\epsilon} \right\rceil^{M+1}$.
+
+The optimization problem \eqref{equation:optimization-problem-discretized} is
+closely related to the optimization problem
+\eqref{equation:optimization-problem}. Lemma~\ref{lemma:epsilon-net-reduction}
+below shows that a sequence of actions that is approximately feasible and
+approximately optimal for optimization
+problem~\eqref{equation:optimization-problem-discretized} is also approximately
+feasible and approximately optimal for the optimization
+problem~\eqref{equation:optimization-problem}. We refer to the error introduced
+by this reduction as the \emph{discretization error}.
+
+\begin{lemma}[$\epsilon$-net reduction]
+\label{lemma:epsilon-net-reduction}
+Let $\epsilon, \epsilon', \epsilon''$ be positive real numbers. Let
+$a_1, a_2, \dots, a_T$ be a sequence of actions that is $\epsilon'$-feasible and $\epsilon''$-optimal for
+the optimization problem~\eqref{equation:optimization-problem-discretized}. Then,
+$a_1, a_2, \dots, a_T$ is $(\epsilon + \epsilon')$-feasible and $(\epsilon + \epsilon'')$-optimal
+for the optimization problem~\eqref{equation:optimization-problem}.
+\end{lemma}
+
+\begin{proof}
+Let $V$ be the optimal value of the optimization problem
+\eqref{equation:optimization-problem}. Let $\epsilon''' > 0$ be a positive real
+number. Then, there exists a sequence of actions $a_1' \in R_1, a_2' \in R_2, \dots, a_T' \in R_T$ such that
+\begin{align*}
+\frac{1}{T} \sum_{t=1}^T a'_{t,M+1} & \ge V - \epsilon''' \: , \\
+\frac{1}{T} \sum_{t=1}^T a'_{t,i} & \le b_i & \qquad \text{for all $i=1,2,\dots,M$.}
+\end{align*}
+In other words, $a'_1, a'_2, \dots, a'_T$ is feasible and $\epsilon'''$-optimal
+for the optimization problem \eqref{equation:optimization-problem}.
+
+We construct a sequence of actions $a_1'' \in R_1', a_2'' \in R_2', \dots, a_T'' \in R_T'$. We define
+$a_t''$ be the element of $R_t'$ that is closest to $a_t'$ in the
+$\|\cdot\|_\infty$-norm. Since $R_t'$ is an $\epsilon$-net of $R_t$,
+\begin{align*}
+\|a_t'' - a_t'\|_\infty \le \epsilon & \qquad \text{for all $t=1,2,\dots,T$.}
+\end{align*}
+Therefore,
+\begin{align*}
+\frac{1}{T} \sum_{t=1}^T a''_{t,M+1} & \ge V - \epsilon''' - \epsilon \: , \\
+\frac{1}{T} \sum_{t=1}^T a''_{t,i} & \le b_i + \epsilon & \qquad \text{for all $i=1,2,\dots,M$.}
+\end{align*}
+In other words, $a''_1, a''_2, \dots, a''_T$ is a feasible and $(\epsilon''' +
+\epsilon)$-optimal for the optimization
+problem~\eqref{equation:optimization-problem-discretized}. Therefore, the
+optimal value of the optimization
+problem~\eqref{equation:optimization-problem-discretized} is at least $V -
+\epsilon''' - \epsilon$. Since $\epsilon'''$ is arbitrary, the optimal value of
+the optimization problem \eqref{equation:optimization-problem-discretized} is at
+least $V - \epsilon$.
+
+By assumption $a_1 \in R_1', a_2 \in R_2', \dots, a_T \in R_T'$ is $\epsilon'$-feasible and $\epsilon''$-optimal for
+optimization problem \eqref{equation:optimization-problem-discretized}. This implies that
+\begin{align*}
+\frac{1}{T} \sum_{t=1}^T a_{t,M+1} & \ge V - \epsilon - \epsilon'' \: , \\
+\frac{1}{T} \sum_{t=1}^T a_{t,i} & \le b_i + \epsilon + \epsilon' & \qquad \text{for all $i=1,2,\dots,M$.}
+\end{align*}
+Since $R_t' \subseteq R_t$, this means that $a_1, a_2, \dots, a_T$
+is $(\epsilon + \epsilon')$-feasible and $(\epsilon + \epsilon'')$-optimal for
+the optimization problem \eqref{equation:optimization-problem}.
+\end{proof}
+
+As it will turn out, a suitable value for $\epsilon$ is $\epsilon = \sqrt{M/T}$.
+This makes the discretization error commensurate with other sources of error
+that we encounter later. In the rest of the paper, we assume that the requests
+are $N$-tuples where $N = \left\lceil \frac{2}{\epsilon}
+\right\rceil^{M+1}$.
 
 \section{Problem formulation}
 
@@ -338,154 +498,6 @@ problem~\eqref{equation:optimization-problem},
 We are interested in solutions that are both $\epsilon$-feasible and
 $\epsilon$-optimal. We remark that such solutions might exist even if the
 optimization problems are infeasible.
-
-\subsection{Notation and definitions}
-
-We use the following notation in the rest of the paper. For $i=1,2,\dots,N$, we
-define $e_i$ to be the vector in $\R^N$ with $i$-th entry equal to $1$ and all
-other entries equal to zero, that is,
-$$
-e_i = \underbrace{(0,\dots,0,1,0,\dots,0)}_{\text{$1$ is at position $i$}} \: .
-$$
-For any $p \in [1, \infty]$, we denote by $\|\cdot\|_p$ the $p$-norm on $\R^{M+1}$.
-That is, if $x = (x_1, \dots, x_{M+1}) \in \R^{M+1}$, then
-$$
-\|x\|_p =
-\begin{cases}
-\left(|x_1|^p + \dots + |x_{M+1}|^p\right)^{1/p} & \text{if $p \in [1, \infty)$,}  \\
-\max \{|x_1|, \dots, |x_{M+1}|\} & \text{if $p = \infty$.}
-\end{cases}
-$$
-For any $c \in \R^{M+1}$, any $r \ge 0$ and any $p \in [1, \infty]$,
-we define the ball of radius $r$ centered at $c$ in $p$-norm,
-$$
-B_p(c,r) = \{x \in \R^{M+1} ~:~ \|x - c\|_p \le r \}
-$$
-
-We abuse the notation and allow a request to be a tuple of actions instead of a
-set of actions. We use this convention only if the set of actions in the request
-is finite. We allow an action to be repeated multiple times in the tuple. This
-way, requests can be tuples of the same length. If $R = (a_1, a_2, \dots, a_N)$
-is an $N$-tuple, the set notation $a \in R$ means that $a = a_i$ for some $i =
-1,2,\dots,N$. If all requests are tuples of the same length $N$, a policy is
-function $\pi: [-1,1]^{(M+1) \times N} \to [-1,1]^{M+1}$ such that $\pi(R) \in
-R$.
-
-\section{Discretization}
-\label{section:discretization}
-
-Requests that are arbitrary subsets of $[-1,1]^{M+1}$ are difficult to handle.
-We therefore discretize them using $\epsilon$-nets. Formally, an
-\emph{$\epsilon$-net} of a set $R \subseteq \R^{M+1}$ with respect to a norm
-$\|\cdot\|$ is a subset $R' \subseteq R$ such that for every $x \in R$, there
-exists $x' \in R'$ such that $\|x - x'\| \le \epsilon$. While the notion of
-$\epsilon$-net can be considered for any norm, we will exclusively consider
-$\epsilon$-nets with respect to the $\|\cdot\|_\infty$-norm.
-
-We show that the size of $\epsilon$-net of $R$ can be upper bounded by
-$\left\lceil \frac{2}{\epsilon} \right\rceil^{M+1}$; see
-Proposition~\ref{proposition:size-of-epsilon-net} in
-Appendix~\ref{section:size-of-epsilon-net}. The size of the $\epsilon$-net will
-become important later.
-
-We assume that we have an oracle that given any subset $R \subseteq [-1,1]^{M+1}$
-and $\epsilon > 0$ finds an $\epsilon$-net of $R$ of size at most $\left\lceil
-\frac{2}{\epsilon} \right\rceil^{M+1}$. We denote by $\Psi(R,\epsilon)$ the
-$\epsilon$-net that the oracle outputs for input $R$ and $\epsilon$. Using the oracle,
-we reduce the optimization problem~\eqref{equation:optimization-problem}
-to the optimization problem
-\begin{equation}
-\label{equation:optimization-problem-discretized}
-\begin{aligned}
-\maximize_{a_1, a_2, \dots, a_T} \qquad & \frac{1}{T} \sum_{t=1}^T a_{t,M+1} \\
-\subjectto \qquad & \frac{1}{T} \sum_{t=1}^T a_{t,i} \le B_i + \epsilon && \qquad \text{for all $i=1,2,\dots,M$} \\
-& a_t \in \Psi(R_t,\epsilon) && \qquad \text{for all $t=1,2,\dots,T$}
-\end{aligned}
-\end{equation}
-
-The problem \eqref{equation:optimization-problem-discretized} is a special case
-of the optimization problem \eqref{equation:optimization-problem} where $R_t$ is
-replaced by $\Psi(R_t,\epsilon)$ and $B_i$ is replaced by $B_i + \epsilon$. The
-problem is special in the sense that the requests $\Psi(R_t,\epsilon)$ have
-finite cardinality, and, in particular, the cardinality of each request is
-bounded by $\left\lceil \frac{2}{\epsilon} \right\rceil^{M+1}$.
-
-The optimization problem \eqref{equation:optimization-problem-discretized} is
-closely related to the optimization problem
-\eqref{equation:optimization-problem}. Lemma~\ref{lemma:epsilon-net-reduction}
-below shows that a sequence of actions that is approximately feasible and
-approximately optimal for optimization
-problem~\eqref{equation:optimization-problem-discretized} is also approximately
-feasible and approximately optimal for the optimization
-problem~\eqref{equation:optimization-problem}. We refer to the error introduced
-by this reduction as the \emph{discretization error}.
-
-We remark that one can construct dicsretized versions of the optimization
-problems \eqref{equation:distribution-policy-optimization} and
-\eqref{equation:sample-policy-optimization}. Similar reductions and
-corresponding analogues of Lemma~\ref{lemma:epsilon-net-reduction} exist for
-these problems as well.
-
-\begin{lemma}[$\epsilon$-net reduction]
-\label{lemma:epsilon-net-reduction}
-Let $\epsilon, \epsilon', \epsilon''$ be positive real numbers. Let
-$a_1, a_2, \dots, a_T$ be a sequence of actions that is $\epsilon'$-feasible and $\epsilon''$-optimal for
-the optimization problem~\eqref{equation:optimization-problem-discretized}. Then,
-$a_1, a_2, \dots, a_T$ is $(\epsilon + \epsilon')$-feasible and $(\epsilon + \epsilon'')$-optimal
-for the optimization problem~\eqref{equation:optimization-problem}.
-\end{lemma}
-
-\begin{proof}
-Let $V$ be the optimal value of the optimization problem
-\eqref{equation:optimization-problem}. Let $\epsilon''' > 0$ be a positive real
-number. Then, there exists a sequence of actions $a_1', a_2', \dots, a_T'$ such that
-\begin{align*}
-\frac{1}{T} \sum_{t=1}^T a'_{t,M+1} & \ge V - \epsilon''' \: , \\
-\frac{1}{T} \sum_{t=1}^T a'_{t,i} & \le B_i & \qquad \text{for all $i=1,2,\dots,M$,} \\
-a'_t & \in R_t & \qquad \text{for all $t=1,2,\dots,T$.}
-\end{align*}
-In other words, $a'_1, a'_2, \dots, a'_T$ is feasible and $\epsilon'''$-optimal
-for the optimization problem \eqref{equation:optimization-problem}.
-
-We construct a sequence of actions $a_1'', a_2'', \dots, a_T''$. We define
-$a_t''$ be the element of $\Psi(R_t,\epsilon)$ that is closest to $a_t'$ in the
-$\|\cdot\|_\infty$-norm. Since $\Psi(R_t,\epsilon)$ is an $\epsilon$-net of
-$R_t$,
-\begin{align*}
-\|a_t'' - a_t'\|_\infty \le \epsilon & \qquad \text{for all $t=1,2,\dots,T$.}
-\end{align*}
-Therefore,
-\begin{align*}
-\frac{1}{T} \sum_{t=1}^T a''_{t,M+1} & \ge V - \epsilon''' - \epsilon \: , \\
-\frac{1}{T} \sum_{t=1}^T a''_{t,i} & \le B_i + \epsilon & \qquad \text{for all $i=1,2,\dots,M$,} \\
-a_t'' & \in \Psi(R_t,\epsilon) & \qquad \text{for all $t=1,2,\dots,T$.}
-\end{align*}
-In other words, $a''_1, a''_2, \dots, a''_T$ is a feasible and $(\epsilon''' +
-\epsilon)$-optimal for the optimization
-problem~\eqref{equation:optimization-problem-discretized}. Therefore, the
-optimal value of the optimization
-problem~\eqref{equation:optimization-problem-discretized} is at least $V -
-\epsilon''' - \epsilon$. Since $\epsilon'''$ is arbitrary, the optimal value of
-the optimization problem \eqref{equation:optimization-problem-discretized} is at
-least $V - \epsilon$.
-
-By assumption $a_1, a_2, \dots, a_T$ is $\epsilon'$-feasible and $\epsilon''$-optimal for
-optimization problem \eqref{equation:optimization-problem-discretized}. This implies that
-\begin{align*}
-\frac{1}{T} \sum_{t=1}^T a'_{t,M+1} & \ge V - \epsilon - \epsilon'' \: , \\
-\frac{1}{T} \sum_{t=1}^T a'_{t,i} & \le B_i + \epsilon + \epsilon' & \qquad \text{for all $i=1,2,\dots,M$,} \\
-a_t' & \in \Psi(R_t,\epsilon) & \qquad \text{for all $t=1,2,\dots,T$.}
-\end{align*}
-Since $\Psi(R_t,\epsilon) \subseteq R_t$, this means that $a_1, a_2, \dots, a_T$
-is $(\epsilon + \epsilon')$-feasible and $(\epsilon + \epsilon'')$-optimal for
-the optimization problem \eqref{equation:optimization-problem}.
-\end{proof}
-
-As it will turn out, a suitable value for $\epsilon$ is $\epsilon = \sqrt{M/T}$.
-This makes the discretization error commensurate with other sources of error
-that we encounter later. In the rest of the paper, we assume that the requests
-are $N$-tuples where $N = \left\lceil \frac{2}{\epsilon}
-\right\rceil^{M+1}$.
 
 \section{Lagrangian policies}
 
